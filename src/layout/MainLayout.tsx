@@ -1,33 +1,73 @@
-:root {
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../auth/AuthContext";
 
-  /* Brand */
-  --brand-primary: #02C39A;
-  --brand-secondary: #028090;
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const { user, logout } = useAuth();
 
-  /* Neutral Scale */
-  --neutral-900: #0D1B2A;
-  --neutral-800: #111827;
-  --neutral-700: #1B263B;
-  --neutral-600: #132232;
-  --neutral-200: #E5E7EB;
-  --neutral-100: #F9FAFB;
-  --white: #ffffff;
+  return (
+    <div className="app-container">
+      <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+        <h2 style={{ marginBottom: "30px" }}>CircleFi</h2>
 
-  /* Text */
-  --text-dark: #111827;
-  --text-light: #ffffff;
-  --text-muted-dark: rgba(17, 24, 39, 0.6);
-  --text-muted-light: rgba(255, 255, 255, 0.6);
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Link to="/app" style={{ color: "white", textDecoration: "none" }}>
+            Dashboard
+          </Link>
+          <Link to="/reputation" style={{ color: "white", textDecoration: "none" }}>
+            Reputation
+          </Link>
+          <Link to="/circles" style={{ color: "white", textDecoration: "none" }}>
+            Circles
+          </Link>
+          <Link to="/security" style={{ color: "white", textDecoration: "none" }}>
+            Security
+          </Link>
+        </div>
 
-  /* Radius */
-  --radius-lg: 16px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          style={{
+            marginTop: "40px",
+            background: "transparent",
+            border: "1px solid rgba(255,255,255,0.3)",
+            color: "white",
+            padding: "6px 10px",
+            borderRadius: "6px",
+            cursor: "pointer"
+          }}
+        >
+          {collapsed ? "→" : "←"}
+        </button>
+      </div>
 
-  /* Shadows */
-  --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.08);
-  --shadow-dark: 0 10px 25px rgba(0, 0, 0, 0.3);
+      <div className="main-content fade-in">
+        <div className="topbar">
+          <h1 style={{ margin: 0 }}>CircleFi Platform</h1>
 
-  /* Transitions */
-  --transition-fast: 0.2s ease;
+          {user && (
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <span>{user.name}</span>
+              <button
+                onClick={logout}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  color: "white",
+                  padding: "6px 12px",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+
+        {children}
+      </div>
+    </div>
+  );
 }
