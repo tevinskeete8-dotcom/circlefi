@@ -1,0 +1,35 @@
+:root {
+
+  /* Brand Colors */
+  --brand-primary: #02C39A;      /* growth */
+  --brand-secondary: #028090;    /* trust */
+
+  /* Warm Neutrals */
+  --neutral-900: #0F1F2F;        /* deep navy */
+  --neutral-800: #162A3A;
+  --neutral-700: #1E3547;
+  --neutral-600: #254055;
+
+  --neutral-200: #E6EDF2;
+  --neutral-100: #F4F7F9;
+  --white: #ffffff;
+
+  /* Text */
+  --text-dark: #1A2A33;
+  --text-muted-dark: rgba(26, 42, 51, 0.65);
+  --text-light: #ffffff;
+  --text-muted-light: rgba(255, 255, 255, 0.65);
+
+  /* Radius */
+  --radius-xl: 20px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* Shadow */
+  --shadow-soft: 0 8px 25px rgba(0, 0, 0, 0.08);
+  --shadow-warm: 0 12px 35px rgba(2, 195, 154, 0.08);
+
+  /* Motion */
+  --transition: 0.25s ease;
+}
