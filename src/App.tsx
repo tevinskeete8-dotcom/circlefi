@@ -4,129 +4,114 @@ type Member = {
   id: string;
   name: string;
   paid: boolean;
-  reliability: number;
-};
-
-type Circle = {
-  id: string;
-  name: string;
-  amount: number;
-  members: Member[];
-  currentRound: number;
 };
 
 export default function App() {
-  const [screen, setScreen] = useState<"dashboard" | "circle">("dashboard");
-  const [selectedCircle, setSelectedCircle] = useState<Circle | null>(null);
+  const [paid, setPaid] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  const [circles, setCircles] = useState<Circle[]>([
-    {
-      id: "1",
-      name: "Familia Unida",
-      amount: 300,
-      currentRound: 1,
-      members: [
-        { id: "1", name: "You", paid: false, reliability: 80 },
-        { id: "2", name: "Rosa", paid: true, reliability: 92 },
-        { id: "3", name: "Luis", paid: false, reliability: 60 },
-        { id: "4", name: "Ana", paid: true, reliability: 88 }
-      ]
-    }
-  ]);
+  const contribution = 300;
+  const members: Member[] = [
+    { id: "1", name: "You", paid },
+    { id: "2", name: "Rosa", paid: true },
+    { id: "3", name: "Luis", paid: false },
+    { id: "4", name: "Ana", paid: true }
+  ];
 
-  const togglePaid = () => {
-    if (!selectedCircle) return;
+  const totalPool = contribution * members.length;
+  const paidCount = members.filter(m => m.paid).length;
+  const progress = (paidCount / members.length) * 100;
 
-    const updatedCircles = circles.map(circle => {
-      if (circle.id !== selectedCircle.id) return circle;
+  const trustScore = paid ? 85 : 70;
 
-      const updatedMembers = circle.members.map(member => {
-        if (member.name === "You") {
-          const newPaid = !member.paid;
-          return {
-            ...member,
-            paid: newPaid,
-            reliability: newPaid
-              ? Math.min(member.reliability + 5, 100)
-              : Math.max(member.reliability - 10, 0)
-          };
-        }
-        return member;
-      });
-
-      return { ...circle, members: updatedMembers };
-    });
-
-    setCircles(updatedCircles);
-    setSelectedCircle(updatedCircles.find(c => c.id === selectedCircle.id) || null);
-  };
-
-  const totalPool = selectedCircle
-    ? selectedCircle.amount * selectedCircle.members.length
-    : 0;
+  const trustLabel =
+    trustScore >= 85
+      ? "Excellent Standing"
+      : trustScore >= 75
+      ? "Good Standing"
+      : "Needs Attention";
 
   return (
     <div style={styles.app}>
-      {screen === "dashboard" && (
-        <div style={styles.container}>
-          <h1 style={styles.title}>CircleFi</h1>
-          <p style={styles.subtitle}>Escrow-protected savings circles</p>
+      <div style={styles.phone}>
+        <h2 style={styles.greeting}>Good Evening 👋</h2>
 
-          {circles.map(circle => (
+        <div style={styles.poolCard}>
+          <div style={styles.poolLabel}>Total Escrow Pool</div>
+          <div style={styles.poolAmount}>${totalPool}</div>
+          <div style={styles.poolSub}>
+            ${contribution} per member · 4 members
+          </div>
+        </div>
+
+        <div style={styles.section}>
+          <div style={styles.sectionTitle}>This Round</div>
+          <div style={styles.progressBarBackground}>
             <div
-              key={circle.id}
-              style={styles.card}
-              onClick={() => {
-                setSelectedCircle(circle);
-                setScreen("circle");
+              style={{
+                ...styles.progressBarFill,
+                width: `${progress}%`
               }}
-            >
-              <h3>{circle.name}</h3>
-              <p>${circle.amount} per member</p>
-              <p>
-                Pool: $
-                {circle.amount * circle.members.length}
-              </p>
+            />
+          </div>
+          <div style={styles.progressText}>
+            {paidCount} of {members.length} members have contributed
+          </div>
+        </div>
+
+        <div style={styles.section}>
+          <div style={styles.sectionTitle}>Your Trust Score</div>
+          <div style={styles.trustBadge}>
+            {trustScore} · {trustLabel}
+          </div>
+        </div>
+
+        <div style={styles.section}>
+          <div style={styles.sectionTitle}>Members</div>
+          {members.map(member => (
+            <div key={member.id} style={styles.memberRow}>
+              <span>{member.name}</span>
+              <span
+                style={{
+                  color: member.paid ? "#02C39A" : "#E76F51",
+                  fontWeight: 600
+                }}
+              >
+                {member.paid ? "Paid ✓" : "Waiting"}
+              </span>
             </div>
           ))}
         </div>
-      )}
 
-      {screen === "circle" && selectedCircle && (
-        <div style={styles.container}>
-          <button style={styles.back} onClick={() => setScreen("dashboard")}>
-            ← Back
-          </button>
+        <button
+          style={styles.payButton}
+          onClick={() => setShowModal(true)}
+        >
+          Mark My Contribution as Paid
+        </button>
+      </div>
 
-          <h2>{selectedCircle.name}</h2>
-          <p style={styles.pool}>
-            Total Escrow Pool: ${totalPool}
-          </p>
-
-          <div style={styles.memberList}>
-            {selectedCircle.members.map(member => (
-              <div key={member.id} style={styles.member}>
-                <div>
-                  <strong>{member.name}</strong>
-                  <div style={styles.reliability}>
-                    Reliability: {member.reliability}%
-                  </div>
-                </div>
-
-                <div>
-                  {member.paid ? (
-                    <span style={styles.paid}>Paid ✓</span>
-                  ) : (
-                    <span style={styles.unpaid}>Pending</span>
-                  )}
-                </div>
-              </div>
-            ))}
+      {showModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h3>Confirm Payment</h3>
+            <p>You are contributing ${contribution} to this round.</p>
+            <button
+              style={styles.confirmButton}
+              onClick={() => {
+                setPaid(true);
+                setShowModal(false);
+              }}
+            >
+              Confirm Payment
+            </button>
+            <button
+              style={styles.cancelButton}
+              onClick={() => setShowModal(false)}
+            >
+              Cancel
+            </button>
           </div>
-
-          <button style={styles.payButton} onClick={togglePaid}>
-            Toggle My Payment
-          </button>
         </div>
       )}
     </div>
@@ -135,70 +120,117 @@ export default function App() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   app: {
-    fontFamily: "system-ui, sans-serif",
     background: "#0D1B2A",
     minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "system-ui"
+  },
+  phone: {
+    width: 390,
+    maxWidth: "100%",
+    padding: 20,
     color: "white"
   },
-  container: {
-    maxWidth: 420,
-    margin: "0 auto",
-    padding: 24
+  greeting: {
+    marginBottom: 20
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 800
-  },
-  subtitle: {
-    opacity: 0.7,
-    marginBottom: 24
-  },
-  card: {
+  poolCard: {
     background: "#132232",
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    cursor: "pointer"
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 20
   },
-  back: {
-    background: "none",
-    border: "none",
-    color: "#02C39A",
-    marginBottom: 12,
-    cursor: "pointer"
+  poolLabel: {
+    opacity: 0.7,
+    fontSize: 14
   },
-  pool: {
-    fontSize: 20,
-    marginBottom: 16
+  poolAmount: {
+    fontSize: 36,
+    fontWeight: 800,
+    margin: "8px 0"
   },
-  memberList: {
-    marginBottom: 24
+  poolSub: {
+    opacity: 0.6
   },
-  member: {
+  section: {
+    marginBottom: 20
+  },
+  sectionTitle: {
+    marginBottom: 8,
+    fontWeight: 600
+  },
+  progressBarBackground: {
+    height: 8,
+    background: "#1A2E42",
+    borderRadius: 4
+  },
+  progressBarFill: {
+    height: 8,
+    background: "#02C39A",
+    borderRadius: 4
+  },
+  progressText: {
+    marginTop: 6,
+    fontSize: 13,
+    opacity: 0.7
+  },
+  trustBadge: {
+    background: "#028090",
+    padding: "8px 12px",
+    borderRadius: 20,
+    display: "inline-block",
+    fontWeight: 600
+  },
+  memberRow: {
     display: "flex",
     justifyContent: "space-between",
     background: "#1A2E42",
-    padding: 12,
+    padding: 10,
     borderRadius: 10,
-    marginBottom: 10
-  },
-  paid: {
-    color: "#02C39A"
-  },
-  unpaid: {
-    color: "#E76F51"
-  },
-  reliability: {
-    fontSize: 12,
-    opacity: 0.7
+    marginBottom: 8
   },
   payButton: {
     width: "100%",
     padding: 14,
-    background: "#028090",
+    background: "#02C39A",
     border: "none",
-    borderRadius: 10,
+    borderRadius: 12,
     fontWeight: 700,
+    marginTop: 10,
     cursor: "pointer"
+  },
+  modalOverlay: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.6)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modal: {
+    background: "#132232",
+    padding: 20,
+    borderRadius: 16,
+    width: 300,
+    textAlign: "center"
+  },
+  confirmButton: {
+    background: "#02C39A",
+    border: "none",
+    padding: 10,
+    borderRadius: 10,
+    width: "100%",
+    marginTop: 10
+  },
+  cancelButton: {
+    background: "transparent",
+    border: "1px solid #02C39A",
+    padding: 10,
+    borderRadius: 10,
+    width: "100%",
+    marginTop: 8,
+    color: "#02C39A"
   }
 };
