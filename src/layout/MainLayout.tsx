@@ -1,18 +1,12 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { useState } from "react";
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MainLayout({ children }: any) {
   const { user, logout } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="app-container">
-      <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+      <div className="sidebar">
         <h2>CircleFi</h2>
 
         <NavLink to="/app" className="nav-link">
@@ -30,21 +24,16 @@ export default function MainLayout({
         <NavLink to="/security" className="nav-link">
           Security
         </NavLink>
-
-        <button
-          className="collapse-btn"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          Toggle
-        </button>
       </div>
 
-      <div className="main-content fade-in">
+      <div className="main-content">
         <div className="topbar">
-          <h1>CircleFi Platform</h1>
+          <h1 style={{ fontSize: "34px", fontWeight: 700 }}>
+            CircleFi Platform
+          </h1>
 
           <div>
-            <span style={{ marginRight: "20px" }}>
+            <span style={{ marginRight: 20 }}>
               {user?.name} ({user?.role})
             </span>
             <button className="primary-btn" onClick={logout}>
