@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { supabase } from "./lib/supabase";
 
 import Landing from "./pages/Landing";
@@ -7,18 +7,16 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import MainLayout from "./layout/MainLayout";
 
-function ProtectedRoute({ children }: { children: JSX.Element }) {
+function ProtectedRoute({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
-    // Get current session
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setLoading(false);
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -36,7 +34,7 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 }
 
 export default function App() {
