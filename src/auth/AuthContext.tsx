@@ -1,31 +1,39 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 
-const AuthContext = createContext<any>(null);
+type Role = "organizer" | "member";
 
-export function AuthProvider({ children }: any) {
-  const [user, setUser] = useState<any>(null);
+interface User {
+  name: string;
+  role: Role;
+  onboarded: boolean;
+}
 
-  // Load user from localStorage on first load
-  useEffect(() => {
-    const savedUser = localStorage.getItem("circlefi_user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
+interface AuthContextType {
+  user: User | null;
+  login: (name: string, role: Role) => void;
+  logout: () => void;
+  completeOnboarding: () => void;
+}
 
-  const login = () => {
-    const mockUser = { name: "Tevin" };
-    setUser(mockUser);
-    localStorage.setItem("circlefi_user", JSON.stringify(mockUser));
+const AuthContext = createContext<AuthContextType>(null!);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+
+  const login = (name: string, role: Role) => {
+    setUser({ name, role, onboarded: false });
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("circlefi_user");
+  const logout = () => setUser(null);
+
+  const completeOnboarding = () => {
+    if (user) {
+      setUser({ ...user, onboarded: true });
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, completeOnboarding }}>
       {children}
     </AuthContext.Provider>
   );

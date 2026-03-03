@@ -1,49 +1,40 @@
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  function handleLogin() {
-    login();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const handleLogin = () => {
+    login(name, email);
     navigate("/app");
-  }
+  };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#F9FAFB"
-      }}
-    >
-      <div
-        style={{
-          background: "white",
-          padding: 40,
-          borderRadius: 12,
-          width: 350,
-          textAlign: "center"
-        }}
-      >
-        <h2>Login to CircleFi</h2>
+    <div style={{ padding: "80px", textAlign: "center" }}>
+      <h1>Login to CircleFi</h1>
 
-        <button
-          onClick={handleLogin}
-          style={{
-            marginTop: 20,
-            padding: "12px 20px",
-            background: "#02C39A",
-            border: "none",
-            borderRadius: 8,
-            fontWeight: 600,
-            cursor: "pointer"
-          }}
-        >
-          Mock Login
+      <div style={{ marginTop: "30px" }}>
+        <input
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          style={{ padding: "10px", marginRight: "10px" }}
+        />
+
+        <input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ padding: "10px", marginRight: "10px" }}
+        />
+
+        <button className="primary-btn" onClick={handleLogin}>
+          Login
         </button>
       </div>
     </div>

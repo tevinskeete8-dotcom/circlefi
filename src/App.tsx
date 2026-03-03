@@ -1,55 +1,71 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./auth/AuthContext";
+
+import MainLayout from "./layout/MainLayout";
+
 import Landing from "./pages/Landing";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Reputation from "./pages/Reputation";
 import Circles from "./pages/Circles";
 import Security from "./pages/Security";
-import Login from "./pages/Login";
-import ProtectedRoute from "./components/ProtectedRoute";
+import Onboarding from "./pages/Onboarding";
 
 export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
+  const { user } = useAuth();
 
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
+
+      {user && !user.onboarded && (
+        <Route path="*" element={<Onboarding />} />
+      )}
+
+      {user && user.onboarded && (
         <Route
           path="/app"
           element={
-            <ProtectedRoute>
+            <MainLayout>
               <Dashboard />
-            </ProtectedRoute>
+            </MainLayout>
           }
         />
+      )}
 
-        <Route
-          path="/reputation"
-          element={
-            <ProtectedRoute>
-              <Reputation />
-            </ProtectedRoute>
-          }
-        />
+      {user && user.onboarded && (
+        <>
+          <Route
+            path="/reputation"
+            element={
+              <MainLayout>
+                <Reputation />
+              </MainLayout>
+            }
+          />
 
-        <Route
-          path="/circles"
-          element={
-            <ProtectedRoute>
-              <Circles />
-            </ProtectedRoute>
-          }
-        />
+          <Route
+            path="/circles"
+            element={
+              <MainLayout>
+                <Circles />
+              </MainLayout>
+            }
+          />
 
-        <Route
-          path="/security"
-          element={
-            <ProtectedRoute>
-              <Security />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Router>
+          <Route
+            path="/security"
+            element={
+              <MainLayout>
+                <Security />
+              </MainLayout>
+            }
+          />
+        </>
+      )}
+
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 }
