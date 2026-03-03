@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { supabase } from "./lib/supabase";
@@ -27,37 +27,31 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  if (loading) {
-    return <div style={{ padding: 40 }}>Loading...</div>;
-  }
+  if (loading) return <div style={{ padding: 40 }}>Loading...</div>;
 
-  if (!session) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!session) return <Navigate to="/login" replace />;
 
   return <>{children}</>;
 }
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/app"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Dashboard />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      <Route
+        path="/app"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Dashboard />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
