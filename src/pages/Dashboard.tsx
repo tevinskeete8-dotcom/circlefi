@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "../auth/AuthContext";
 
 type Circle = {
   id: string;
@@ -11,24 +10,29 @@ type Circle = {
 };
 
 export default function Dashboard() {
-  const { user } = useAuth();
   const [circles, setCircles] = useState<Circle[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchCircles() {
-      if (!user) {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) {
         setLoading(false);
         return;
       }
 
+      const userId = session.user.id;
+
       const { data, error } = await supabase
         .from("circles")
         .select("*")
-        .eq("organizer_id", user.id);
+        .eq("organizer_id", userId);
 
       if (error) {
-        console.error("Error fetching circles:", error);
+        console.error(error);
       } else {
         setCircles(data ?? []);
       }
@@ -37,7 +41,7 @@ export default function Dashboard() {
     }
 
     fetchCircles();
-  }, [user]);
+  }, []);
 
   if (loading) return <div style={{ padding: 40 }}>Loading...</div>;
 
