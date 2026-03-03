@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,28 +18,15 @@ export default function Login() {
       password,
     });
 
-    if (error) {
-      alert(error.message);
-    }
-
     setLoading(false);
-  }
-
-  async function handleSignUp() {
-    setLoading(true);
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
 
     if (error) {
       alert(error.message);
-    } else {
-      alert("Check your email to confirm your account.");
+      return;
     }
 
-    setLoading(false);
+    // ✅ Redirect after successful login
+    navigate("/app");
   }
 
   return (
@@ -68,12 +58,6 @@ export default function Login() {
           {loading ? "Loading..." : "Login"}
         </button>
       </form>
-
-      <div style={{ marginTop: 16 }}>
-        <button onClick={handleSignUp} disabled={loading}>
-          Sign Up
-        </button>
-      </div>
     </div>
   );
 }
