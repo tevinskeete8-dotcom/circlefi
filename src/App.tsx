@@ -1,71 +1,67 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./auth/AuthContext";
-
-import MainLayout from "./layout/MainLayout";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "./lib/supabase";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Reputation from "./pages/Reputation";
-import Circles from "./pages/Circles";
-import Security from "./pages/Security";
-import Onboarding from "./pages/Onboarding";
+import MainLayout from "./layout/MainLayout";
+
+function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    // Get current session
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div style={{ padding: 40 }}>Loading...</div>;
+  }
+
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
 
 export default function App() {
-  const { user } = useAuth();
-
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
+    <BrowserRouter>
+      <Routes>
+        {/* Public */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
 
-      {user && !user.onboarded && (
-        <Route path="*" element={<Onboarding />} />
-      )}
-
-      {user && user.onboarded && (
+        {/* Protected */}
         <Route
           path="/app"
           element={
-            <MainLayout>
-              <Dashboard />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout>
+                <Dashboard />
+              </MainLayout>
+            </ProtectedRoute>
           }
         />
-      )}
 
-      {user && user.onboarded && (
-        <>
-          <Route
-            path="/reputation"
-            element={
-              <MainLayout>
-                <Reputation />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/circles"
-            element={
-              <MainLayout>
-                <Circles />
-              </MainLayout>
-            }
-          />
-
-          <Route
-            path="/security"
-            element={
-              <MainLayout>
-                <Security />
-              </MainLayout>
-            }
-          />
-        </>
-      )}
-
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
