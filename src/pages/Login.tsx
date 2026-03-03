@@ -1,40 +1,77 @@
-import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function Login() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    login(name, email);
-    navigate("/app");
-  };
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+    }
+
+    setLoading(false);
+  }
+
+  async function handleSignUp() {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Check your email to confirm your account.");
+    }
+
+    setLoading(false);
+  }
 
   return (
-    <div style={{ padding: "80px", textAlign: "center" }}>
+    <div style={{ padding: 40 }}>
       <h1>Login to CircleFi</h1>
 
-      <div style={{ marginTop: "30px" }}>
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          style={{ padding: "10px", marginRight: "10px" }}
-        />
+      <form onSubmit={handleLogin}>
+        <div style={{ marginBottom: 12 }}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
 
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: "10px", marginRight: "10px" }}
-        />
+        <div style={{ marginBottom: 12 }}>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
-        <button className="primary-btn" onClick={handleLogin}>
-          Login
+        <button type="submit" disabled={loading}>
+          {loading ? "Loading..." : "Login"}
+        </button>
+      </form>
+
+      <div style={{ marginTop: 16 }}>
+        <button onClick={handleSignUp} disabled={loading}>
+          Sign Up
         </button>
       </div>
     </div>

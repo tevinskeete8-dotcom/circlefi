@@ -2,27 +2,35 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../auth/AuthContext";
 
+type Circle = {
+  id: string;
+  name: string;
+  contribution_amount: number;
+  total_members: number;
+  organizer_id: string;
+};
+
 export default function Dashboard() {
   const { user } = useAuth();
-  const [data, setData] = useState<any[]>([]);
+  const [circles, setCircles] = useState<Circle[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
-
     async function fetchCircles() {
-      setLoading(true);
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("circles")
-        .select("*");
+        .select("*")
+        .eq("organizer_id", user.id);
 
-      console.log("USER:", user.id);
-      console.log("DATA:", data);
-      console.log("ERROR:", error);
-
-      if (!error && data) {
-        setData(data);
+      if (error) {
+        console.error("Error fetching circles:", error);
+      } else {
+        setCircles(data ?? []);
       }
 
       setLoading(false);
@@ -31,34 +39,28 @@ export default function Dashboard() {
     fetchCircles();
   }, [user]);
 
-  if (loading) {
-    return (
-      <div style={{ padding: 40 }}>
-        <h2>Loading dashboard...</h2>
-      </div>
-    );
-  }
+  if (loading) return <div style={{ padding: 40 }}>Loading...</div>;
 
   return (
     <div style={{ padding: 40 }}>
-      <h1>Dashboard</h1>
+      <h1>CircleFi Platform</h1>
 
-      {data.length === 0 ? (
+      {circles.length === 0 ? (
         <p>No circles found.</p>
       ) : (
-        data.map((circle) => (
+        circles.map((circle) => (
           <div
             key={circle.id}
             style={{
+              marginBottom: 24,
               padding: 20,
-              marginBottom: 20,
-              background: "#f4f4f4",
+              border: "1px solid #ddd",
               borderRadius: 8,
             }}
           >
             <h3>{circle.name}</h3>
             <p>Contribution: ${circle.contribution_amount}</p>
-            <p>Members: {circle.total_members}</p>
+            <p>Total Members: {circle.total_members}</p>
           </div>
         ))
       )}
