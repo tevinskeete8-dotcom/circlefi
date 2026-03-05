@@ -1,13 +1,25 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { supabase } from "./lib/supabase";
 
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import MainLayout from "./layout/MainLayout";
+import Landing     from "./pages/Landing";
+import Login       from "./pages/Login";
+import Signup      from "./pages/Signup";
+import Onboarding  from "./pages/Onboarding";
+import Dashboard   from "./pages/Dashboard";
+import Circles     from "./pages/Circles";
+import CircleDetail from "./pages/CircleDetail";
+import Reputation  from "./pages/Reputation";
+import Security    from "./pages/Security";
+import MainLayout  from "./layout/MainLayout";
 
+// ── Checks if user has completed onboarding ───────────────────────────
+function hasOnboarded(userId: string) {
+  return localStorage.getItem(`jouvay_onboarded_${userId}`) === "true";
+}
+
+// ── Protected route ───────────────────────────────────────────────────
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
@@ -18,40 +30,107 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  if (loading) return <div style={{ padding: 40 }}>Loading...</div>;
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: "100vh", background: "#F7F5F2",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        color: "#6B3FA0", fontFamily: "Plus Jakarta Sans, sans-serif",
+        fontSize: "0.9rem", letterSpacing: "0.05em",
+      }}>
+        Loading...
+      </div>
+    );
+  }
 
   if (!session) return <Navigate to="/login" replace />;
+
+  // Redirect first-time users to onboarding
+  if (!hasOnboarded(session.user.id)) {
+    return <Navigate to="/onboarding" replace />;
+  }
 
   return <>{children}</>;
 }
 
+function AppShell({ children }: { children: ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <MainLayout>{children}</MainLayout>
+    </ProtectedRoute>
+  );
+}
+
+// ── Onboarding guard — already onboarded users skip straight to /app ──
+function OnboardingRoute() {
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) return null;
+  if (!session) return <Navigate to="/login" replace />;
+  if (hasOnboarded(session.user.id)) return <Navigate to="/app" replace />;
+
+  return <Onboarding />;
+}
+
+// ── Auth redirect handler ─────────────────────────────────────────────
+function AuthRedirectHandler() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        if (!hasOnboarded(session.user.id)) {
+          navigate("/onboarding", { replace: true });
+        } else {
+          navigate("/app", { replace: true });
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  return null;
+}
+
+// ── App ───────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/login" element={<Login />} />
+    <>
+      <AuthRedirectHandler />
+      <Routes>
+        {/* Public */}
+        <Route path="/"       element={<Landing />} />
+        <Route path="/login"  element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
 
-      <Route
-        path="/app"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <Dashboard />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
+        {/* Onboarding — first time only */}
+        <Route path="/onboarding" element={<OnboardingRoute />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Protected app */}
+        <Route path="/app"                element={<AppShell><Dashboard /></AppShell>} />
+        <Route path="/app/circles"        element={<AppShell><Circles /></AppShell>} />
+        <Route path="/app/circles/:id"    element={<AppShell><CircleDetail /></AppShell>} />
+        <Route path="/app/reputation"     element={<AppShell><Reputation /></AppShell>} />
+        <Route path="/app/security"       element={<AppShell><Security /></AppShell>} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }

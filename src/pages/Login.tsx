@@ -1,63 +1,125 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { useNavigate, Link } from "react-router-dom";
+import "../styles/login.css";
 
 export default function Login() {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
+  const handleLogin = async () => {
     setLoading(true);
+    setError("");
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    setLoading(false);
-
-    if (error) {
-      alert(error.message);
-      return;
+    if (!error) {
+      navigate("/app");
+    } else {
+      setError(error.message);
+      setLoading(false);
     }
+  };
 
-    // ✅ Redirect after successful login
-    navigate("/app");
-  }
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleLogin();
+  };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h1>Login to CircleFi</h1>
+    <div className="login-page">
 
-      <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: 12 }}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      {/* Background effects */}
+      <div className="login-bg-grid" aria-hidden="true" />
+      <div className="login-glow" aria-hidden="true" />
+
+      {/* Back to landing */}
+      <Link to="/" className="login-back">
+        ← Back to Jouvay
+      </Link>
+
+      <div className="login-card">
+
+        {/* Logo */}
+        <div className="login-logo">
+          <div className="logo-circle">C</div>
+          <span>Jouvay</span>
         </div>
 
-        <div style={{ marginBottom: 12 }}>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <div className="login-header">
+          <h1>Welcome back</h1>
+          <p>Sign in to your savings circle</p>
         </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Loading..." : "Login"}
+        {/* Error message */}
+        {error && (
+          <div className="login-error">
+            <span>⚠</span> {error}
+          </div>
+        )}
+
+        {/* Fields */}
+        <div className="login-fields">
+          <div className="field-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              className="login-input"
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoComplete="email"
+            />
+          </div>
+
+          <div className="field-group">
+            <div className="field-label-row">
+              <label htmlFor="password">Password</label>
+              <a href="#" className="forgot-link">Forgot password?</a>
+            </div>
+            <input
+              id="password"
+              className="login-input"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoComplete="current-password"
+            />
+          </div>
+        </div>
+
+        <button
+          className={`login-btn ${loading ? "login-btn--loading" : ""}`}
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="spinner" />
+          ) : (
+            <>Sign in <span className="btn-arrow">→</span></>
+          )}
         </button>
-      </form>
+
+        <p className="login-signup">
+          Don't have an account?{" "}
+          <Link to="/signup">Create one free</Link>
+        </p>
+
+      </div>
+
+      {/* Bottom trust line */}
+      <p className="login-trust">
+        🔐 Bank-grade encryption · Your data is always protected
+      </p>
     </div>
   );
 }
