@@ -29,7 +29,7 @@ type Stats = {
 };
 
 const SCORE_TIERS = [
-  { min: 90, label: "Excellent", color: "#1ABFAD", desc: "You are a top-tier circle member." },
+  { min: 90, label: "Excellent", color: "#6B3FA0", desc: "You are a top-tier circle member." },
   { min: 75, label: "Good",      color: "#2E8B57", desc: "Strong track record with room to grow." },
   { min: 60, label: "Fair",      color: "#C9963A", desc: "Building your history — keep going." },
   { min: 0,  label: "New",       color: "#8A9BB5", desc: "No contribution history yet." },
@@ -47,14 +47,14 @@ function calcScore(s: Stats): number {
 }
 
 const METRICS = [
-  { icon: "⟡", label: "On-time Rate",       color: "#1ABFAD", key: "onTimeRate"         as keyof Stats, format: (v: number) => `${Math.round(v * 100)}%`,   desc: "Percentage of contributions paid on schedule." },
+  { icon: "⟡", label: "On-time Rate",       color: "#6B3FA0", key: "onTimeRate"         as keyof Stats, format: (v: number) => `${Math.round(v * 100)}%`,   desc: "Percentage of contributions paid on schedule." },
   { icon: "◈", label: "Total Paid",          color: "#C9963A", key: "totalPaid"          as keyof Stats, format: (v: number) => `$${v.toLocaleString()}`,     desc: "Cumulative amount contributed across all circles." },
   { icon: "◉", label: "Circles Joined",      color: "#7B5EA7", key: "circlesJoined"      as keyof Stats, format: (v: number) => `${v}`,                       desc: "Number of savings circles you've participated in." },
   { icon: "⬡", label: "Contributions Made",  color: "#3D7EAA", key: "totalContributions" as keyof Stats, format: (v: number) => `${v}`,                       desc: "Total individual contribution rounds completed." },
 ];
 
 const HOW_IT_WORKS = [
-  { icon: "⟡", color: "#1ABFAD", title: "Pay on time",         desc: "Every on-schedule contribution raises your score. Missed payments lower it." },
+  { icon: "⟡", color: "#6B3FA0", title: "Pay on time",         desc: "Every on-schedule contribution raises your score. Missed payments lower it." },
   { icon: "◉", color: "#C9963A", title: "Join more circles",   desc: "Participating in multiple circles demonstrates consistent community trust." },
   { icon: "◈", color: "#7B5EA7", title: "Complete full cycles", desc: "Finishing a full rotation without gaps gives the strongest signal to lenders." },
 ];

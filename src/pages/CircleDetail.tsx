@@ -43,7 +43,7 @@ function timeAgo(dateStr: string) {
 }
 
 const MEMBER_COLORS = [
-  "#1ABFAD", "#C9963A", "#7B5EA7", "#3D7EAA", "#C25F3B",
+  "#6B3FA0", "#C9963A", "#7B5EA7", "#3D7EAA", "#C25F3B",
   "#2E8B57", "#B5651D", "#4682B4", "#9370DB", "#20B2AA",
 ];
 
@@ -190,7 +190,7 @@ function InviteMemberModal({
                   onChange={(e) => setUserId(e.target.value)}
                 />
                 <p className="modal-hint">
-                  Members must have a CircleFi account. Ask them to share their user ID from their profile.
+                  Members must have a Jouvay account. Ask them to share their user ID from their profile.
                 </p>
               </div>
             </div>
@@ -320,7 +320,7 @@ export default function CircleDetail() {
       {/* ── Stat Cards ── */}
       <div className="cd-stats">
         {[
-          { icon: "⬡", label: "Monthly Pool",    value: `$${totalPool.toLocaleString()}`,         color: "#1ABFAD" },
+          { icon: "⬡", label: "Monthly Pool",    value: `$${totalPool.toLocaleString()}`,         color: "#6B3FA0" },
           { icon: "◈", label: "Total Collected",  value: `$${totalCollected.toLocaleString()}`,    color: "#C9963A" },
           { icon: "◉", label: "Members",          value: `${members.length} / ${circle.total_members}`, color: "#7B5EA7" },
           { icon: "⟡", label: "On-time Rate",     value: contributions.length ? `${onTimeRate}%` : "—", color: "#3D7EAA" },
@@ -426,7 +426,7 @@ export default function CircleDetail() {
                 {/* Summary bar */}
                 <div className="cd-contrib-summary">
                   <div className="cd-contrib-summary-item">
-                    <span className="cd-contrib-summary-val" style={{ color: "#1ABFAD" }}>
+                    <span className="cd-contrib-summary-val" style={{ color: "#6B3FA0" }}>
                       {paidContribs.length}
                     </span>
                     <span>Paid</span>
@@ -477,7 +477,7 @@ export default function CircleDetail() {
         <div>
           <p className="cd-escrow-title">FDIC-Protected Escrow</p>
           <p className="cd-escrow-desc">
-            All funds in this circle are held in custodial escrow — not by CircleFi or
+            All funds in this circle are held in custodial escrow — not by Jouvay or
             any individual member. Payouts are released automatically on schedule.
           </p>
         </div>

@@ -70,7 +70,7 @@ export default function Signup() {
         <div className="login-card">
           <div className="login-logo">
             <div className="logo-circle">C</div>
-            <span>CircleFi</span>
+            <span>Jouvay</span>
           </div>
 
           <div className="login-header">
@@ -81,7 +81,7 @@ export default function Signup() {
           <div className="login-error" style={{
             background: "rgba(26,191,173,0.08)",
             borderColor: "rgba(26,191,173,0.2)",
-            color: "#1ABFAD",
+            color: "#6B3FA0",
           }}>
             <span>✓</span> Click the link in your email to activate your account.
           </div>
@@ -103,14 +103,14 @@ export default function Signup() {
       <div className="login-glow" aria-hidden="true" />
 
       <Link to="/" className="login-back">
-        ← Back to CircleFi
+        ← Back to Jouvay
       </Link>
 
       <div className="login-card">
 
         <div className="login-logo">
           <div className="logo-circle">C</div>
-          <span>CircleFi</span>
+          <span>Jouvay</span>
         </div>
 
         <div className="login-header">
@@ -181,7 +181,7 @@ export default function Signup() {
                       password.length >= n * 3
                         ? password.length < 6  ? "#F87171"
                         : password.length < 10 ? "#C9963A"
-                        : "#1ABFAD"
+                        : "#6B3FA0"
                         : "rgba(255,255,255,0.08)",
                   }}
                 />
