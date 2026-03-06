@@ -139,78 +139,110 @@ function LogContributionModal({
   );
 }
 
-// ── Invite Member Modal ───────────────────────────────────────────────
+// ── Invite Member Modal (replace existing one in CircleDetail.tsx) ────
 function InviteMemberModal({
   circle,
   onClose,
-  onInvited,
 }: {
   circle: Circle;
   onClose: () => void;
-  onInvited: () => void;
 }) {
-  const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState("");
-  const [success, setSuccess] = useState(false);
+  const [error, setError]     = useState("");
+  const [inviteLink, setInviteLink] = useState("");
+  const [copied, setCopied]   = useState(false);
 
-  const handleInvite = async () => {
-    if (!userId.trim()) { setError("Please enter a user ID."); return; }
+  const generateInvite = async () => {
     setLoading(true); setError("");
 
-    const { error: err } = await supabase.from("circle_members").insert({
-      circle_id: circle.id,
-      user_id:   userId.trim(),
-    });
+    const token = crypto.randomUUID();
+    const { error: err } = await supabase
+      .from("circle_invitations")
+      .insert({ circle_id: circle.id, token, status: "pending" });
 
-    if (err) { setError(err.message); setLoading(false); }
-    else     { setSuccess(true); onInvited(); }
+    if (err) { setError(err.message); setLoading(false); return; }
+
+    const link = `${window.location.origin}/invite/${token}`;
+    setInviteLink(link);
+    setLoading(false);
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Add Member</h2>
+          <h2>Invite Member</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
-        {error   && <div className="modal-error">⚠ {error}</div>}
-        {success && <div className="modal-success">✓ Member added successfully.</div>}
+        {error && <div className="modal-error">⚠ {error}</div>}
 
-        {!success && (
-          <>
-            <div className="modal-fields">
-              <div className="modal-field">
-                <label>Member User ID</label>
+        <div className="modal-fields">
+          {!inviteLink ? (
+            <>
+              <p style={{ fontSize: "0.875rem", color: "#5E4A7A", lineHeight: 1.6, marginBottom: "0.5rem" }}>
+                Generate a unique invite link and share it with anyone you want to join <strong>{circle.name}</strong>. The link can only be used once.
+              </p>
+              <button
+                className={`modal-btn ${loading ? "modal-btn--loading" : ""}`}
+                onClick={generateInvite}
+                disabled={loading}
+              >
+                {loading ? <span className="spinner" /> : "Generate invite link →"}
+              </button>
+            </>
+          ) : (
+            <div className="modal-field">
+              <label>Share this link</label>
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                 <input
                   className="modal-input"
-                  placeholder="Paste member's Supabase user ID"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
+                  value={inviteLink}
+                  readOnly
+                  style={{ fontSize: "0.78rem", color: "#5E4A7A" }}
                 />
-                <p className="modal-hint">
-                  Members must have a Jouvay account. Ask them to share their user ID from their profile.
-                </p>
+                <button
+                  onClick={copyLink}
+                  style={{
+                    padding: "0.6rem 1rem", borderRadius: 100, border: "none",
+                    background: copied ? "#00BFA5" : "#6B3FA0",
+                    color: "#fff", fontWeight: 700, fontSize: "0.8rem",
+                    cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
+                    transition: "background 0.2s",
+                  }}
+                >
+                  {copied ? "✓ Copied!" : "Copy"}
+                </button>
               </div>
+              <p className="modal-hint">
+                Share via WhatsApp, text, or email. The link works once and expires after 7 days.
+              </p>
+              <button
+                onClick={generateInvite}
+                style={{ marginTop: "0.5rem", background: "none", border: "none", color: "#6B3FA0", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline" }}
+              >
+                Generate a new link
+              </button>
             </div>
-            <button
-              className={`modal-btn ${loading ? "modal-btn--loading" : ""}`}
-              onClick={handleInvite}
-              disabled={loading}
-            >
-              {loading ? <span className="spinner" /> : "Add Member →"}
-            </button>
-          </>
-        )}
+          )}
+        </div>
 
-        {success && (
-          <button className="modal-btn" onClick={onClose}>Done</button>
+        {inviteLink && (
+          <button className="modal-btn" style={{ background: "#F0EAFA", color: "#6B3FA0" }} onClick={onClose}>
+            Done
+          </button>
         )}
       </div>
     </div>
   );
 }
+
 
 // ── Main Page ─────────────────────────────────────────────────────────
 export default function CircleDetail() {
@@ -497,7 +529,6 @@ export default function CircleDetail() {
         <InviteMemberModal
           circle={circle}
           onClose={() => setShowInviteModal(false)}
-          onInvited={fetchData}
         />
       )}
     </div>
