@@ -107,8 +107,7 @@ export default function Signup() {
       <div className="login-card">
 
         <div className="login-logo">
-          <div className="logo-circle">C</div>
-          <span>Pardna</span>
+          <PardnaLogo size="md" />
         </div>
 
         <div className="login-header">

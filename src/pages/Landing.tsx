@@ -348,10 +348,7 @@ export default function Landing() {
 
       {/* FOOTER */}
       <footer style={{ padding: "2rem clamp(1.25rem, 5vw, 4rem)", background: "#0D0618", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          <WaveMark size={28} />
-          <PardnaLogo dark size="sm" />
-        </div>
+        <PardnaLogo dark size="sm" />
         <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", margin: 0 }}>© 2026 Pardna. All rights reserved.</p>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           {["Privacy", "Terms", "Contact"].map(l => (
