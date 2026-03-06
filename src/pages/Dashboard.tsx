@@ -12,7 +12,7 @@ type Circle = {
 
 // Cycle progress — placeholder until you add cycle dates to the DB
 const MOCK_PROGRESS = [72, 45, 90, 33, 58, 80];
-const COLORS = ["#6B3FA0", "#C9963A", "#7B5EA7", "#3D7EAA", "#C25F3B", "#2E8B57"];
+const COLORS = ["#1D4ED8", "#D97706", "#7B5EA7", "#3D7EAA", "#C25F3B", "#2E8B57"];
 
 function getInitials(name: string) {
   return name
@@ -72,14 +72,14 @@ export default function Dashboard() {
       value: circles.length,
       sub: "circles you organise",
       icon: "◉",
-      color: "#6B3FA0",
+      color: "#1D4ED8",
     },
     {
       label: "Total Pool",
       value: `$${totalPool.toLocaleString()}`,
       sub: "combined monthly value",
       icon: "⬡",
-      color: "#C9963A",
+      color: "#D97706",
     },
     {
       label: "Total Members",

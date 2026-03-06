@@ -26,7 +26,7 @@ function ChangePassword() {
   return (
     <div className="sec-card">
       <div className="sec-card-head">
-        <div className="sec-card-icon" style={{ color: "#6B3FA0" }}>⟡</div>
+        <div className="sec-card-icon" style={{ color: "#1D4ED8" }}>⟡</div>
         <div>
           <h3>Change Password</h3>
           <p>Update your account password. Use at least 8 characters.</p>
@@ -65,7 +65,7 @@ function KYCSection() {
   return (
     <div className="sec-card">
       <div className="sec-card-head">
-        <div className="sec-card-icon" style={{ color: "#C9963A" }}>◈</div>
+        <div className="sec-card-icon" style={{ color: "#D97706" }}>◈</div>
         <div>
           <h3>Identity Verification (KYC)</h3>
           <p>Verify your identity to unlock full circle features and credit reporting.</p>
@@ -95,7 +95,7 @@ function KYCSection() {
         ))}
       </div>
       <div className="kyc-notice">
-        🔐 Jouvay follows all KYC/AML requirements. Your data is encrypted and never sold.
+        🔐 Pardna follows all KYC/AML requirements. Your data is encrypted and never sold.
       </div>
       <button className="sec-btn sec-btn--gold" disabled>
         Start Verification — Coming Soon
@@ -154,9 +154,9 @@ function PrivacySection() {
     setPrefs((p) => ({ ...p, [key]: !p[key] }));
 
   const items: { key: keyof typeof prefs; title: string; desc: string; color: string }[] = [
-    { key: "creditReporting", color: "#6B3FA0", title: "Credit Reporting",        desc: "Share your contribution history with credit bureaus to build your financial profile." },
-    { key: "activityVisible", color: "#C9963A", title: "Circle Activity Visible", desc: "Allow other circle members to see your payment status in shared circles." },
-    { key: "marketingEmails", color: "#7B5EA7", title: "Product Updates",         desc: "Receive emails about new Jouvay features and community finance insights." },
+    { key: "creditReporting", color: "#1D4ED8", title: "Credit Reporting",        desc: "Share your contribution history with credit bureaus to build your financial profile." },
+    { key: "activityVisible", color: "#D97706", title: "Circle Activity Visible", desc: "Allow other circle members to see your payment status in shared circles." },
+    { key: "marketingEmails", color: "#7B5EA7", title: "Product Updates",         desc: "Receive emails about new Pardna features and community finance insights." },
   ];
 
   return (
@@ -165,7 +165,7 @@ function PrivacySection() {
         <div className="sec-card-icon" style={{ color: "#3D7EAA" }}>⬡</div>
         <div>
           <h3>Privacy & Data</h3>
-          <p>Control how your data is used across the Jouvay platform.</p>
+          <p>Control how your data is used across the Pardna platform.</p>
         </div>
       </div>
       <div className="privacy-list">
@@ -194,14 +194,14 @@ function PrivacySection() {
 function EscrowBanner() {
   const pillars = [
     {
-      icon: "🏦", color: "#6B3FA0",
+      icon: "🏦", color: "#1D4ED8",
       title: "FDIC-Protected Escrow",
-      desc:  "All pooled circle funds are held in custodial escrow accounts — not by Jouvay or any individual member. Your money is FDIC-insured up to applicable limits.",
+      desc:  "All pooled circle funds are held in custodial escrow accounts — not by Pardna or any individual member. Your money is FDIC-insured up to applicable limits.",
     },
     {
-      icon: "⚡", color: "#C9963A",
+      icon: "⚡", color: "#D97706",
       title: "Stripe Treasury Infrastructure",
-      desc:  "Payments are processed through Stripe Treasury and Unit — regulated payments infrastructure. Jouvay operates as a payments + escrow platform, not a deposit-taking institution.",
+      desc:  "Payments are processed through Stripe Treasury and Unit — regulated payments infrastructure. Pardna operates as a payments + escrow platform, not a deposit-taking institution.",
     },
     {
       icon: "🔐", color: "#7B5EA7",
@@ -223,7 +223,7 @@ function EscrowBanner() {
           <p className="escrow-eyebrow">Circle Escrow Protection</p>
           <h2>How we protect your circle funds</h2>
           <p className="escrow-sub">
-            Jouvay is structured as payments + escrow infrastructure — not a bank.
+            Pardna is structured as payments + escrow infrastructure — not a bank.
             This gives us a defensible regulatory position and means your funds are
             protected at every step of the rotation cycle.
           </p>
@@ -241,7 +241,7 @@ function EscrowBanner() {
       <div className="escrow-footnote">
         <span>🛡</span>
         <span>
-          Jouvay holds no deposits and is not a bank. Funds are held in escrow by our
+          Pardna holds no deposits and is not a bank. Funds are held in escrow by our
           regulated infrastructure partners until scheduled disbursement. Float yield
           earned on held balances is disclosed in our fee schedule.
         </span>

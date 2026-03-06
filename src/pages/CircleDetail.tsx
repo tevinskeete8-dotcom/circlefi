@@ -43,7 +43,7 @@ function timeAgo(dateStr: string) {
 }
 
 const MEMBER_COLORS = [
-  "#6B3FA0", "#C9963A", "#7B5EA7", "#3D7EAA", "#C25F3B",
+  "#1D4ED8", "#D97706", "#7B5EA7", "#3D7EAA", "#C25F3B",
   "#2E8B57", "#B5651D", "#4682B4", "#9370DB", "#20B2AA",
 ];
 
@@ -186,7 +186,7 @@ function InviteMemberModal({
         <div className="modal-fields">
           {!inviteLink ? (
             <>
-              <p style={{ fontSize: "0.875rem", color: "#5E4A7A", lineHeight: 1.6, marginBottom: "0.5rem" }}>
+              <p style={{ fontSize: "0.875rem", color: "#475569", lineHeight: 1.6, marginBottom: "0.5rem" }}>
                 Generate a unique invite link and share it with anyone you want to join <strong>{circle.name}</strong>. The link can only be used once.
               </p>
               <button
@@ -205,13 +205,13 @@ function InviteMemberModal({
                   className="modal-input"
                   value={inviteLink}
                   readOnly
-                  style={{ fontSize: "0.78rem", color: "#5E4A7A" }}
+                  style={{ fontSize: "0.78rem", color: "#475569" }}
                 />
                 <button
                   onClick={copyLink}
                   style={{
                     padding: "0.6rem 1rem", borderRadius: 100, border: "none",
-                    background: copied ? "#00BFA5" : "#6B3FA0",
+                    background: copied ? "#059669" : "#1D4ED8",
                     color: "#fff", fontWeight: 700, fontSize: "0.8rem",
                     cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
                     transition: "background 0.2s",
@@ -225,7 +225,7 @@ function InviteMemberModal({
               </p>
               <button
                 onClick={generateInvite}
-                style={{ marginTop: "0.5rem", background: "none", border: "none", color: "#6B3FA0", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline" }}
+                style={{ marginTop: "0.5rem", background: "none", border: "none", color: "#1D4ED8", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline" }}
               >
                 Generate a new link
               </button>
@@ -234,7 +234,7 @@ function InviteMemberModal({
         </div>
 
         {inviteLink && (
-          <button className="modal-btn" style={{ background: "#F0EAFA", color: "#6B3FA0" }} onClick={onClose}>
+          <button className="modal-btn" style={{ background: "#EFF6FF", color: "#1D4ED8" }} onClick={onClose}>
             Done
           </button>
         )}
@@ -352,8 +352,8 @@ export default function CircleDetail() {
       {/* ── Stat Cards ── */}
       <div className="cd-stats">
         {[
-          { icon: "⬡", label: "Monthly Pool",    value: `$${totalPool.toLocaleString()}`,         color: "#6B3FA0" },
-          { icon: "◈", label: "Total Collected",  value: `$${totalCollected.toLocaleString()}`,    color: "#C9963A" },
+          { icon: "⬡", label: "Monthly Pool",    value: `$${totalPool.toLocaleString()}`,         color: "#1D4ED8" },
+          { icon: "◈", label: "Total Collected",  value: `$${totalCollected.toLocaleString()}`,    color: "#D97706" },
           { icon: "◉", label: "Members",          value: `${members.length} / ${circle.total_members}`, color: "#7B5EA7" },
           { icon: "⟡", label: "On-time Rate",     value: contributions.length ? `${onTimeRate}%` : "—", color: "#3D7EAA" },
         ].map((s, i) => (
@@ -458,7 +458,7 @@ export default function CircleDetail() {
                 {/* Summary bar */}
                 <div className="cd-contrib-summary">
                   <div className="cd-contrib-summary-item">
-                    <span className="cd-contrib-summary-val" style={{ color: "#6B3FA0" }}>
+                    <span className="cd-contrib-summary-val" style={{ color: "#1D4ED8" }}>
                       {paidContribs.length}
                     </span>
                     <span>Paid</span>
@@ -470,7 +470,7 @@ export default function CircleDetail() {
                     <span>Missed</span>
                   </div>
                   <div className="cd-contrib-summary-item">
-                    <span className="cd-contrib-summary-val" style={{ color: "#C9963A" }}>
+                    <span className="cd-contrib-summary-val" style={{ color: "#D97706" }}>
                       ${totalCollected.toLocaleString()}
                     </span>
                     <span>Collected</span>
@@ -509,7 +509,7 @@ export default function CircleDetail() {
         <div>
           <p className="cd-escrow-title">FDIC-Protected Escrow</p>
           <p className="cd-escrow-desc">
-            All funds in this circle are held in custodial escrow — not by Jouvay or
+            All funds in this circle are held in custodial escrow — not by Pardna or
             any individual member. Payouts are released automatically on schedule.
           </p>
         </div>

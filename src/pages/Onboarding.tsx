@@ -11,8 +11,8 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 function StepWelcome({ name, setName }: { name: string; setName: (v: string) => void }) {
   return (
     <div className="ob-step">
-      <div className="ob-step-icon" style={{ background: "#F0EAFA" }}>👋</div>
-      <h2 className="ob-step-title">Welcome to Jouvay</h2>
+      <div className="ob-step-icon" style={{ background: "#EFF6FF" }}>👋</div>
+      <h2 className="ob-step-title">Welcome to Pardna</h2>
       <p className="ob-step-sub">
         You're joining a movement that's been helping communities build wealth
         together for generations. Let's get you set up — what should we call you?
@@ -36,11 +36,11 @@ function StepROSCA() {
   const items = [
     { icon: "👥", title: "A group saves together", desc: "A fixed number of trusted members each contribute the same amount every month." },
     { icon: "🔄", title: "One member wins each round", desc: "The full pool is paid out to one member per cycle, rotating until everyone has received it." },
-    { icon: "🤝", title: "Built on trust", desc: "Traditionally done informally — Jouvay adds accountability, automation, and credit reporting." },
+    { icon: "🤝", title: "Built on trust", desc: "Traditionally done informally — Pardna adds accountability, automation, and credit reporting." },
   ];
   return (
     <div className="ob-step">
-      <div className="ob-step-icon" style={{ background: "#FDF3E3" }}>🌍</div>
+      <div className="ob-step-icon" style={{ background: "#FFFBEB" }}>🌍</div>
       <h2 className="ob-step-title">How savings circles work</h2>
       <p className="ob-step-sub">
         ROSCAs — Rotating Savings and Credit Associations — are one of the oldest
@@ -64,17 +64,17 @@ function StepROSCA() {
 
 function StepEscrow() {
   const pillars = [
-    { icon: "🏦", color: "#F0EAFA", title: "FDIC-Protected Escrow",       desc: "All circle funds are held in custodial escrow — not by Jouvay or any individual member." },
-    { icon: "⚡", color: "#FDF3E3", title: "Stripe Treasury Infrastructure", desc: "Payments run through Stripe Treasury — regulated infrastructure, not a bank." },
+    { icon: "🏦", color: "#EFF6FF", title: "FDIC-Protected Escrow",       desc: "All circle funds are held in custodial escrow — not by Pardna or any individual member." },
+    { icon: "⚡", color: "#FFFBEB", title: "Stripe Treasury Infrastructure", desc: "Payments run through Stripe Treasury — regulated infrastructure, not a bank." },
     { icon: "🔐", color: "#F0EDFF", title: "KYC / AML Verified",           desc: "Every member is identity-verified before they can join or contribute to a circle." },
-    { icon: "🔄", color: "#F0EAFA", title: "Automated Payouts",            desc: "No organizer can hold or redirect funds. Payouts release automatically on schedule." },
+    { icon: "🔄", color: "#EFF6FF", title: "Automated Payouts",            desc: "No organizer can hold or redirect funds. Payouts release automatically on schedule." },
   ];
   return (
     <div className="ob-step">
-      <div className="ob-step-icon" style={{ background: "#F0EAFA" }}>🛡</div>
+      <div className="ob-step-icon" style={{ background: "#EFF6FF" }}>🛡</div>
       <h2 className="ob-step-title">Your money is protected</h2>
       <p className="ob-step-sub">
-        Jouvay is structured as payments + escrow infrastructure — not a bank.
+        Pardna is structured as payments + escrow infrastructure — not a bank.
         That means your money is safer here than in a traditional informal circle.
       </p>
       <div className="ob-pillars">
@@ -114,7 +114,7 @@ function StepCreateCircle({
 
   return (
     <div className="ob-step">
-      <div className="ob-step-icon" style={{ background: "#F0EAFA" }}>⬡</div>
+      <div className="ob-step-icon" style={{ background: "#EFF6FF" }}>⬡</div>
       <h2 className="ob-step-title">Create your first circle</h2>
       <p className="ob-step-sub">
         You can always create more later — but let's get your first one started now.
@@ -195,12 +195,12 @@ function StepInvite({ circleName, circleId }: { circleName: string; circleId: st
 
   return (
     <div className="ob-step">
-      <div className="ob-step-icon" style={{ background: "#FDF3E3" }}>📨</div>
+      <div className="ob-step-icon" style={{ background: "#FFFBEB" }}>📨</div>
       <h2 className="ob-step-title">Invite your members</h2>
       <p className="ob-step-sub">
         {circleName
-          ? `Share the link below to invite trusted people to "${circleName}". They'll need to create a Jouvay account first.`
-          : "Share this link with your trusted circle members. They'll need to create a Jouvay account to join."}
+          ? `Share the link below to invite trusted people to "${circleName}". They'll need to create a Pardna account first.`
+          : "Share this link with your trusted circle members. They'll need to create a Pardna account to join."}
       </p>
 
       <div className="ob-invite-box">
@@ -224,8 +224,8 @@ function StepInvite({ circleName, circleId }: { circleName: string; circleId: st
 
 function StepReputation({ name }: { name: string }) {
   const items = [
-    { icon: "⟡", color: "#6B3FA0", label: "Pay on time",          desc: "Every on-schedule contribution raises your score." },
-    { icon: "◉", color: "#C9963A", label: "Join more circles",    desc: "Participating in multiple circles builds your reputation." },
+    { icon: "⟡", color: "#1D4ED8", label: "Pay on time",          desc: "Every on-schedule contribution raises your score." },
+    { icon: "◉", color: "#D97706", label: "Join more circles",    desc: "Participating in multiple circles builds your reputation." },
     { icon: "◈", color: "#7B5EA7", label: "Complete full cycles", desc: "Finishing a full rotation gives the strongest credit signal." },
   ];
 
@@ -235,14 +235,14 @@ function StepReputation({ name }: { name: string }) {
       <h2 className="ob-step-title">Build your financial reputation</h2>
       <p className="ob-step-sub">
         {name ? `Every contribution you make, ${name}, ` : "Every contribution you make "}
-        is recorded and used to build your Jouvay Reputation Score — a credit
+        is recorded and used to build your Pardna Reputation Score — a credit
         identity for people traditional banks overlook.
       </p>
 
       <div className="ob-rep-score">
         <svg width="100" height="100" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="8" />
-          <circle cx="60" cy="60" r="50" fill="none" stroke="#6B3FA0" strokeWidth="8"
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#1D4ED8" strokeWidth="8"
             strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 50}`}
             strokeDashoffset={`${2 * Math.PI * 50 * 0.75}`}
             transform="rotate(-90 60 60)" />
@@ -324,7 +324,7 @@ export default function Onboarding() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
       // Store in localStorage keyed by user id so it's per-user
-      localStorage.setItem(`jouvay_onboarded_${session.user.id}`, "true");
+      localStorage.setItem(`pardna_onboarded_${session.user.id}`, "true");
     }
   };
 
@@ -361,7 +361,7 @@ export default function Onboarding() {
         <div className="ob-card-header">
           <div className="ob-logo">
             <div className="ob-logo-mark">C</div>
-            <span>Jouvay</span>
+            <span>Pardna</span>
           </div>
           <ProgressBar step={step} total={TOTAL} />
           <div className="ob-step-count">{step} of {TOTAL}</div>

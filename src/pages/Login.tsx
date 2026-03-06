@@ -40,7 +40,7 @@ export default function Login() {
 
       {/* Back to landing */}
       <Link to="/" className="login-back">
-        ← Back to Jouvay
+        ← Back to Pardna
       </Link>
 
       <div className="login-card">
@@ -48,7 +48,7 @@ export default function Login() {
         {/* Logo */}
         <div className="login-logo">
           <div className="logo-circle">C</div>
-          <span>Jouvay</span>
+          <span>Pardna</span>
         </div>
 
         <div className="login-header">

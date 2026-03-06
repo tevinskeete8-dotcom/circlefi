@@ -93,7 +93,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         {/* Logo */}
         <div className="sidebar-logo">
           <div className="sidebar-logo-mark">C</div>
-          <span>Jouvay</span>
+          <span>Pardna</span>
         </div>
 
         {/* Nav */}
@@ -160,7 +160,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               n.end
                 ? location.pathname === n.to
                 : location.pathname.startsWith(n.to)
-            )?.label ?? "Jouvay"}
+            )?.label ?? "Pardna"}
           </div>
 
           {/* Right actions */}

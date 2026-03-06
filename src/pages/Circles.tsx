@@ -14,7 +14,7 @@ type Circle = {
 
 type Tab = "all" | "organizing" | "member";
 
-const COLORS = ["#6B3FA0", "#C9963A", "#7B5EA7", "#3D7EAA", "#C25F3B", "#2E8B57"];
+const COLORS = ["#1D4ED8", "#D97706", "#7B5EA7", "#3D7EAA", "#C25F3B", "#2E8B57"];
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);

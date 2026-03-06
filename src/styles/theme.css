@@ -1,54 +1,55 @@
 /* ═══════════════════════════════════════════════
-   Jouvay — Master Theme
-   Light · Plus Jakarta Sans · Carnival Palette
-   Primary: Mas Purple #6B3FA0
-   Secondary: Carnival Gold #C9963A
-   Accent: Soca Teal #00BFA5
+   Pardna — Master Theme
+   Light · Noto Sans · Clean Fintech
+   Primary: Slate Blue #1D4ED8
+   Secondary: Amber #D97706
+   Accent: Emerald #059669
    ═══════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
 
 :root {
   /* ── Backgrounds ── */
-  --bg:          #F7F5FC;
-  --bg-2:        #EDE9F7;
+  --bg:          #F8FAFC;
+  --bg-2:        #F1F5F9;
   --bg-card:     #FFFFFF;
-  --bg-card-h:   #F5F2FB;
-  --bg-input:    #F0EDF9;
+  --bg-card-h:   #F8FAFC;
+  --bg-input:    #F1F5F9;
   --sidebar-w:   240px;
   --topbar-h:    64px;
 
-  /* ── Brand Primary: Mas Purple ── */
-  --primary:       #6B3FA0;
-  --primary-mid:   #8B4FC8;
-  --primary-dim:   #582F85;
-  --primary-light: #F0EAFA;
+  /* ── Brand Primary: Slate Blue ── */
+  --primary:       #1D4ED8;
+  --primary-mid:   #3B82F6;
+  --primary-dim:   #1E40AF;
+  --primary-light: #EFF6FF;
+  --primary-dark:  #0F172A;
 
-  /* ── Brand Secondary: Carnival Gold ── */
-  --gold:        #C9963A;
-  --gold-bright: #E8B84B;
-  --gold-light:  #FDF3E3;
+  /* ── Brand Secondary: Amber ── */
+  --gold:        #D97706;
+  --gold-bright: #F59E0B;
+  --gold-light:  #FFFBEB;
 
-  /* ── Brand Accent: Soca Teal ── */
-  --accent:       #00BFA5;
-  --accent-dim:   #009E88;
-  --accent-light: #E0F7F4;
+  /* ── Brand Accent: Emerald ── */
+  --accent:       #059669;
+  --accent-dim:   #047857;
+  --accent-light: #ECFDF5;
 
   /* ── Text ── */
-  --text:        #1C1033;
-  --text-mid:    #5E4A7A;
-  --text-dim:    #9D8CB5;
+  --text:        #0F172A;
+  --text-mid:    #475569;
+  --text-dim:    #94A3B8;
 
   /* ── Borders & Shadows ── */
-  --border:      rgba(107,63,160,0.1);
-  --border-glow: rgba(107,63,160,0.3);
-  --shadow-sm:   0 1px 3px rgba(28,16,51,0.06), 0 1px 2px rgba(28,16,51,0.04);
-  --shadow-md:   0 4px 16px rgba(28,16,51,0.08), 0 2px 6px rgba(28,16,51,0.04);
-  --shadow-lg:   0 12px 40px rgba(28,16,51,0.1), 0 4px 12px rgba(28,16,51,0.06);
+  --border:      rgba(15,23,42,0.08);
+  --border-glow: rgba(29,78,216,0.2);
+  --shadow-sm:   0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md:   0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+  --shadow-lg:   0 12px 40px rgba(15,23,42,0.1), 0 4px 12px rgba(15,23,42,0.06);
 
   /* ── Status ── */
   --danger:      #EF4444;
-  --success:     #00BFA5;
+  --success:     #059669;
 
   /* ── Radii ── */
   --radius-lg:   20px;
@@ -56,8 +57,8 @@
   --radius-pill: 100px;
 
   /* ── Typography ── */
-  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Noto Serif', Georgia, serif;
+  --font-body:    'Noto Sans', system-ui, sans-serif;
 
   /* ── Motion ── */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
