@@ -28,7 +28,6 @@ const C = {
   purpleDark:   "#0F172A",
 };
 
-function WaveMark({ size = 40 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
       <defs>
