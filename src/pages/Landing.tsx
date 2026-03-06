@@ -28,23 +28,7 @@ const C = {
   purpleDark:   "#0F172A",
 };
 
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" style={{ flexShrink: 0 }}>
-      <defs>
-        <linearGradient id={`wg-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stopColor={C.purple} />
-          <stop offset="55%"  stopColor="#3B82F6" />
-          <stop offset="100%" stopColor={C.gold} />
-        </linearGradient>
-      </defs>
-      <rect width="40" height="40" rx="11" fill={`url(#wg-${size})`} />
-      <text x="19" y="28" textAnchor="middle" fill="#fff" fontSize="23" fontWeight="900"
-        fontFamily="'Noto Serif', Georgia, serif" letterSpacing="-1">P</text>
-      <circle cx="29" cy="11" r="5" fill={C.teal} />
-      <circle cx="29" cy="11" r="2.5" fill="rgba(255,255,255,0.85)" />
-    </svg>
-  );
-}
+
 
 function useInView(threshold = 0.15): [React.RefObject<HTMLDivElement | null>, boolean] {
   const ref = useRef<HTMLDivElement>(null);
