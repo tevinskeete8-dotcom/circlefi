@@ -311,7 +311,7 @@ export default function Landing() {
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(107,63,160,0.15)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(107,63,160,0.06)"; }}
                 >
-                  <div style={{ position: "absolute", top: -10, right: 16, fontSize: "5rem", fontWeight: 900, color: C.purpleLight, lineHeight: 1, fontFamily: "Georgia, serif", userSelect: "none" }}>{s.n}</div>
+                  <div style={{ position: "absolute", top: -10, right: 16, fontSize: "5rem", fontWeight: 900, color: "rgba(0,0,0,0.15)", lineHeight: 1, fontFamily: "'Noto Serif', Georgia, serif", userSelect: "none" }}>{s.n}</div>
                   <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg, ${C.purple}, ${C.purpleMid})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", color: C.gold, marginBottom: "1.25rem", fontWeight: 900 }}>{s.icon}</div>
                   <div style={{ fontSize: "1.1rem", fontWeight: 700, color: C.text, marginBottom: "0.5rem" }}>{s.title}</div>
                   <div style={{ fontSize: "0.875rem", color: C.mid, lineHeight: 1.7 }}>{s.body}</div>
