@@ -105,12 +105,19 @@ const signupStyle: React.CSSProperties = {
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setHeroVisible(true), 80);
     const onScroll = () => setScrolled(window.scrollY > 40);
+    const onResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   const anim = (delay: number): React.CSSProperties => ({
@@ -128,23 +135,62 @@ export default function Landing() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 clamp(1.25rem, 6vw, 4rem)",
         height: 68,
-        background: scrolled ? "rgba(15,23,42,0.95)" : "transparent",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
+        background: scrolled || menuOpen ? "rgba(15,23,42,0.97)" : "transparent",
+        backdropFilter: scrolled || menuOpen ? "blur(12px)" : "none",
         borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
         transition: "background 0.3s, border-color 0.3s",
       }}>
         <PardnaLogo dark size="md" />
-        <div style={{ display: "flex", alignItems: "center", gap: "clamp(1rem, 3vw, 2.5rem)" }}>
-          <a href="#features" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Features</a>
-          <a href="#how-it-works" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
-          <a href="#communities" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
+
+        {/* Desktop links */}
+        {!isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: "clamp(1rem, 3vw, 2.5rem)" }}>
+            <a href="#features" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Features</a>
+            <a href="#how-it-works" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
+            <a href="#communities" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
+          </div>
+        )}
+
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          {!isMobile && (
+            <Link to="/signup" style={{
+              padding: "0.5rem 1.25rem", background: C.gold, color: "#fff",
+              borderRadius: 100, fontSize: "0.875rem", fontWeight: 700,
+              textDecoration: "none", transition: "opacity 0.2s",
+            }}>Get started →</Link>
+          )}
+          {isMobile && (
+            <button onClick={() => setMenuOpen(!menuOpen)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              padding: "0.5rem", display: "flex", flexDirection: "column",
+              gap: "5px", alignItems: "flex-end",
+            }}>
+              <span style={{ display: "block", width: 22, height: 2, background: "#fff", borderRadius: 2, transition: "transform 0.25s, opacity 0.25s", transform: menuOpen ? "translateY(7px) rotate(45deg)" : "none" }} />
+              <span style={{ display: "block", width: 16, height: 2, background: "#fff", borderRadius: 2, opacity: menuOpen ? 0 : 1, transition: "opacity 0.25s" }} />
+              <span style={{ display: "block", width: 22, height: 2, background: "#fff", borderRadius: 2, transition: "transform 0.25s", transform: menuOpen ? "translateY(-7px) rotate(-45deg)" : "none" }} />
+            </button>
+          )}
         </div>
-        <Link to="/signup" style={{
-          padding: "0.5rem 1.25rem", background: C.gold, color: "#fff",
-          borderRadius: 100, fontSize: "0.875rem", fontWeight: 700,
-          textDecoration: "none", transition: "opacity 0.2s",
-        }}>Get started →</Link>
       </nav>
+
+      {/* Mobile drawer */}
+      {isMobile && menuOpen && (
+        <div style={{
+          position: "fixed", top: 68, left: 0, right: 0, zIndex: 99,
+          background: "rgba(15,23,42,0.98)", backdropFilter: "blur(12px)",
+          padding: "1.75rem clamp(1.25rem, 6vw, 4rem) 2rem",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          display: "flex", flexDirection: "column", gap: "1.5rem",
+        }}>
+          <a href="#features" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>Features</a>
+          <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
+          <a href="#communities" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
+          <Link to="/signup" onClick={() => setMenuOpen(false)} style={{
+            ...signupStyle, padding: "0.9rem 1.5rem", fontSize: "0.95rem",
+            textAlign: "center", justifyContent: "center", marginTop: "0.25rem",
+          }}>Get started →</Link>
+        </div>
+      )}
 
       {/* HERO */}
       <section style={{
@@ -209,10 +255,10 @@ export default function Landing() {
       </section>
 
       {/* STATS BAR */}
-      <div style={{ background: "#0F172A", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}>
+      <div style={{ background: "#0F172A", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)" }}>
         {STATS.map((s, i) => (
           <Reveal key={s.val} delay={i * 0.1}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "2.5rem 1rem", textAlign: "center", borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "2.5rem 1rem", textAlign: "center", borderRight: !isMobile && i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none", borderBottom: isMobile && i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
               <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: C.gold, lineHeight: 1, marginBottom: "0.4rem", fontFamily: "'Noto Serif', Georgia, serif", whiteSpace: "pre-line" }}>{s.val}</div>
               <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
             </div>
@@ -289,7 +335,7 @@ export default function Landing() {
               Up and running<br /><em style={{ color: C.purple }}>in minutes.</em>
             </h2>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", alignItems: "stretch" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "1.5rem", alignItems: "stretch" }}>
             {STEPS.map((s, i) => (
               <Reveal key={s.n} delay={i * 0.15}>
                 <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(15,23,42,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s", height: "100%" }}
