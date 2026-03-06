@@ -361,8 +361,6 @@ export default function Onboarding() {
         {/* Header */}
         <div className="ob-card-header">
           <PardnaLogo size="md" />
-            <span>Pardna</span>
-          </div>
           <ProgressBar step={step} total={TOTAL} />
           <div className="ob-step-count">{step} of {TOTAL}</div>
         </div>

@@ -48,8 +48,6 @@ export default function Login() {
 
         {/* Logo */}
         <PardnaLogo size="md" />
-          <span>Pardna</span>
-        </div>
 
         <div className="login-header">
           <h1>Welcome back</h1>

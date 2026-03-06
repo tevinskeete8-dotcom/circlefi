@@ -70,8 +70,6 @@ export default function Signup() {
 
         <div className="login-card">
           <PardnaLogo size="md" />
-            <span>Pardna</span>
-          </div>
 
           <div className="login-header">
             <h1>Check your email</h1>
