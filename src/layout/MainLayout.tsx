@@ -1,5 +1,6 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import PardnaLogo from "../components/PardnaLogo";
 import { useEffect, useState } from "react";
 import "../styles/layout.css";
 
@@ -92,7 +93,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         {/* Logo */}
         <div className="sidebar-logo">
-          <div className="sidebar-logo-mark">P</div>
+          <PardnaLogo iconOnly size="sm" />
           <span>Pardna</span>
         </div>
 

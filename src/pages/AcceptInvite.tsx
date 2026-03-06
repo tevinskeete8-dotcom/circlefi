@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import PardnaLogo from "../components/PardnaLogo";
 import { supabase } from "../lib/supabase";
 
 type InviteData = {
@@ -89,19 +90,7 @@ export default function AcceptInvite() {
 
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "2rem" }}>
-          <svg width="32" height="32" viewBox="0 0 40 40">
-            <defs>
-              <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#1D4ED8" />
-                <stop offset="100%" stopColor="#D97706" />
-              </linearGradient>
-            </defs>
-            <rect width="40" height="40" rx="11" fill="url(#wg)" />
-            <text x="19" y="28" textAnchor="middle" fill="#fff" fontSize="23" fontWeight="900" fontFamily="Georgia, serif">P</text>
-            <circle cx="29" cy="11" r="5" fill="#059669" />
-            <circle cx="29" cy="11" r="2.5" fill="rgba(255,255,255,0.85)" />
-          </svg>
-          <span style={{ fontWeight: 800, fontSize: "1.1rem", color: C.dark }}>pardna</span>
+          <PardnaLogo size="md" />
         </div>
 
         {error && (

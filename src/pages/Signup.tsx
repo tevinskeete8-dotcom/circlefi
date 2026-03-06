@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PardnaLogo from "../components/PardnaLogo";
 import { supabase } from "../lib/supabase";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/login.css"; // reuses login styles — no new CSS needed
@@ -68,8 +69,7 @@ export default function Signup() {
         <div className="login-glow" aria-hidden="true" />
 
         <div className="login-card">
-          <div className="login-logo">
-            <div className="logo-circle">C</div>
+          <PardnaLogo size="md" />
             <span>Pardna</span>
           </div>
 

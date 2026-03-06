@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PardnaLogo from "../components/PardnaLogo";
 import { supabase } from "../lib/supabase";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/login.css";
@@ -46,8 +47,7 @@ export default function Login() {
       <div className="login-card">
 
         {/* Logo */}
-        <div className="login-logo">
-          <div className="logo-circle">C</div>
+        <PardnaLogo size="md" />
           <span>Pardna</span>
         </div>
 

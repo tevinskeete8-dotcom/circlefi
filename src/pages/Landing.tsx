@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import PardnaLogo from "../components/PardnaLogo";
 
 // ── Design tokens ─────────────────────────────────────────────────
 const C = {
@@ -136,35 +137,30 @@ export default function Landing() {
   });
 
   return (
-    <div style={{ fontFamily: "'Noto Sans', system-ui, sans-serif", background: C.bg, color: C.text, overflowX: "hidden" }}>
+    <div style={{ fontFamily: "'Noto Sans', system-ui, sans-serif", color: C.text }}>
 
-      {/* NAV */}
+      {/* ── NAV ── */}
       <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 clamp(1.25rem, 5vw, 4rem)", height: 68,
-        background: scrolled ? "rgba(15,23,42,0.92)" : "transparent",
-        backdropFilter: scrolled ? "blur(16px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "none",
-        transition: "background 0.4s",
+        padding: "0 clamp(1.25rem, 6vw, 4rem)",
+        height: 68,
+        background: scrolled ? "rgba(15,23,42,0.95)" : "transparent",
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
+        transition: "background 0.3s, border-color 0.3s",
       }}>
-        <a href="#" style={{ display: "flex", alignItems: "center", gap: "0.6rem", textDecoration: "none" }}>
-          <WaveMark size={36} />
-          <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#fff" }}>pardna</span>
-        </a>
-        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-          {["Features", "How it works", "Communities"].map(label => (
-            <a key={label} href={`#${label.toLowerCase().replace(/ /g, "-")}`}
-              style={{ fontSize: "0.85rem", fontWeight: 500, color: "rgba(255,255,255,0.7)", textDecoration: "none" }}
-              onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-              onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.7)"}
-            >{label}</a>
-          ))}
-          <Link to="/signup" style={{ ...signupStyle, padding: "0.5rem 1.25rem", fontSize: "0.85rem" }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}
-          >Get started →</Link>
+        <PardnaLogo dark size="md" />
+        <div style={{ display: "flex", alignItems: "center", gap: "clamp(1rem, 3vw, 2.5rem)" }}>
+          <a href="#features" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Features</a>
+          <a href="#how-it-works" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
+          <a href="#communities" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
         </div>
+        <Link to="/signup" style={{
+          padding: "0.5rem 1.25rem", background: C.gold, color: "#fff",
+          borderRadius: 100, fontSize: "0.875rem", fontWeight: 700,
+          textDecoration: "none", transition: "opacity 0.2s",
+        }}>Get started →</Link>
       </nav>
 
       {/* HERO */}
@@ -354,7 +350,7 @@ export default function Landing() {
       <footer style={{ padding: "2rem clamp(1.25rem, 5vw, 4rem)", background: "#0D0618", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
           <WaveMark size={28} />
-          <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#fff" }}>pardna</span>
+          <PardnaLogo dark size="sm" />
         </div>
         <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", margin: 0 }}>© 2026 Pardna. All rights reserved.</p>
         <div style={{ display: "flex", gap: "1.5rem" }}>

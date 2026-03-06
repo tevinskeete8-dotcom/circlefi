@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PardnaLogo from "../components/PardnaLogo";
 import { supabase } from "../lib/supabase";
 import "../styles/onboarding.css";
 
@@ -359,8 +360,7 @@ export default function Onboarding() {
 
         {/* Header */}
         <div className="ob-card-header">
-          <div className="ob-logo">
-            <div className="ob-logo-mark">C</div>
+          <PardnaLogo size="md" />
             <span>Pardna</span>
           </div>
           <ProgressBar step={step} total={TOTAL} />
