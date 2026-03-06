@@ -102,6 +102,112 @@ const signupStyle: React.CSSProperties = {
   transition: "transform 0.2s, box-shadow 0.2s",
 };
 
+const FAQS = [
+  {
+    q: "Will I owe taxes on my payout?",
+    a: "In a standard savings circle, your payout is not taxable income. You're receiving back the money your group pooled together — there's no profit, no interest, and no gain. You put in $500/month for 10 months and receive $5,000 back. The IRS does not tax the return of your own contributions. If you have a specific tax situation, we always recommend consulting a tax professional."
+  },
+  {
+    q: "What happens if someone doesn't pay?",
+    a: "Every member is identity-verified before joining a circle. Contributions are tied to a verified bank account, so payments are pulled automatically on the scheduled date — no relying on someone to remember or follow through. If a payment fails, the organizer is notified immediately and the circle has a grace period to resolve it before the next payout is affected."
+  },
+  {
+    q: "Is my bank account information safe?",
+    a: "Yes. Pardna uses Plaid, the same technology used by major banks and apps like Venmo and Robinhood, to securely connect your bank account. We never see or store your banking credentials. Your connection is encrypted and you can revoke it at any time."
+  },
+  {
+    q: "Who holds the money in the circle?",
+    a: "Circle funds are held in FDIC-insured custodial accounts — not by Pardna, and not by any individual member. This means your money is protected up to $250,000 and no one person can run off with the pot. Funds are only released when it's your turn, based on the rotation your group agreed to."
+  },
+  {
+    q: "Can I trust the other people in my circle?",
+    a: "You control who joins your circle. Every invite is personal — you generate a unique link and share it only with people you trust. Members are identity-verified before they can join, and every contribution is tracked transparently so everyone can see the full history at any time."
+  },
+  {
+    q: "What if I need to leave the circle early?",
+    a: "We recommend only joining a circle you're confident you can complete — just like the traditional practice. That said, life happens. Circles can handle early exits based on rules the organizer sets up, and your organizer can work with you to find a resolution. We're building formal exit and replacement mechanics to make this smoother."
+  },
+  {
+    q: "Does using Pardna affect my credit score?",
+    a: "Joining a circle does not affect your credit score. We're working on building a reputation system that lets you carry your on-time contribution history as a financial credential — something you can use to demonstrate creditworthiness even if you've never had a loan. That feature is coming soon."
+  },
+  {
+    q: "Why would I use Pardna instead of just running it informally?",
+    a: "The informal version works when everyone shows up. Pardna adds the infrastructure that removes the awkward conversations — automated contributions, transparent tracking, verified identities, and protected funds. You keep the community and the trust. We handle the follow-ups."
+  },
+];
+
+function FAQ({ isMobile, C }: { isMobile: boolean; C: Record<string, string> }) {
+  const [open, setOpen] = useState<number | null>(null);
+
+  return (
+    <section id="faq" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: C.bg }}>
+      <div style={{ maxWidth: 760, margin: "0 auto" }}>
+        <Reveal>
+          <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Common questions</span>
+          <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "0.75rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
+            Honest answers<br />
+            <em style={{ color: C.purple }}>to real concerns.</em>
+          </h2>
+          <p style={{ fontSize: "1rem", color: C.mid, lineHeight: 1.7, marginBottom: "3rem", maxWidth: 520 }}>
+            We know the questions people don't always ask out loud. Here are the ones that matter most.
+          </p>
+        </Reveal>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {FAQS.map((item, i) => (
+            <Reveal key={i} delay={i * 0.04}>
+              <div
+                style={{
+                  background: C.card, border: `1px solid ${open === i ? C.purple : C.border}`,
+                  borderRadius: 16, overflow: "hidden",
+                  transition: "border-color 0.2s, box-shadow 0.2s",
+                  boxShadow: open === i ? `0 4px 24px rgba(29,78,216,0.08)` : "0 2px 8px rgba(15,23,42,0.04)",
+                }}
+              >
+                <button
+                  onClick={() => setOpen(open === i ? null : i)}
+                  style={{
+                    width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: isMobile ? "1.1rem 1.25rem" : "1.25rem 1.75rem",
+                    background: "none", border: "none", cursor: "pointer", gap: "1rem", textAlign: "left",
+                  }}
+                >
+                  <span style={{ fontSize: isMobile ? "0.95rem" : "1rem", fontWeight: 700, color: C.text, lineHeight: 1.4 }}>
+                    {item.q}
+                  </span>
+                  <span style={{
+                    flexShrink: 0, width: 28, height: 28, borderRadius: "50%",
+                    background: open === i ? C.purple : "rgba(15,23,42,0.06)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "background 0.2s, transform 0.25s",
+                    transform: open === i ? "rotate(45deg)" : "none",
+                  }}>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <line x1="6" y1="1" x2="6" y2="11" stroke={open === i ? "#fff" : C.text} strokeWidth="1.8" strokeLinecap="round" />
+                      <line x1="1" y1="6" x2="11" y2="6" stroke={open === i ? "#fff" : C.text} strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                </button>
+
+                {open === i && (
+                  <div style={{
+                    padding: isMobile ? "0 1.25rem 1.25rem" : "0 1.75rem 1.5rem",
+                    fontSize: "0.9rem", color: C.mid, lineHeight: 1.75,
+                    borderTop: `1px solid ${C.border}`, paddingTop: "1.1rem",
+                  }}>
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Landing() {
   const [scrolled, setScrolled] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
@@ -148,6 +254,7 @@ export default function Landing() {
             <a href="#features" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Features</a>
             <a href="#how-it-works" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
             <a href="#communities" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
+            <a href="#faq" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
           </div>
         )}
 
@@ -185,6 +292,7 @@ export default function Landing() {
           <a href="#features" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>Features</a>
           <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
           <a href="#communities" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
+          <a href="#faq" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
           <Link to="/signup" onClick={() => setMenuOpen(false)} style={{
             ...signupStyle, padding: "0.9rem 1.5rem", fontSize: "0.95rem",
             textAlign: "center", justifyContent: "center", marginTop: "0.25rem",
@@ -352,6 +460,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* FAQ */}
+      <FAQ isMobile={isMobile} C={C} />
 
       {/* CTA */}
       <section style={{ padding: "7rem clamp(1.25rem, 5vw, 4rem)", textAlign: "center", background: `radial-gradient(ellipse 70% 60% at 50% 50%, ${C.primary}30 0%, transparent 70%), linear-gradient(160deg, #0F172A 0%, #1E293B 100%)`, position: "relative", overflow: "hidden" }}>
