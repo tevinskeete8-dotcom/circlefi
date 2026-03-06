@@ -83,9 +83,9 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: "01", icon: "✦", title: "Start your circle",    body: "Set the amount, frequency, and size. Invite people you trust. Takes five minutes." },
-  { n: "02", icon: "✦", title: "Everyone contributes", body: "Members pay each round on schedule. Automated reminders handle the awkward follow-ups." },
-  { n: "03", icon: "✦", title: "Receive your payout",  body: "When your position comes up, the full pool transfers instantly to your account." },
+  { n: "01", icon: "1", title: "Start your circle",    body: "Set the amount, frequency, and size. Invite people you trust. Takes five minutes." },
+  { n: "02", icon: "2", title: "Everyone contributes", body: "Members pay each round on schedule. Automated reminders handle the awkward follow-ups." },
+  { n: "03", icon: "3", title: "Receive your payout",  body: "When your position comes up, the full pool transfers instantly to your account." },
 ];
 
 const STATS = [
@@ -318,7 +318,7 @@ export default function Landing() {
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(15,23,42,0.06)"; }}
                 >
                   <div style={{ position: "absolute", top: -10, right: 16, fontSize: "5rem", fontWeight: 900, color: C.purpleLight, lineHeight: 1, fontFamily: "'Noto Serif', Georgia, serif", userSelect: "none" }}>{s.n}</div>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg, ${C.purple}, ${C.purpleMid})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", color: C.gold, marginBottom: "1.25rem", fontWeight: 900 }}>{s.icon}</div>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg, ${C.primary}, ${C.primaryMid})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", color: "#fff", marginBottom: "1.25rem", fontWeight: 800, fontFamily: "'Noto Sans', sans-serif" }}>{s.icon}</div>
                   <div style={{ fontSize: "1.1rem", fontWeight: 700, color: C.text, marginBottom: "0.5rem" }}>{s.title}</div>
                   <div style={{ fontSize: "0.875rem", color: C.mid, lineHeight: 1.7 }}>{s.body}</div>
                 </div>

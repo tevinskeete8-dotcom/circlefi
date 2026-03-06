@@ -247,7 +247,7 @@ export default function Dashboard() {
                     >
                       View Circle
                     </Link>
-                    <Link to={`/app/circles/${circle.id}?tab=manage`} className="cc-btn cc-btn--ghost">Manage</Link>
+                    <Link to={`/app/circles/${circle.id}?invite=true`} className="cc-btn cc-btn--ghost">Manage</Link>
                   </div>
                 </div>
               );

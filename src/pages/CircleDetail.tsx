@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import "../styles/circledetail.css";
 
@@ -257,6 +257,14 @@ export default function CircleDetail() {
   const [isOrganizer, setIsOrganizer]   = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const location = useLocation();
+
+  // Auto-open invite modal if ?invite=true
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get("invite") === "true") {
+      setShowInviteModal(true);
+    }
+  }, [location.search]);
 
   const fetchData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
