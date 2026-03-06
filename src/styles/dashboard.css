@@ -1,7 +1,7 @@
 @import './theme.css';
 
 /* ═══════════════════════════════════════════════
-   Jouvay — Dashboard (Light Theme)
+   Pardna — Dashboard (Light Theme)
    ═══════════════════════════════════════════════ */
 
 .dashboard { font-family: var(--font-body); color: var(--text); }
@@ -18,6 +18,7 @@
 .dash-title {
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   font-weight: 800; letter-spacing: -0.5px; line-height: 1.1;
+  color: var(--text);
 }
 .dash-title-name { color: var(--primary); font-style: italic; }
 
@@ -32,7 +33,7 @@
 }
 .dash-new-btn:hover {
   background: var(--primary-dim); transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(107,63,160,0.25);
+  box-shadow: 0 6px 20px rgba(15,23,42,0.25);
 }
 
 /* Stats grid */
@@ -80,7 +81,7 @@
 .dash-count-badge {
   font-size: 0.72rem; font-weight: 600; color: var(--primary);
   background: var(--primary-light);
-  border: 1px solid rgba(107,63,160,0.2);
+  border: 1px solid rgba(15,23,42,0.2);
   padding: 0.25rem 0.75rem; border-radius: var(--radius-pill);
 }
 
@@ -113,7 +114,7 @@
   letter-spacing: 0.1em; text-transform: uppercase;
   padding: 0.15rem 0.55rem; border-radius: var(--radius-pill);
   color: var(--primary); background: var(--primary-light);
-  border: 1px solid rgba(107,63,160,0.2);
+  border: 1px solid rgba(15,23,42,0.2);
 }
 
 .cc-stats {
@@ -164,8 +165,8 @@
 
 .credit-nudge {
   display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-  background: linear-gradient(135deg, rgba(107,63,160,0.06), rgba(201,150,58,0.05));
-  border: 1px solid rgba(107,63,160,0.2);
+  background: linear-gradient(135deg, rgba(15,23,42,0.06), rgba(201,150,58,0.05));
+  border: 1px solid rgba(15,23,42,0.2);
   border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; margin-top: 1.5rem;
 }
 .credit-nudge-icon { font-size: 1.5rem; flex-shrink: 0; }

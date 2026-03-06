@@ -104,16 +104,16 @@ export default function Dashboard() {
       <header className="dash-header">
         <div className="dash-header-left">
           <p className="dash-eyebrow">Good to see you back</p>
-          <h1 className="dash-title">
+          <h1 className="dash-title" style={{ color: "#0F172A" }}>
             {userName ? (
-              <>Welcome, <em>{userName}</em></>
+              <>Welcome, <em style={{ color: "#1D4ED8", fontStyle: "italic" }}>{userName}</em></>
             ) : (
               "Your Dashboard"
             )}
           </h1>
         </div>
         <div className="dash-header-right">
-          <Link to="/app/circles/new" className="dash-new-btn">
+          <Link to="/app/circles" className="dash-new-btn">
             + New Circle
           </Link>
         </div>
@@ -142,10 +142,10 @@ export default function Dashboard() {
 
       {/* ── CIRCLES ── */}
       <section className="dash-circles">
-        <div className="dash-section-header">
-          <h2>Your Circles</h2>
+        <div className="dash-section-head">
+          <h2 className="dash-section-title">Your Circles</h2>
           {circles.length > 0 && (
-            <span className="dash-count">{circles.length} active</span>
+            <span className="dash-count-badge">{circles.length} active</span>
           )}
         </div>
 
@@ -166,7 +166,7 @@ export default function Dashboard() {
             <div className="empty-icon">◉</div>
             <h3>No circles yet</h3>
             <p>Create your first savings circle and invite your community.</p>
-            <Link to="/app/circles/new" className="dash-new-btn">
+            <Link to="/app/circles" className="dash-new-btn">
               Create a Circle
             </Link>
           </div>
@@ -247,7 +247,7 @@ export default function Dashboard() {
                     >
                       View Circle
                     </Link>
-                    <button className="cc-btn cc-btn--ghost">Manage</button>
+                    <Link to={`/app/circles/${circle.id}?tab=manage`} className="cc-btn cc-btn--ghost">Manage</Link>
                   </div>
                 </div>
               );
