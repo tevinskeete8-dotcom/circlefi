@@ -73,9 +73,9 @@ const STEPS = [
 ];
 
 const STATS = [
-  { val: "$25B", label: "Annual ROSCA flow in the US" },
-  { val: "7M+",  label: "Estimated US participants"   },
-  { val: "180+", label: "Active circles on Pardna"    },
+  { val: "$1T+",  label: "Estimated global informal savings annually" },
+  { val: "1.4B",  label: "Adults underserved by formal banking"      },
+  { val: "Early\naccess", label: "Now open — join the first circles"  },
 ];
 
 const MEMBERS = [
@@ -200,7 +200,7 @@ export default function Landing() {
               ))}
             </div>
             <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.78rem" }}>
-              <strong style={{ color: "rgba(255,255,255,0.85)" }}>2,400+</strong> members across <strong style={{ color: "rgba(255,255,255,0.85)" }}>180</strong> active circles
+              Join a growing community of members saving together on <strong style={{ color: "rgba(255,255,255,0.85)" }}>Pardna</strong>
             </span>
             <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.6rem" }}>●</span>
             <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.78rem" }}>🔐 FDIC-protected escrow</span>
@@ -213,7 +213,7 @@ export default function Landing() {
         {STATS.map((s, i) => (
           <Reveal key={s.val} delay={i * 0.1}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "2.5rem 1rem", textAlign: "center", borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-              <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: C.gold, lineHeight: 1, marginBottom: "0.4rem", fontFamily: "'Noto Serif', Georgia, serif" }}>{s.val}</div>
+              <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: C.gold, lineHeight: 1, marginBottom: "0.4rem", fontFamily: "'Noto Serif', Georgia, serif", whiteSpace: "pre-line" }}>{s.val}</div>
               <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
             </div>
           </Reveal>
