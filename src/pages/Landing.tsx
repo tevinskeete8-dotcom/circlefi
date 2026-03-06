@@ -289,10 +289,10 @@ export default function Landing() {
               Up and running<br /><em style={{ color: C.purple }}>in minutes.</em>
             </h2>
           </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", alignItems: "stretch" }}>
             {STEPS.map((s, i) => (
               <Reveal key={s.n} delay={i * 0.15}>
-                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(15,23,42,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s" }}
+                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(15,23,42,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s", height: "100%" }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(15,23,42,0.15)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(15,23,42,0.06)"; }}
                 >
