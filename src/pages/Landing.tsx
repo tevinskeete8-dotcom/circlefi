@@ -3,22 +3,28 @@ import { Link } from "react-router-dom";
 
 // ── Design tokens ─────────────────────────────────────────────────
 const C = {
-  purple:      "#6B3FA0",
-  purpleMid:   "#8B4FC8",
-  purpleDim:   "#582F85",
-  purpleLight: "#F0EAFA",
-  purpleDark:  "#1C1033",
-  gold:        "#C9963A",
-  goldBright:  "#E8B84B",
-  goldLight:   "#FDF3E3",
-  teal:        "#00BFA5",
-  tealLight:   "#E0F7F4",
-  bg:          "#F7F5FC",
-  card:        "#FFFFFF",
-  text:        "#1C1033",
-  mid:         "#5E4A7A",
-  dim:         "#9D8CB5",
-  border:      "rgba(107,63,160,0.12)",
+  primary:      "#1D4ED8",
+  primaryMid:   "#3B82F6",
+  primaryDim:   "#1E40AF",
+  primaryLight: "#EFF6FF",
+  primaryDark:  "#0F172A",
+  gold:         "#D97706",
+  goldBright:   "#F59E0B",
+  goldLight:    "#FFFBEB",
+  teal:         "#059669",
+  tealLight:    "#ECFDF5",
+  bg:           "#F8FAFC",
+  card:         "#FFFFFF",
+  text:         "#0F172A",
+  mid:          "#475569",
+  dim:          "#94A3B8",
+  border:       "rgba(15,23,42,0.08)",
+  // aliases for backward compat
+  purple:       "#1D4ED8",
+  purpleMid:    "#3B82F6",
+  purpleDim:    "#1E40AF",
+  purpleLight:  "#EFF6FF",
+  purpleDark:   "#0F172A",
 };
 
 function WaveMark({ size = 40 }: { size?: number }) {
@@ -27,13 +33,13 @@ function WaveMark({ size = 40 }: { size?: number }) {
       <defs>
         <linearGradient id={`wg-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%"   stopColor={C.purple} />
-          <stop offset="55%"  stopColor="#8B4FC8" />
+          <stop offset="55%"  stopColor="#3B82F6" />
           <stop offset="100%" stopColor={C.gold} />
         </linearGradient>
       </defs>
       <rect width="40" height="40" rx="11" fill={`url(#wg-${size})`} />
       <text x="19" y="28" textAnchor="middle" fill="#fff" fontSize="23" fontWeight="900"
-        fontFamily="Georgia, 'Times New Roman', serif" letterSpacing="-1">J</text>
+        fontFamily="'Noto Serif', Georgia, serif" letterSpacing="-1">P</text>
       <circle cx="29" cy="11" r="5" fill={C.teal} />
       <circle cx="29" cy="11" r="2.5" fill="rgba(255,255,255,0.85)" />
     </svg>
@@ -77,21 +83,21 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: "01", icon: "✦", title: "Start your circle",    body: "Set the amount, frequency, and size. Invite people you trust. Takes five minutes." },
-  { n: "02", icon: "✦", title: "Everyone contributes", body: "Members pay each round on schedule. Automated reminders handle the awkward follow-ups." },
-  { n: "03", icon: "✦", title: "Receive your payout",  body: "When your position comes up, the full pool transfers instantly to your account." },
+  { n: "01", icon: "1", title: "Start your circle",    body: "Set the amount, frequency, and size. Invite people you trust. Takes five minutes." },
+  { n: "02", icon: "2", title: "Everyone contributes", body: "Members pay each round on schedule. Automated reminders handle the awkward follow-ups." },
+  { n: "03", icon: "3", title: "Receive your payout",  body: "When your position comes up, the full pool transfers instantly to your account." },
 ];
 
 const STATS = [
   { val: "$25B", label: "Annual ROSCA flow in the US" },
   { val: "7M+",  label: "Estimated US participants"   },
-  { val: "180+", label: "Active circles on Jouvay"    },
+  { val: "180+", label: "Active circles on Pardna"    },
 ];
 
 const MEMBERS = [
-  { i: "KA", c: "#6B3FA0" }, { i: "MR", c: "#C9963A" },
-  { i: "JT", c: "#00BFA5" }, { i: "SB", c: "#8B4FC8" },
-  { i: "OD", c: "#582F85" },
+  { i: "KA", c: "#1D4ED8" }, { i: "MR", c: "#D97706" },
+  { i: "JT", c: "#059669" }, { i: "SB", c: "#3B82F6" },
+  { i: "OD", c: "#1E40AF" },
 ];
 
 function Reveal({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
@@ -105,8 +111,8 @@ function Reveal({ children, delay = 0, style = {} }: { children: React.ReactNode
 
 const signupStyle: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: "0.5rem",
-  background: `linear-gradient(135deg, #C9963A, #E8B84B)`,
-  color: "#1C1033", borderRadius: 100, fontWeight: 800,
+  background: `linear-gradient(135deg, #D97706, #F59E0B)`,
+  color: "#0F172A", borderRadius: 100, fontWeight: 800,
   textDecoration: "none", cursor: "pointer",
   boxShadow: "0 8px 32px rgba(201,150,58,0.4)",
   transition: "transform 0.2s, box-shadow 0.2s",
@@ -130,21 +136,21 @@ export default function Landing() {
   });
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", background: C.bg, color: C.text, overflowX: "hidden" }}>
+    <div style={{ fontFamily: "'Noto Sans', system-ui, sans-serif", background: C.bg, color: C.text, overflowX: "hidden" }}>
 
       {/* NAV */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 clamp(1.25rem, 5vw, 4rem)", height: 68,
-        background: scrolled ? "rgba(28,16,51,0.92)" : "transparent",
+        background: scrolled ? "rgba(15,23,42,0.92)" : "transparent",
         backdropFilter: scrolled ? "blur(16px)" : "none",
         borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "none",
         transition: "background 0.4s",
       }}>
         <a href="#" style={{ display: "flex", alignItems: "center", gap: "0.6rem", textDecoration: "none" }}>
           <WaveMark size={36} />
-          <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#fff" }}>jouvay</span>
+          <span style={{ fontSize: "1.15rem", fontWeight: 800, color: "#fff" }}>pardna</span>
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
           {["Features", "How it works", "Communities"].map(label => (
@@ -168,10 +174,10 @@ export default function Landing() {
         padding: "9rem clamp(1.25rem, 6vw, 5rem) 6rem",
         position: "relative", overflow: "hidden",
         background: `
-          radial-gradient(ellipse 80% 60% at 50% -10%, ${C.purpleMid}60 0%, transparent 65%),
-          radial-gradient(ellipse 50% 40% at 85% 90%, ${C.gold}25 0%, transparent 55%),
-          radial-gradient(ellipse 40% 30% at 10% 80%, ${C.teal}18 0%, transparent 50%),
-          linear-gradient(175deg, #120821 0%, #1C1033 45%, #0E0820 100%)
+          radial-gradient(ellipse 80% 60% at 50% -10%, ${C.primaryMid}30 0%, transparent 65%),
+          radial-gradient(ellipse 50% 40% at 85% 90%, ${C.gold}15 0%, transparent 55%),
+          radial-gradient(ellipse 40% 30% at 10% 80%, ${C.teal}12 0%, transparent 50%),
+          linear-gradient(175deg, #0F172A 0%, #1E293B 45%, #0F172A 100%)
         `,
       }}>
         <div style={{ position: "absolute", inset: 0, opacity: 0.035, zIndex: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: "200px 200px" }} />
@@ -185,7 +191,7 @@ export default function Landing() {
             Now in early access
           </div>
 
-          <h1 style={{ ...anim(0.2), fontSize: "clamp(2.6rem, 7vw, 5.2rem)", fontWeight: 800, letterSpacing: "-2px", lineHeight: 1.05, color: "#fff", marginBottom: "1.5rem", fontFamily: "Georgia, serif" }}>
+          <h1 style={{ ...anim(0.2), fontSize: "clamp(2.6rem, 7vw, 5.2rem)", fontWeight: 800, letterSpacing: "-2px", lineHeight: 1.05, color: "#fff", marginBottom: "1.5rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
             Before the banks existed,{" "}
             <span style={{ background: `linear-gradient(135deg, ${C.gold}, ${C.goldBright}, ${C.teal})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               your community
@@ -224,11 +230,11 @@ export default function Landing() {
       </section>
 
       {/* STATS BAR */}
-      <div style={{ background: C.purpleDark, borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}>
+      <div style={{ background: "#0F172A", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}>
         {STATS.map((s, i) => (
           <Reveal key={s.val} delay={i * 0.1}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "2.5rem 1rem", textAlign: "center", borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-              <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: C.gold, lineHeight: 1, marginBottom: "0.4rem", fontFamily: "Georgia, serif" }}>{s.val}</div>
+              <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: C.gold, lineHeight: 1, marginBottom: "0.4rem", fontFamily: "'Noto Serif', Georgia, serif" }}>{s.val}</div>
               <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
             </div>
           </Reveal>
@@ -240,20 +246,20 @@ export default function Landing() {
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Cultural roots</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "0.75rem", fontFamily: "Georgia, serif" }}>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "0.75rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
               A tradition across cultures,<br />
               <em style={{ color: C.purple }}>now with infrastructure.</em>
             </h2>
             <p style={{ fontSize: "1rem", color: C.mid, lineHeight: 1.7, maxWidth: 520, marginBottom: "2.5rem" }}>
-              Savings circles have existed across every continent for centuries. Jouvay is the digital home they've never had.
+              Savings circles have existed across every continent for centuries. Pardna is the digital home they've never had.
             </p>
           </Reveal>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.65rem" }}>
             {COMMUNITIES.map((c, i) => (
               <Reveal key={c.name} delay={i * 0.05}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.6rem 1.1rem", background: C.card, border: `1px solid ${C.border}`, borderRadius: 100, boxShadow: "0 2px 8px rgba(107,63,160,0.07)", transition: "transform 0.2s, box-shadow 0.2s", cursor: "default" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(107,63,160,0.15)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(107,63,160,0.07)"; }}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.6rem 1.1rem", background: C.card, border: `1px solid ${C.border}`, borderRadius: 100, boxShadow: "0 2px 8px rgba(15,23,42,0.07)", transition: "transform 0.2s, box-shadow 0.2s", cursor: "default" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(15,23,42,0.15)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(15,23,42,0.07)"; }}
                 >
                   <span style={{ fontSize: "1.1rem" }}>{c.flag}</span>
                   <span style={{ fontWeight: 700, color: C.text, fontSize: "0.875rem" }}>{c.name}</span>
@@ -266,13 +272,13 @@ export default function Landing() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: C.purpleDark, position: "relative", overflow: "hidden" }}>
+      <section id="features" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#0F172A", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: "-20%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${C.purple}30, transparent 70%)`, filter: "blur(60px)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: "-10%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${C.gold}15, transparent 70%)`, filter: "blur(50px)", pointerEvents: "none" }} />
         <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "0.75rem" }}>Why Jouvay</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: "#fff", marginBottom: "3rem", fontFamily: "Georgia, serif" }}>
+            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "0.75rem" }}>Why Pardna</span>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: "#fff", marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
               Everything your circle<br /><em style={{ color: C.gold }}>needs to thrive.</em>
             </h2>
           </Reveal>
@@ -300,19 +306,19 @@ export default function Landing() {
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Getting started</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "3rem", fontFamily: "Georgia, serif" }}>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
               Up and running<br /><em style={{ color: C.purple }}>in minutes.</em>
             </h2>
           </Reveal>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
             {STEPS.map((s, i) => (
               <Reveal key={s.n} delay={i * 0.15}>
-                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(107,63,160,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(107,63,160,0.15)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(107,63,160,0.06)"; }}
+                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(15,23,42,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(15,23,42,0.15)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(15,23,42,0.06)"; }}
                 >
                   <div style={{ position: "absolute", top: -10, right: 16, fontSize: "5rem", fontWeight: 900, color: "rgba(0,0,0,0.15)", lineHeight: 1, fontFamily: "'Noto Serif', Georgia, serif", userSelect: "none" }}>{s.n}</div>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg, ${C.purple}, ${C.purpleMid})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", color: C.gold, marginBottom: "1.25rem", fontWeight: 900 }}>{s.icon}</div>
+
                   <div style={{ fontSize: "1.1rem", fontWeight: 700, color: C.text, marginBottom: "0.5rem" }}>{s.title}</div>
                   <div style={{ fontSize: "0.875rem", color: C.mid, lineHeight: 1.7 }}>{s.body}</div>
                 </div>
@@ -323,13 +329,13 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: "7rem clamp(1.25rem, 5vw, 4rem)", textAlign: "center", background: `radial-gradient(ellipse 70% 60% at 50% 50%, ${C.purple}50 0%, transparent 70%), linear-gradient(160deg, #120821 0%, #1C1033 100%)`, position: "relative", overflow: "hidden" }}>
+      <section style={{ padding: "7rem clamp(1.25rem, 5vw, 4rem)", textAlign: "center", background: `radial-gradient(ellipse 70% 60% at 50% 50%, ${C.primary}30 0%, transparent 70%), linear-gradient(160deg, #0F172A 0%, #1E293B 100%)`, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: "10%", left: "5%", width: 280, height: 280, borderRadius: "50%", background: `radial-gradient(circle, ${C.gold}15, transparent 70%)`, filter: "blur(40px)" }} />
         <div style={{ position: "absolute", bottom: "10%", right: "5%", width: 220, height: 220, borderRadius: "50%", background: `radial-gradient(circle, ${C.teal}15, transparent 70%)`, filter: "blur(35px)" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
           <Reveal>
             <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "1.25rem" }}>Join the movement</span>
-            <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.1, color: "#fff", marginBottom: "1.25rem", fontFamily: "Georgia, serif" }}>
+            <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.1, color: "#fff", marginBottom: "1.25rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
               Every circle has a payout.{" "}
               <em style={{ background: `linear-gradient(135deg, ${C.gold}, ${C.goldBright}, ${C.teal})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Yours is coming.</em>
             </h2>
@@ -348,9 +354,9 @@ export default function Landing() {
       <footer style={{ padding: "2rem clamp(1.25rem, 5vw, 4rem)", background: "#0D0618", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
           <WaveMark size={28} />
-          <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#fff" }}>jouvay</span>
+          <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#fff" }}>pardna</span>
         </div>
-        <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", margin: 0 }}>© 2026 Jouvay. All rights reserved.</p>
+        <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", margin: 0 }}>© 2026 Pardna. All rights reserved.</p>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           {["Privacy", "Terms", "Contact"].map(l => (
             <a key={l} href="#" style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", textDecoration: "none" }}
@@ -362,7 +368,7 @@ export default function Landing() {
       </footer>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:wght@400;600;700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         @keyframes float1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(20px,-30px) scale(1.05); } }
         @keyframes float2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-25px,20px) scale(0.95); } }

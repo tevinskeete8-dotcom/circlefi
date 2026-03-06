@@ -92,7 +92,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
         {/* Logo */}
         <div className="sidebar-logo">
-          <div className="sidebar-logo-mark">C</div>
+          <div className="sidebar-logo-mark">P</div>
           <span>Pardna</span>
         </div>
 
