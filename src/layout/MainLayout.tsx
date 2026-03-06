@@ -58,12 +58,25 @@ const NAV_ITEMS = [
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const [email, setEmail] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setEmail(data.session?.user?.email ?? null);
+    supabase.auth.getSession().then(async ({ data }) => {
+      const user = data.session?.user;
+      if (!user) return;
+      setEmail(user.email ?? null);
+
+      // Try to get display name from profiles
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name")
+        .eq("id", user.id)
+        .single();
+      if (profile?.first_name) {
+        setDisplayName(profile.first_name);
+      }
     });
   }, []);
 
@@ -77,8 +90,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     navigate("/login");
   };
 
-  const userInitial = email ? email[0].toUpperCase() : "U";
-  const userName = email ? email.split("@")[0] : "User";
+  const userInitial = displayName ? displayName[0].toUpperCase() : (email ? email[0].toUpperCase() : "U");
+  const userName = displayName ?? (email ? email.split("@")[0] : "User");
 
   return (
     <div className="layout">
@@ -166,7 +179,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
           {/* Right actions */}
           <div className="topbar-right">
-            <div className="topbar-avatar" title={email ?? ""}>{userInitial}</div>
+            <div className="topbar-avatar" title={email ?? ""} onClick={() => navigate("/app/profile")} style={{ cursor: "pointer" }}>{userInitial}</div>
           </div>
         </header>
 

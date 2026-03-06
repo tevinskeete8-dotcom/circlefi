@@ -5,18 +5,19 @@ import { useNavigate, Link } from "react-router-dom";
 import "../styles/login.css"; // reuses login styles — no new CSS needed
 
 export default function Signup() {
-  const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm]   = useState("");
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
-  const [success, setSuccess]   = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail]         = useState("");
+  const [password, setPassword]   = useState("");
+  const [confirm, setConfirm]     = useState("");
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState("");
+  const [success, setSuccess]     = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async () => {
     setError("");
 
-    if (!email || !password || !confirm) {
+    if (!firstName.trim() || !email || !password || !confirm) {
       setError("Please fill in all fields.");
       return;
     }
@@ -31,7 +32,7 @@ export default function Signup() {
 
     setLoading(true);
 
-    const { error: signupError } = await supabase.auth.signUp({
+    const { data: signupData, error: signupError } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -40,6 +41,14 @@ export default function Signup() {
       setError(signupError.message);
       setLoading(false);
       return;
+    }
+
+    // Save first name to profiles
+    if (signupData?.user) {
+      await supabase.from("profiles").upsert({
+        id: signupData.user.id,
+        first_name: firstName.trim(),
+      });
     }
 
     // Auto sign-in after signup
@@ -122,6 +131,20 @@ export default function Signup() {
         )}
 
         <div className="login-fields">
+          <div className="field-group">
+            <label htmlFor="firstName">First Name</label>
+            <input
+              id="firstName"
+              className="login-input"
+              type="text"
+              placeholder="e.g. Amara"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoComplete="given-name"
+            />
+          </div>
+
           <div className="field-group">
             <label htmlFor="email">Email</label>
             <input

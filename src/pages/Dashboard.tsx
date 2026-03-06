@@ -37,9 +37,19 @@ export default function Dashboard() {
 
       if (!session?.user) return;
 
-      // Get display name from email
-      const email = session.user.email ?? "";
-      setUserName(email.split("@")[0]);
+      // Get display name from profiles, fall back to email
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name")
+        .eq("id", session.user.id)
+        .single();
+
+      if (profile?.first_name) {
+        setUserName(profile.first_name);
+      } else {
+        const email = session.user.email ?? "";
+        setUserName(email.split("@")[0]);
+      }
 
       const { data } = await supabase
         .from("circles")

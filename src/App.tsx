@@ -16,6 +16,7 @@ import Security from "./pages/Security";
 
 import MainLayout from "./layout/MainLayout";
 import AcceptInvite from "./pages/AcceptInvite";
+import Profile from "./pages/Profile";
 
 
 // ── Check onboarding status ───────────────────────────────────────────
@@ -191,6 +192,9 @@ export default function App() {
           </AppShell>
         } />
 
+        <Route path="/app/profile" element={
+          <AppShell><Profile /></AppShell>
+        } />
         <Route path="/app/security" element={
           <AppShell>
             <Security />

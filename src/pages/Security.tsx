@@ -2,63 +2,7 @@ import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import "../styles/security.css";
 
-// ── Change Password ───────────────────────────────────────────────────
-function ChangePassword() {
-  const [current, setCurrent] = useState("");
-  const [next, setNext]       = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError]     = useState("");
 
-  const handleChange = async () => {
-    setError(""); setSuccess(false);
-    if (!next || !confirm) { setError("Please fill in all fields."); return; }
-    if (next !== confirm)  { setError("New passwords do not match."); return; }
-    if (next.length < 8)   { setError("Password must be at least 8 characters."); return; }
-    setLoading(true);
-    const { error: err } = await supabase.auth.updateUser({ password: next });
-    if (err) { setError(err.message); }
-    else     { setSuccess(true); setCurrent(""); setNext(""); setConfirm(""); }
-    setLoading(false);
-  };
-
-  return (
-    <div className="sec-card">
-      <div className="sec-card-head">
-        <div className="sec-card-icon" style={{ color: "#1D4ED8" }}>⟡</div>
-        <div>
-          <h3>Change Password</h3>
-          <p>Update your account password. Use at least 8 characters.</p>
-        </div>
-      </div>
-      {error   && <div className="sec-alert sec-alert--error">⚠ {error}</div>}
-      {success && <div className="sec-alert sec-alert--success">✓ Password updated successfully.</div>}
-      <div className="sec-fields">
-        <div className="sec-field">
-          <label>Current Password</label>
-          <input className="sec-input" type="password" placeholder="••••••••"
-            value={current} onChange={(e) => setCurrent(e.target.value)} />
-        </div>
-        <div className="sec-row">
-          <div className="sec-field">
-            <label>New Password</label>
-            <input className="sec-input" type="password" placeholder="••••••••"
-              value={next} onChange={(e) => setNext(e.target.value)} />
-          </div>
-          <div className="sec-field">
-            <label>Confirm New Password</label>
-            <input className="sec-input" type="password" placeholder="••••••••"
-              value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-          </div>
-        </div>
-      </div>
-      <button className="sec-btn" onClick={handleChange} disabled={loading}>
-        {loading ? <span className="spinner" /> : "Update Password"}
-      </button>
-    </div>
-  );
-}
 
 // ── KYC ──────────────────────────────────────────────────────────────
 function KYCSection() {
@@ -259,7 +203,18 @@ export default function Security() {
         <h1 className="sec-title">Security</h1>
       </div>
       <EscrowBanner />
-      <ChangePassword />
+      <div className="sec-card">
+        <div className="sec-card-head">
+          <div className="sec-card-icon" style={{ color: "#1D4ED8" }}>⟡</div>
+          <div>
+            <h3>Change Password</h3>
+            <p>Update your password or display name from your profile.</p>
+          </div>
+        </div>
+        <a href="/app/profile" style={{ display: "inline-block", marginTop: "0.75rem", color: "#1D4ED8", fontWeight: 600, textDecoration: "none", fontSize: "0.9rem" }}>
+          Go to Profile →
+        </a>
+      </div>
       <KYCSection />
       <SessionsSection />
       <PrivacySection />
