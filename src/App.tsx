@@ -20,7 +20,12 @@ import AcceptInvite from "./pages/AcceptInvite";
 
 // ── Check onboarding status ───────────────────────────────────────────
 function hasOnboarded(userId: string) {
-  return localStorage.getItem(`jouvay_onboarded_${userId}`) === "true";
+  // Check both new and old key for backwards compatibility
+  return (
+    localStorage.getItem(`pardna_onboarded_${userId}`) === "true" ||
+    localStorage.getItem(`jouvay_onboarded_${userId}`) === "true" ||
+    localStorage.getItem(`circlefi_onboarded_${userId}`) === "true"
+  );
 }
 
 
@@ -28,10 +33,28 @@ function hasOnboarded(userId: string) {
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
+  const [profileChecked, setProfileChecked] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
+    supabase.auth.getSession().then(async ({ data }) => {
+      const s = data.session;
+      setSession(s);
+
+      // If session exists but localStorage key missing, check Supabase profiles
+      // This handles users who onboarded before the pardna rename
+      if (s?.user && !hasOnboarded(s.user.id)) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name")
+          .eq("id", s.user.id)
+          .single();
+        if (profile?.first_name) {
+          // Backfill the localStorage key so future checks are instant
+          localStorage.setItem(`pardna_onboarded_${s.user.id}`, "true");
+        }
+      }
+
+      setProfileChecked(true);
       setLoading(false);
     });
 
@@ -52,8 +75,8 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#6B3FA0",
-          fontFamily: "Plus Jakarta Sans, sans-serif",
+          color: "#1D4ED8",
+          fontFamily: "Noto Sans, sans-serif",
           fontSize: "0.9rem",
           letterSpacing: "0.05em",
         }}
@@ -64,6 +87,8 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   if (!session) return <Navigate to="/login" replace />;
+
+  if (!profileChecked) return null;
 
   if (!hasOnboarded(session.user.id)) {
     return <Navigate to="/onboarding" replace />;
