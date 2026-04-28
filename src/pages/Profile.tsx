@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import "../styles/security.css";
 
@@ -18,6 +19,13 @@ export default function Profile() {
   const [pwSuccess, setPwSuccess]   = useState(false);
   const [pwError, setPwError]       = useState("");
 
+  const [stripeConnected, setStripeConnected]   = useState(false);
+  const [stripeLoading, setStripeLoading]       = useState(false);
+  const [stripeError, setStripeError]           = useState("");
+  const [stripeSuccess, setStripeSuccess]       = useState(false);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
   useEffect(() => {
     async function load() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -27,16 +35,28 @@ export default function Profile() {
 
       const { data } = await supabase
         .from("profiles")
-        .select("first_name, last_name")
+        .select("first_name, last_name, stripe_account_id")
         .eq("id", session.user.id)
         .single();
 
       if (data) {
         setFirstName(data.first_name ?? "");
         setLastName(data.last_name ?? "");
+        setStripeConnected(!!data.stripe_account_id);
       }
     }
     load();
+
+    // Handle return from Stripe onboarding
+    const stripeParam = searchParams.get("stripe");
+    if (stripeParam === "success") {
+      setStripeSuccess(true);
+      setStripeConnected(true);
+      setSearchParams({});
+    } else if (stripeParam === "refresh") {
+      setStripeError("Onboarding expired. Please try again.");
+      setSearchParams({});
+    }
   }, []);
 
   const handleSaveName = async () => {
@@ -51,7 +71,6 @@ export default function Profile() {
     if (error) { setNameError(error.message); }
     else {
       setNameSuccess(true);
-      // Update localStorage key so dashboard picks up new name
       localStorage.setItem(`pardna_onboarded_${userId}`, "true");
     }
     setNameLoading(false);
@@ -68,6 +87,32 @@ export default function Profile() {
     if (error) { setPwError(error.message); }
     else       { setPwSuccess(true); setNewPw(""); setConfirmPw(""); }
     setPwLoading(false);
+  };
+
+  const handleStripeConnect = async () => {
+    setStripeError(""); setStripeLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-connect-onboard`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        }
+      );
+      const json = await res.json();
+      if (json.url) {
+        window.location.href = json.url;
+      } else {
+        setStripeError(json.error ?? "Something went wrong. Please try again.");
+      }
+    } catch {
+      setStripeError("Something went wrong. Please try again.");
+    }
+    setStripeLoading(false);
   };
 
   return (
@@ -161,6 +206,41 @@ export default function Profile() {
         <button className="sec-btn" onClick={handleChangePassword} disabled={pwLoading}>
           {pwLoading ? <span className="spinner" /> : "Update Password"}
         </button>
+      </div>
+
+      {/* ── Stripe Connect ── */}
+      <div className="sec-card">
+        <div className="sec-card-head">
+          <div className="sec-card-icon" style={{ color: stripeConnected ? "#10B981" : "#1D4ED8" }}>
+            {stripeConnected ? "✓" : "⬡"}
+          </div>
+          <div>
+            <h3>Payout Account</h3>
+            <p>
+              {stripeConnected
+                ? "Your payout account is connected. You can receive circle payouts."
+                : "Connect a bank account to receive payouts when it's your turn in a circle."}
+            </p>
+          </div>
+        </div>
+
+        {stripeError   && <div className="sec-alert sec-alert--error">⚠ {stripeError}</div>}
+        {stripeSuccess && <div className="sec-alert sec-alert--success">✓ Payout account connected successfully.</div>}
+
+        {stripeConnected ? (
+          <button
+            className="sec-btn"
+            onClick={handleStripeConnect}
+            disabled={stripeLoading}
+            style={{ background: "#F1F5F9", color: "#475569" }}
+          >
+            {stripeLoading ? <span className="spinner" /> : "Update payout account"}
+          </button>
+        ) : (
+          <button className="sec-btn" onClick={handleStripeConnect} disabled={stripeLoading}>
+            {stripeLoading ? <span className="spinner" /> : "Connect payout account"}
+          </button>
+        )}
       </div>
     </div>
   );
