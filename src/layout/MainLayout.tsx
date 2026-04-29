@@ -1,4 +1,4 @@
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import PardnaLogo from "../components/PardnaLogo";
 import { useEffect, useState } from "react";
@@ -15,10 +15,10 @@ import {
 } from "lucide-react";
 
 const NAV_ITEMS = [
-  { to: "/app",            end: true,  icon: <LayoutDashboard size={18} strokeWidth={1.8} />, label: "Dashboard" },
-  { to: "/app/circles",   end: false, icon: <Users           size={18} strokeWidth={1.8} />, label: "Circles"   },
-  { to: "/app/reputation",end: false, icon: <TrendingUp      size={18} strokeWidth={1.8} />, label: "Reputation" },
-  { to: "/app/security",  end: false, icon: <Shield          size={18} strokeWidth={1.8} />, label: "Security"  },
+  { to: "/app",             end: true,  icon: <LayoutDashboard size={18} strokeWidth={1.8} />, label: "Dashboard"  },
+  { to: "/app/circles",    end: false, icon: <Users            size={18} strokeWidth={1.8} />, label: "Circles"    },
+  { to: "/app/reputation", end: false, icon: <TrendingUp       size={18} strokeWidth={1.8} />, label: "Reputation" },
+  { to: "/app/security",   end: false, icon: <Shield           size={18} strokeWidth={1.8} />, label: "Security"   },
 ];
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
@@ -56,15 +56,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="layout-root">
-      {/* Sidebar overlay on mobile */}
       {sidebarOpen && (
         <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Sidebar */}
       <aside className={`sidebar${sidebarOpen ? " sidebar--open" : ""}`}>
         <div className="sidebar-logo">
-          <PardnaLogo variant="full" size={28} color="white" markColor="#006FFF" />
+          <PardnaLogo variant="full" color="white" markColor="#006FFF" />
         </div>
 
         <nav className="sidebar-nav">
@@ -99,9 +97,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="layout-main">
-        {/* Topbar */}
         <header className="topbar">
           <button
             className="topbar-hamburger"
@@ -125,7 +121,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
 
-        {/* Page content */}
         <main className="layout-content">{children}</main>
       </div>
     </div>
