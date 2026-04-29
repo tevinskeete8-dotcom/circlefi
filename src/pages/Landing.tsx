@@ -372,12 +372,12 @@ export default function Landing() {
       </section>
 
       {/* STATS BAR */}
-      <div style={{ background: "#0F172A", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)" }}>
+      <div style={{ background: "#FFFFFF", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)" }}>
         {STATS.map((s, i) => (
           <Reveal key={s.val} delay={i * 0.1}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "2.5rem 1rem", textAlign: "center", borderRight: !isMobile && i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none", borderBottom: isMobile && i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none" }}>
-              <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: C.gold, lineHeight: 1, marginBottom: "0.4rem", fontFamily: "'Noto Serif', Georgia, serif", whiteSpace: "pre-line" }}>{s.val}</div>
-              <div style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "2.5rem 1rem", textAlign: "center", borderRight: !isMobile && i < 2 ? "1px solid #E2E8F0" : "none", borderBottom: isMobile && i < 2 ? "1px solid #E2E8F0" : "none" }}>
+              <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: "#006FFF", lineHeight: 1, marginBottom: "0.4rem", fontFamily: "'Noto Serif', Georgia, serif", whiteSpace: "pre-line" }}>{s.val}</div>
+              <div style={{ fontSize: "0.82rem", color: "#64748B" }}>{s.label}</div>
             </div>
           </Reveal>
         ))}
@@ -414,9 +414,9 @@ export default function Landing() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#0F172A", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: `radial-gradient(circle, ${C.purple}30, transparent 70%)`, filter: "blur(60px)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "-10%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: `radial-gradient(circle, ${C.gold}15, transparent 70%)`, filter: "blur(50px)", pointerEvents: "none" }} />
+      <section id="features" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#F8FAFC", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,111,255,0.06), transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: "-10%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(245,158,11,0.06), transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }} />
         <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <Reveal>
             <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "0.75rem" }}>Why Pardna</span>
@@ -427,14 +427,14 @@ export default function Landing() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem" }}>
             {FEATURES.map((f, i) => (
               <Reveal key={f.title} delay={(i % 3) * 0.1}>
-                <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 20, padding: "1.75rem", display: "flex", gap: "1.25rem", alignItems: "flex-start", transition: "background 0.2s, transform 0.2s", cursor: "default" }}
+                <div style={{ background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 20, padding: "1.75rem", display: "flex", gap: "1.25rem", alignItems: "flex-start", transition: "background 0.2s, transform 0.2s", cursor: "default" }}
                   onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.transform = "none"; }}
                 >
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0 }}>{f.icon}</div>
                   <div>
                     <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#fff", marginBottom: "0.4rem" }}>{f.title}</div>
-                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{f.body}</div>
+                    <div style={{ fontSize: "0.85rem", color: "#64748B", lineHeight: 1.7 }}>{f.body}</div>
                   </div>
                 </div>
               </Reveal>

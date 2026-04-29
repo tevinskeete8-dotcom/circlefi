@@ -128,7 +128,7 @@
   font-size: 0.8rem; font-weight: 700; color: #fff; cursor: default;
 }
 .layout-content {
-  flex: 1; padding: 2.5rem clamp(1.5rem, 4vw, 3rem); background: #F4F7FF;
+  flex: 1; padding: 2.5rem clamp(1.5rem, 4vw, 3rem); background: #F8FAFC;
 }
 
 /* ── Mobile ── */
