@@ -198,3 +198,41 @@
 @media (max-width: 500px) {
   .dash-stats  { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Blue + Amber accent system ───────────────── */
+
+/* Amber italic — used for first names, highlights */
+.text-amber-italic {
+  color: #F59E0B;
+  font-style: italic;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+}
+
+/* Electric blue eyebrow labels */
+.eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #006FFF;
+}
+
+/* Stat card value highlight */
+.stat-value-blue { color: #006FFF; font-weight: 800; }
+
+/* Blue left-border accent for cards */
+.card-accent-left {
+  border-left: 3px solid #006FFF !important;
+}
+
+/* Amber badge */
+.badge-amber {
+  background: rgba(245, 158, 11, 0.1);
+  color: #D97706;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 100px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}

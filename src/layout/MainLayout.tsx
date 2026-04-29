@@ -122,6 +122,24 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         </header>
 
         <main className="layout-content">{children}</main>
+
+        {/* App Footer */}
+        <footer style={{
+          padding: "1rem clamp(1.5rem, 4vw, 3rem)",
+          background: "#006FFF",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          flexWrap: "wrap", gap: "0.75rem",
+        }}>
+          <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)" }}>© 2026 Pardna. All rights reserved.</span>
+          <div style={{ display: "flex", gap: "1.25rem" }}>
+            {["Privacy", "Terms", "Contact"].map(l => (
+              <a key={l} href="#" style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.65)", textDecoration: "none", transition: "color 0.2s" }}
+                onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.color = "#F59E0B"}
+                onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.65)"}
+              >{l}</a>
+            ))}
+          </div>
+        </footer>
       </div>
     </div>
   );

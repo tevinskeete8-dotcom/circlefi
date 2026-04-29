@@ -12,7 +12,7 @@ type Circle = {
 
 // Cycle progress — placeholder until you add cycle dates to the DB
 const MOCK_PROGRESS = [72, 45, 90, 33, 58, 80];
-const COLORS = ["#1D4ED8", "#D97706", "#7B5EA7", "#3D7EAA", "#C25F3B", "#2E8B57"];
+const COLORS = ["#006FFF", "#D97706", "#7B5EA7", "#3D7EAA", "#C25F3B", "#2E8B57"];
 
 function getInitials(name: string) {
   return name
@@ -82,7 +82,7 @@ export default function Dashboard() {
       value: circles.length,
       sub: "circles you organise",
       icon: "◉",
-      color: "#1D4ED8",
+      color: "#006FFF",
     },
     {
       label: "Total Pool",
@@ -116,7 +116,7 @@ export default function Dashboard() {
           <p className="dash-eyebrow">Good to see you back</p>
           <h1 className="dash-title" style={{ color: "#0F172A" }}>
             {userName ? (
-              <>Welcome, <em style={{ color: "#1D4ED8", fontStyle: "italic" }}>{userName}</em></>
+              <>Welcome, <em style={{ color: "#F59E0B", fontStyle: "italic", fontFamily: "Georgia, serif" }}>{userName}</em></>
             ) : (
               "Your Dashboard"
             )}

@@ -108,3 +108,27 @@
 .escrow-footnote { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.75rem; color: var(--text-dim); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; line-height: 1.6; }
 
 @media (max-width: 640px) { .sec-row { grid-template-columns: 1fr; } .escrow-pillars { grid-template-columns: 1fr; } .escrow-banner-head { flex-direction: column; } }
+
+
+/* Blue + Amber accents on inner pages */
+.sec-header h1 em,
+.sec-header h1 span.accent {
+  color: #F59E0B;
+  font-style: italic;
+  font-family: Georgia, serif;
+}
+
+.sec-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #006FFF;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+/* Blue left border on active/highlighted cards */
+.sec-card--highlight {
+  border-left: 3px solid #006FFF !important;
+}

@@ -496,14 +496,14 @@ export default function Landing() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding: "2rem clamp(1.25rem, 5vw, 4rem)", background: "#0D0618", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+      <footer style={{ padding: "1.75rem clamp(1.25rem, 5vw, 4rem)", background: "#006FFF", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
         <PardnaLogo dark size="sm" />
-        <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.25)", margin: 0 }}>© 2026 Pardna. All rights reserved.</p>
+        <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", margin: 0 }}>© 2026 Pardna. All rights reserved.</p>
         <div style={{ display: "flex", gap: "1.5rem" }}>
           {["Privacy", "Terms", "Contact"].map(l => (
-            <a key={l} href="#" style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.3)", textDecoration: "none" }}
-              onMouseEnter={e => e.currentTarget.style.color = C.gold}
-              onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.3)"}
+            <a key={l} href="#" style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", textDecoration: "none", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = "#F59E0B"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.65)"}
             >{l}</a>
           ))}
         </div>
