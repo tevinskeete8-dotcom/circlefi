@@ -24,6 +24,7 @@
   color: rgba(255,255,255,0.7);
   margin: 0;
 }
+.sec-title-accent { color: #F59E0B; font-style: italic; font-family: Georgia, serif; }
 .sec-eyebrow {
   font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.16em; text-transform: uppercase;

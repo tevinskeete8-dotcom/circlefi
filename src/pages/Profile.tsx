@@ -85,8 +85,8 @@ export default function Profile() {
   return (
     <div className="sec-page">
       <div className="sec-header">
-        <h1>Your Profile</h1>
-        <p>Manage your display name, email, and password.</p>
+        <p className="sec-eyebrow">Your account</p>
+        <h1>Your <span className="sec-title-accent">Profile</span></h1>
       </div>
 
       <div className="sec-card">

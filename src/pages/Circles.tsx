@@ -232,7 +232,7 @@ export default function Circles() {
       <div className="circles-header">
         <div>
           <p className="circles-eyebrow">Your savings groups</p>
-          <h1 className="circles-title">Circles</h1>
+          <h1 className="circles-title">Your <span className="circles-title-accent">Circles</span></h1>
         </div>
         <button className="circles-new-btn" onClick={() => setShowModal(true)}>
           + New Circle
