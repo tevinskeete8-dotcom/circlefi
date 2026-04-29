@@ -1,79 +1,70 @@
-// PardnaLogo — boxed P mark + Cormorant Garamond italic "ardna"
-// Usage:
-//   <PardnaLogo />              full wordmark, light bg
-//   <PardnaLogo dark />         full wordmark, dark bg
-//   <PardnaLogo iconOnly />     P box only (sidebar/dashboard)
-//   <PardnaLogo size="sm" />    sm | md (default) | lg
+import React from "react";
 
-type LogoProps = {
+interface PardnaLogoProps {
+  variant?: "full" | "mark";
+  size?: number;
+  color?: string;
   dark?: boolean;
-  iconOnly?: boolean;
-  size?: "sm" | "md" | "lg";
-};
+}
 
-const SIZES = {
-  sm: { box: 28, border: 1.5, font: "1.05rem", ardna: "1.3rem", shadow: 3 },
-  md: { box: 38, border: 2,   font: "1.45rem", ardna: "1.85rem", shadow: 4 },
-  lg: { box: 52, border: 2.5, font: "2rem",    ardna: "2.55rem", shadow: 5 },
-};
+export default function PardnaLogo({
+  variant = "full",
+  size = 36,
+  color,
+  dark = false,
+}: PardnaLogoProps) {
+  const textColor = color ?? (dark ? "#FFFFFF" : "#0F172A");
+  const shadowColor = "#006FFF";
+  const borderColor = dark ? "#FFFFFF" : "#0F172A";
+  const bgColor = dark ? "#1E293B" : "#FFFFFF";
 
-export default function PardnaLogo({ dark = false, iconOnly = false, size = "md" }: LogoProps) {
-  const s = SIZES[size];
-  const fg = dark ? "#FFFFFF" : "#0F172A";
-  const shadowBg = dark ? "rgba(255,255,255,0.12)" : "#1D4ED8";
+  // Mark: thick-bordered white box with P, electric blue shadow offset bottom-right
+  const Mark = ({ s }: { s: number }) => {
+    const offset = s * 0.18;  // shadow offset
+    const boxSize = s * 0.78; // main box size
+    const borderW = s * 0.07; // border thickness
 
-  const boxStyle: React.CSSProperties = {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: s.box,
-    height: s.box,
-    border: `${s.border}px solid ${fg}`,
-    position: "relative",
-    flexShrink: 0,
+    return (
+      <svg
+        width={s}
+        height={s}
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Blue shadow box — offset bottom-right */}
+        <rect
+          x={18}
+          y={22}
+          width={78}
+          height={78}
+          fill={shadowColor}
+        />
+        {/* White main box with thick dark border */}
+        <rect
+          x={4}
+          y={4}
+          width={78}
+          height={78}
+          fill={bgColor}
+          stroke={borderColor}
+          strokeWidth={7}
+        />
+        {/* P letter — bold serif, centered in box */}
+        <text
+          x="43"
+          y="63"
+          textAnchor="middle"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontWeight="900"
+          fontSize="58"
+          fill={borderColor}
+        >
+          P
+        </text>
+      </svg>
+    );
   };
 
-  const shadowStyle: React.CSSProperties = {
-    position: "absolute",
-    top: s.shadow,
-    left: s.shadow,
-    right: -s.shadow,
-    bottom: -s.shadow,
-    background: shadowBg,
-    zIndex: 0,
-  };
-
-  const pStyle: React.CSSProperties = {
-    fontFamily: "'Playfair Display', Georgia, serif",
-    fontWeight: 900,
-    fontSize: s.font,
-    color: fg,
-    position: "relative",
-    zIndex: 1,
-    lineHeight: 1,
-    userSelect: "none",
-  };
-
-  const ardnaStyle: React.CSSProperties = {
-    fontFamily: "'Cormorant Garamond', Georgia, serif",
-    fontStyle: "italic",
-    fontWeight: 700,
-    fontSize: s.ardna,
-    color: fg,
-    lineHeight: 1,
-    letterSpacing: "-0.01em",
-    userSelect: "none",
-  };
-
-  return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-      <div style={boxStyle}>
-        <div style={shadowStyle} />
-        <span style={pStyle}>P</span>
-      </div>
-      {!iconOnly && (
-        <span style={ardnaStyle}>ardna</span>
-      )}
-    </div>
-  );
+  return <Mark s={size} />;
 }
