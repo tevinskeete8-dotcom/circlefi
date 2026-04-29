@@ -205,22 +205,24 @@ export default function Security() {
           <h1 className="sec-title">Your <span className="sec-title-accent">Security</span></h1>
         </div>
       </div>
-      <EscrowBanner />
-      <div className="sec-card">
-        <div className="sec-card-head">
-          <div className="sec-card-icon" style={{ color: "#1D4ED8" }}>⟡</div>
-          <div>
-            <h3>Change Password</h3>
-            <p>Update your password or display name from your profile.</p>
+      <div className="sec-content">
+        <EscrowBanner />
+        <div className="sec-card">
+          <div className="sec-card-head">
+            <div className="sec-card-icon" style={{ color: "#006FFF" }}>⟡</div>
+            <div>
+              <h3>Change Password</h3>
+              <p>Update your password or display name from your profile.</p>
+            </div>
           </div>
+          <a href="/app/profile" style={{ display: "inline-block", marginTop: "0.75rem", color: "#006FFF", fontWeight: 600, textDecoration: "none", fontSize: "0.9rem" }}>
+            Go to Profile →
+          </a>
         </div>
-        <a href="/app/profile" style={{ display: "inline-block", marginTop: "0.75rem", color: "#1D4ED8", fontWeight: 600, textDecoration: "none", fontSize: "0.9rem" }}>
-          Go to Profile →
-        </a>
+        <KYCSection />
+        <SessionsSection />
+        <PrivacySection />
       </div>
-      <KYCSection />
-      <SessionsSection />
-      <PrivacySection />
     </div>
   );
 }
