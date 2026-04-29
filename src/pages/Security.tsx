@@ -44,7 +44,6 @@ function KYCSection() {
       <button className="sec-btn sec-btn--gold" disabled>
         Start Verification — Coming Soon
       </button>
-      </div>
     </div>
   );
 }
