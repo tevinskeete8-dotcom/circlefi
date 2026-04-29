@@ -209,19 +209,15 @@ function FAQ({ isMobile, C }: { isMobile: boolean; C: Record<string, string> }) 
 }
 
 export default function Landing() {
-  const [scrolled, setScrolled] = useState(false);
   const [heroVisible, setHeroVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setHeroVisible(true), 80);
-    const onScroll = () => setScrolled(window.scrollY > 40);
     const onResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("scroll", onScroll);
     window.addEventListener("resize", onResize);
     return () => {
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
   }, []);
