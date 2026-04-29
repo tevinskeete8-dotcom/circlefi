@@ -44,6 +44,7 @@ function KYCSection() {
       <button className="sec-btn sec-btn--gold" disabled>
         Start Verification — Coming Soon
       </button>
+      </div>
     </div>
   );
 }
@@ -199,8 +200,10 @@ export default function Security() {
   return (
     <div className="sec-page">
       <div className="sec-header">
-        <p className="sec-eyebrow">Account & platform</p>
-        <h1 className="sec-title">Your <span className="sec-title-accent">Security</span></h1>
+        <div>
+          <p className="sec-eyebrow">Account & platform</p>
+          <h1 className="sec-title">Your <span className="sec-title-accent">Security</span></h1>
+        </div>
       </div>
       <EscrowBanner />
       <div className="sec-card">

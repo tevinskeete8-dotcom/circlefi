@@ -85,9 +85,13 @@ export default function Profile() {
   return (
     <div className="sec-page">
       <div className="sec-header">
-        <p className="sec-eyebrow">Your account</p>
-        <h1>Your <span className="sec-title-accent">Profile</span></h1>
+        <div>
+          <p className="sec-eyebrow">Your account</p>
+          <h1>Your <span className="sec-title-accent">Profile</span></h1>
+        </div>
       </div>
+
+      <div className="sec-content">
 
       <div className="sec-card">
         <div className="sec-card-head">
@@ -162,6 +166,7 @@ export default function Profile() {
             {stripeLoading ? <span className="spinner" /> : "Connect payout account"}
           </button>
         )}
+      </div>
       </div>
     </div>
   );

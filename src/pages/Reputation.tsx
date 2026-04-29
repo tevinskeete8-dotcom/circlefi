@@ -129,8 +129,10 @@ export default function Reputation() {
 
       {/* Header */}
       <div className="rep-header">
-        <p className="rep-eyebrow">Building your reputation</p>
-        <h1 className="rep-title">Your <span className="rep-title-accent">Score</span></h1>
+        <div>
+          <p className="rep-eyebrow">Building your reputation</p>
+          <h1 className="rep-title">Your <span className="rep-title-accent">Score</span></h1>
+        </div>
       </div>
 
       {/* Score hero */}
