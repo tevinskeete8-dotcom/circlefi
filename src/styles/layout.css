@@ -110,7 +110,7 @@
   background: rgba(255,255,255,0.97);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center;
   padding: 0 2rem; position: sticky; top: 0; z-index: 100; gap: 1rem;
 }
 .topbar-hamburger {
@@ -120,7 +120,7 @@
 }
 .topbar-hamburger:hover { color: var(--text); }
 .topbar-title { display: none; }
-.topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+.topbar-right { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; }
 .topbar-avatar {
   width: 34px; height: 34px; border-radius: 50%;
   background: var(--primary);

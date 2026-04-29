@@ -4,7 +4,7 @@
    Jouvay — Security (Light Theme)
    ═══════════════════════════════════════════════ */
 
-.sec-page { font-family: var(--font-body); color: var(--text); display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; }
+.sec-page { font-family: var(--font-body); color: var(--text); display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto; width: 100%; }
 
 .sec-header { margin-bottom: 0.25rem; }
 .sec-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary, #006FFF); margin-bottom: 0.35rem; }

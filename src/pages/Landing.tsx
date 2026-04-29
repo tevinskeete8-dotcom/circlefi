@@ -420,20 +420,20 @@ export default function Landing() {
         <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <Reveal>
             <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "0.75rem" }}>Why Pardna</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: "#fff", marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-              Everything your circle<br /><em style={{ color: C.gold }}>needs to thrive.</em>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: "#0F172A", marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
+              Everything your circle<br /><em style={{ color: "#006FFF" }}>needs to thrive.</em>
             </h2>
           </Reveal>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem" }}>
             {FEATURES.map((f, i) => (
               <Reveal key={f.title} delay={(i % 3) * 0.1}>
                 <div style={{ background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 20, padding: "1.75rem", display: "flex", gap: "1.25rem", alignItems: "flex-start", transition: "background 0.2s, transform 0.2s", cursor: "default" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.transform = "none"; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#F8FAFC"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,111,255,0.1)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "#FFFFFF"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
                 >
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0 }}>{f.icon}</div>
                   <div>
-                    <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#fff", marginBottom: "0.4rem" }}>{f.title}</div>
+                    <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.4rem" }}>{f.title}</div>
                     <div style={{ fontSize: "0.85rem", color: "#64748B", lineHeight: 1.7 }}>{f.body}</div>
                   </div>
                 </div>
@@ -474,22 +474,22 @@ export default function Landing() {
       <FAQ isMobile={isMobile} C={C} />
 
       {/* CTA */}
-      <section style={{ padding: "7rem clamp(1.25rem, 5vw, 4rem)", textAlign: "center", background: `radial-gradient(ellipse 70% 60% at 50% 50%, ${C.primary}30 0%, transparent 70%), linear-gradient(160deg, #0F172A 0%, #1E293B 100%)`, position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "10%", left: "5%", width: 280, height: 280, borderRadius: "50%", background: `radial-gradient(circle, ${C.gold}15, transparent 70%)`, filter: "blur(40px)" }} />
-        <div style={{ position: "absolute", bottom: "10%", right: "5%", width: 220, height: 220, borderRadius: "50%", background: `radial-gradient(circle, ${C.teal}15, transparent 70%)`, filter: "blur(35px)" }} />
+      <section style={{ padding: "7rem clamp(1.25rem, 5vw, 4rem)", textAlign: "center", background: "#006FFF", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.12) 0%, transparent 65%)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: "-20%", right: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)", filter: "blur(40px)" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
           <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "1.25rem" }}>Join the movement</span>
-            <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.1, color: "#fff", marginBottom: "1.25rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
+            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", display: "block", marginBottom: "1.25rem" }}>Join the movement</span>
+            <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.1, color: "#FFFFFF", marginBottom: "1.25rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
               Every circle has a payout.{" "}
-              <em style={{ background: `linear-gradient(135deg, ${C.gold}, ${C.goldBright}, ${C.teal})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Yours is coming.</em>
+              <em style={{ color: "#F59E0B" }}>Yours is coming.</em>
             </h2>
-            <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.7, maxWidth: 480, margin: "0 auto 2.5rem" }}>
+            <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.7, maxWidth: 480, margin: "0 auto 2.5rem" }}>
               Thousands are already building wealth together — the way communities always have. Find your circle and claim your turn.
             </p>
-            <Link to="/signup" style={{ ...signupStyle, padding: "1rem 2.5rem", fontSize: "1.05rem" }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 18px 50px rgba(201,150,58,0.55)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(201,150,58,0.4)"; }}
+            <Link to="/signup" style={{ padding: "1rem 2.5rem", fontSize: "1.05rem", background: "#FFFFFF", color: "#006FFF", borderRadius: 100, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem", boxShadow: "0 8px 32px rgba(0,0,0,0.15)", transition: "transform 0.2s, box-shadow 0.2s" }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 18px 50px rgba(0,0,0,0.2)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.15)"; }}
             >Start your circle today →</Link>
           </Reveal>
         </div>
