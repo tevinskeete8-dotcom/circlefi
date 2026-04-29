@@ -8,8 +8,8 @@
 
 .sec-header {
   background: #006FFF;
-  margin: -2.5rem -3rem 2.5rem;
-  padding: 2rem 3rem;
+  margin: -2.5rem clamp(-3rem, -4vw, -1.5rem) 2.5rem;
+  padding: 2rem clamp(1.5rem, 4vw, 3rem);
   border-radius: 0;
 }
 .sec-header h1 {
