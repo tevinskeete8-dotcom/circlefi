@@ -107,7 +107,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          <span className="topbar-title">Pardna</span>
+          <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.02em" }}>Pardna</span>
 
           <div className="topbar-right">
             <div
