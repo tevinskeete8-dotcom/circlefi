@@ -95,10 +95,10 @@ function Reveal({ children, delay = 0, style = {} }: { children: React.ReactNode
 
 const signupStyle: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: "0.5rem",
-  background: `linear-gradient(135deg, #D97706, #F59E0B)`,
-  color: "#0F172A", borderRadius: 100, fontWeight: 800,
+  background: "#006FFF",
+  color: "#FFFFFF", borderRadius: 100, fontWeight: 700,
   textDecoration: "none", cursor: "pointer",
-  boxShadow: "0 8px 32px rgba(201,150,58,0.4)",
+  boxShadow: "0 8px 32px rgba(0,111,255,0.3)",
   transition: "transform 0.2s, box-shadow 0.2s",
 };
 
@@ -141,7 +141,7 @@ function FAQ({ isMobile, C }: { isMobile: boolean; C: Record<string, string> }) 
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section id="faq" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: C.bg }}>
+    <section id="faq" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#FFFFFF" }}>
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
         <Reveal>
           <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Common questions</span>
@@ -241,27 +241,27 @@ export default function Landing() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 clamp(1.25rem, 6vw, 4rem)",
         height: 68,
-        background: scrolled || menuOpen ? "rgba(15,23,42,0.97)" : "transparent",
-        backdropFilter: scrolled || menuOpen ? "blur(12px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
-        transition: "background 0.3s, border-color 0.3s",
+        background: "rgba(255,255,255,0.97)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
+        transition: "background 0.3s",
       }}>
-        <PardnaLogo dark size="md" />
+        <PardnaLogo size="md" />
 
         {/* Desktop links */}
         {!isMobile && (
           <div style={{ display: "flex", alignItems: "center", gap: "clamp(1rem, 3vw, 2.5rem)" }}>
-            <a href="#features" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Features</a>
-            <a href="#how-it-works" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
-            <a href="#communities" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
-            <a href="#faq" style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.7)", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
+            <a href="#features" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>Features</a>
+            <a href="#how-it-works" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>How it works</a>
+            <a href="#communities" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>Communities</a>
+            <a href="#faq" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
           </div>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           {!isMobile && (
             <Link to="/signup" style={{
-              padding: "0.5rem 1.25rem", background: C.gold, color: "#fff",
+              padding: "0.5rem 1.25rem", background: "#006FFF", color: "#fff",
               borderRadius: 100, fontSize: "0.875rem", fontWeight: 700,
               textDecoration: "none", transition: "opacity 0.2s",
             }}>Get started →</Link>
@@ -272,9 +272,9 @@ export default function Landing() {
               padding: "0.5rem", display: "flex", flexDirection: "column",
               gap: "5px", alignItems: "flex-end",
             }}>
-              <span style={{ display: "block", width: 22, height: 2, background: "#fff", borderRadius: 2, transition: "transform 0.25s, opacity 0.25s", transform: menuOpen ? "translateY(7px) rotate(45deg)" : "none" }} />
-              <span style={{ display: "block", width: 16, height: 2, background: "#fff", borderRadius: 2, opacity: menuOpen ? 0 : 1, transition: "opacity 0.25s" }} />
-              <span style={{ display: "block", width: 22, height: 2, background: "#fff", borderRadius: 2, transition: "transform 0.25s", transform: menuOpen ? "translateY(-7px) rotate(-45deg)" : "none" }} />
+              <span style={{ display: "block", width: 22, height: 2, background: "#0F172A", borderRadius: 2, transition: "transform 0.25s, opacity 0.25s", transform: menuOpen ? "translateY(7px) rotate(45deg)" : "none" }} />
+              <span style={{ display: "block", width: 16, height: 2, background: "#0F172A", borderRadius: 2, opacity: menuOpen ? 0 : 1, transition: "opacity 0.25s" }} />
+              <span style={{ display: "block", width: 22, height: 2, background: "#0F172A", borderRadius: 2, transition: "transform 0.25s", transform: menuOpen ? "translateY(-7px) rotate(-45deg)" : "none" }} />
             </button>
           )}
         </div>
@@ -284,15 +284,15 @@ export default function Landing() {
       {isMobile && menuOpen && (
         <div style={{
           position: "fixed", top: 68, left: 0, right: 0, zIndex: 99,
-          background: "rgba(15,23,42,0.98)", backdropFilter: "blur(12px)",
+          background: "#FFFFFF", backdropFilter: "blur(12px)",
           padding: "1.75rem clamp(1.25rem, 6vw, 4rem) 2rem",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          borderBottom: "1px solid rgba(15,23,42,0.08)",
           display: "flex", flexDirection: "column", gap: "1.5rem",
         }}>
-          <a href="#features" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>Features</a>
-          <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>How it works</a>
-          <a href="#communities" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>Communities</a>
-          <a href="#faq" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.85)", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
+          <a href="#features" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>Features</a>
+          <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>How it works</a>
+          <a href="#communities" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>Communities</a>
+          <a href="#faq" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
           <Link to="/signup" onClick={() => setMenuOpen(false)} style={{
             ...signupStyle, padding: "0.9rem 1.5rem", fontSize: "0.95rem",
             textAlign: "center", justifyContent: "center", marginTop: "0.25rem",
@@ -306,81 +306,71 @@ export default function Landing() {
         alignItems: "center", justifyContent: "center", textAlign: "center",
         padding: "9rem clamp(1.25rem, 6vw, 5rem) 6rem",
         position: "relative", overflow: "hidden",
-        background: `
-          radial-gradient(ellipse 80% 60% at 50% -10%, ${C.primaryMid}30 0%, transparent 65%),
-          radial-gradient(ellipse 50% 40% at 85% 90%, ${C.gold}15 0%, transparent 55%),
-          radial-gradient(ellipse 40% 30% at 10% 80%, ${C.teal}12 0%, transparent 50%),
-          linear-gradient(175deg, #0F172A 0%, #1E293B 45%, #0F172A 100%)
-        `,
+        background: "#FFFFFF",
       }}>
-        <div style={{ position: "absolute", inset: 0, opacity: 0.035, zIndex: 0, backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: "200px 200px" }} />
-        <div style={{ position: "absolute", top: "20%", left: "8%", width: 300, height: 300, borderRadius: "50%", background: `radial-gradient(circle, ${C.purple}30, transparent 70%)`, filter: "blur(40px)", animation: "float1 8s ease-in-out infinite", zIndex: 0 }} />
-        <div style={{ position: "absolute", bottom: "15%", right: "6%", width: 250, height: 250, borderRadius: "50%", background: `radial-gradient(circle, ${C.gold}20, transparent 70%)`, filter: "blur(40px)", animation: "float2 10s ease-in-out infinite", zIndex: 0 }} />
-        <div style={{ position: "absolute", top: "50%", right: "15%", width: 150, height: 150, borderRadius: "50%", background: `radial-gradient(circle, ${C.teal}20, transparent 70%)`, filter: "blur(30px)", animation: "float3 12s ease-in-out infinite", zIndex: 0 }} />
+        {/* Subtle blue gradient top */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 360, background: "linear-gradient(180deg, rgba(0,111,255,0.06) 0%, transparent 100%)", zIndex: 0 }} />
 
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 760 }}>
-          {/* Definition card */}
-          <div style={{ ...anim(0.05), display: "inline-block", marginBottom: "2.25rem", textAlign: "left" }}>
-            <div style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderLeft: `3px solid ${C.primary}`,
-              borderRadius: 10,
-              padding: "0.75rem 1.25rem",
-              backdropFilter: "blur(8px)",
-            }}>
-              <span style={{ fontFamily: "'Noto Serif', Georgia, serif", fontStyle: "italic", fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "rgba(255,255,255,0.95)", fontWeight: 600, letterSpacing: "-0.2px" }}>
-                part·ner
-              </span>
-              <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", margin: "0 0.4rem", fontFamily: "Georgia, serif" }}>
-                /ˈpärdnə/
-              </span>
-              <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", fontStyle: "italic", marginRight: "0.5rem" }}>noun</span>
-              <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
-                — a savings circle. the oldest form of community banking.
-              </span>
-            </div>
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 680 }}>
+
+          {/* Logo */}
+          <div style={{ ...anim(0.0), display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+            <PardnaLogo size={72} />
           </div>
 
-          <div style={{ ...anim(0.1), display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, background: "rgba(201,150,58,0.12)", border: "1px solid rgba(201,150,58,0.25)", padding: "0.4rem 1.1rem", borderRadius: 100, marginBottom: "2rem" }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.gold, display: "inline-block" }} />
+          {/* Phonetic definition — right under the logo */}
+          <div style={{ ...anim(0.08), marginBottom: "2.5rem" }}>
+            <p style={{ fontSize: "clamp(0.85rem, 2vw, 1rem)", color: "#64748B", fontFamily: "Georgia, serif", margin: 0, lineHeight: 1.6 }}>
+              <span style={{ fontStyle: "italic", fontWeight: 600, color: "#0F172A" }}>part·ner</span>
+              {" "}
+              <span style={{ color: "#94A3B8" }}>/ˈpärdnə/</span>
+              {" "}
+              <span style={{ color: "#94A3B8", fontStyle: "italic" }}>noun</span>
+              {" — "}
+              <span style={{ color: "#475569" }}>a savings circle. the oldest form of community banking.</span>
+            </p>
+          </div>
+
+          {/* Badge */}
+          <div style={{ ...anim(0.15), display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: C.teal, background: C.tealLight, border: `1px solid ${C.teal}30`, padding: "0.4rem 1.1rem", borderRadius: 100, marginBottom: "1.75rem" }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.teal, display: "inline-block" }} />
             Now in early access
           </div>
 
-          <h1 style={{ ...anim(0.2), fontSize: "clamp(2.6rem, 7vw, 5.2rem)", fontWeight: 800, letterSpacing: "-2px", lineHeight: 1.05, color: "#fff", marginBottom: "1.5rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
+          <h1 style={{ ...anim(0.22), fontSize: "clamp(2.4rem, 6vw, 4.5rem)", fontWeight: 800, letterSpacing: "-2px", lineHeight: 1.08, color: "#0F172A", marginBottom: "1.25rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
             Before the banks existed,{" "}
-            <span style={{ background: `linear-gradient(135deg, ${C.gold}, ${C.goldBright}, ${C.teal})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            <span style={{ color: C.primary }}>
               your community
             </span>{" "}
             already knew how.
           </h1>
 
-          <p style={{ ...anim(0.35), fontSize: "clamp(1rem, 2.2vw, 1.2rem)", color: "rgba(255,255,255,0.65)", lineHeight: 1.75, maxWidth: 520, margin: "0 auto 2.75rem" }}>
+          <p style={{ ...anim(0.35), fontSize: "clamp(1rem, 2vw, 1.15rem)", color: "#475569", lineHeight: 1.75, maxWidth: 500, margin: "0 auto 2.5rem" }}>
             The savings circle your community already runs — now with infrastructure. Security, accountability, and the financial credibility you deserve.
           </p>
 
-          <div style={{ ...anim(0.5), display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", justifyContent: "center", marginBottom: "3.5rem" }}>
+          <div style={{ ...anim(0.48), display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", justifyContent: "center", marginBottom: "3rem" }}>
             <Link to="/signup" style={{ ...signupStyle, padding: "0.95rem 2.25rem", fontSize: "1rem" }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 14px 40px rgba(201,150,58,0.6)`; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(201,150,58,0.4)"; }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(0,111,255,0.45)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,111,255,0.3)"; }}
             >Start your circle →</Link>
-            <a href="#how-it-works" style={{ padding: "0.95rem 2.25rem", background: "rgba(255,255,255,0.08)", color: "#fff", borderRadius: 100, fontSize: "1rem", fontWeight: 600, textDecoration: "none", border: "1px solid rgba(255,255,255,0.15)", transition: "background 0.2s" }}
-              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.14)"}
-              onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+            <a href="#how-it-works" style={{ padding: "0.95rem 2.25rem", background: "#F1F5F9", color: "#0F172A", borderRadius: 100, fontSize: "1rem", fontWeight: 600, textDecoration: "none", border: "1px solid #E2E8F0", transition: "background 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.background = "#E2E8F0"}
+              onMouseLeave={e => e.currentTarget.style.background = "#F1F5F9"}
             >See how it works</a>
           </div>
 
           <div style={{ ...anim(0.65), display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <div style={{ display: "flex" }}>
               {MEMBERS.map((m, i) => (
-                <div key={m.i} style={{ width: 30, height: 30, borderRadius: "50%", background: m.c, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", fontWeight: 700, color: "#fff", border: "2px solid rgba(255,255,255,0.2)", marginLeft: i > 0 ? -8 : 0 }}>{m.i}</div>
+                <div key={m.i} style={{ width: 30, height: 30, borderRadius: "50%", background: m.c, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", fontWeight: 700, color: "#fff", border: "2px solid #FFFFFF", marginLeft: i > 0 ? -8 : 0 }}>{m.i}</div>
               ))}
             </div>
-            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.78rem" }}>
-              Join a growing community of members saving together on <strong style={{ color: "rgba(255,255,255,0.85)" }}>Pardna</strong>
+            <span style={{ color: "#64748B", fontSize: "0.78rem" }}>
+              Join a growing community of members saving together on <strong style={{ color: "#0F172A" }}>Pardna</strong>
             </span>
             <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.6rem" }}>●</span>
-            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.78rem" }}>🔐 FDIC-protected escrow</span>
+            <span style={{ color: "#64748B", fontSize: "0.78rem" }}>🔐 FDIC-protected escrow</span>
           </div>
         </div>
       </section>
@@ -398,7 +388,7 @@ export default function Landing() {
       </div>
 
       {/* COMMUNITIES */}
-      <section id="communities" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: C.bg }}>
+      <section id="communities" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#FFFFFF" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Cultural roots</span>
@@ -458,7 +448,7 @@ export default function Landing() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how-it-works" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: C.bg }}>
+      <section id="how-it-works" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#FFFFFF" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
             <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Getting started</span>
