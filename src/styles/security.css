@@ -7,7 +7,7 @@
 .sec-page { font-family: var(--font-body); color: var(--text); display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; }
 
 .sec-header { margin-bottom: 0.25rem; }
-.sec-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.35rem; }
+.sec-eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary, #006FFF); margin-bottom: 0.35rem; }
 .sec-title   { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; letter-spacing: -0.5px; line-height: 1.1; }
 
 .sec-card {
@@ -18,13 +18,13 @@
 @keyframes cardIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
 .sec-card-head  { display: flex; align-items: flex-start; gap: 1rem; }
-.sec-card-icon  { font-size: 1.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+.sec-card-icon  { width: 36px; height: 36px; border-radius: 8px; background: rgba(0,111,255,0.1); color: #006FFF; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .sec-card-head h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.2rem; letter-spacing: -0.2px; }
 .sec-card-head p  { font-size: 0.85rem; color: var(--text-mid); }
 
 .sec-alert { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.84rem; }
 .sec-alert--error   { background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626; }
-.sec-alert--success { background: var(--primary-light); border: 1px solid rgba(107,63,160,0.2); color: var(--primary); }
+.sec-alert--success { background: var(--primary-light); border: 1px solid rgba(107,63,160,0.2); color: var(--primary, #006FFF); }
 
 .sec-fields { display: flex; flex-direction: column; gap: 1rem; }
 .sec-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
@@ -33,19 +33,19 @@
 .sec-input {
   width: 100%; background: var(--bg-input); border: 1.5px solid var(--border); border-radius: 10px;
   padding: 0.75rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--text);
-  outline: none; transition: border-color 0.2s, box-shadow 0.2s; caret-color: var(--primary);
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s; caret-color: var(--primary, #006FFF);
 }
 .sec-input::placeholder { color: var(--text-dim); }
-.sec-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(107,63,160,0.1); background: var(--bg-card); }
+.sec-input:focus { border-color: var(--primary, #006FFF); box-shadow: 0 0 0 3px rgba(0,111,255,0.1); background: var(--bg-card); }
 
 .sec-btn {
   align-self: flex-start; display: inline-flex; align-items: center; justify-content: center;
-  padding: 0.7rem 1.5rem; background: var(--primary); color: #fff;
+  padding: 0.7rem 1.5rem; background: var(--primary, #006FFF); color: #fff;
   border: none; border-radius: var(--radius-pill); font-family: var(--font-body);
   font-size: 0.875rem; font-weight: 600; cursor: pointer;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
-.sec-btn:hover:not(:disabled) { background: var(--primary-dim); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(107,63,160,0.25); }
+.sec-btn:hover:not(:disabled) { background: var(--primary-dim); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,111,255,0.25); }
 .sec-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .sec-btn--gold {
   background: linear-gradient(135deg, var(--gold), #E8B84B); color: #fff;
@@ -77,7 +77,7 @@
 .session-info   { flex: 1; }
 .session-name   { font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 0.1rem; }
 .session-meta   { font-size: 0.72rem; color: var(--text-dim); }
-.session-badge  { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); background: var(--primary-light); border: 1px solid rgba(107,63,160,0.2); padding: 0.2rem 0.65rem; border-radius: var(--radius-pill); }
+.session-badge  { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary, #006FFF); background: var(--primary-light); border: 1px solid rgba(107,63,160,0.2); padding: 0.2rem 0.65rem; border-radius: var(--radius-pill); }
 
 .privacy-list { display: flex; flex-direction: column; }
 .privacy-row  { display: flex; align-items: center; gap: 1.25rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
@@ -87,14 +87,14 @@
 .privacy-desc  { font-size: 0.75rem; color: var(--text-mid); line-height: 1.5; }
 
 .toggle { width: 44px; height: 24px; border-radius: 12px; background: #E5E7EB; border: 1.5px solid #D1D5DB; position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.25s, border-color 0.25s; padding: 0; }
-.toggle--on { background: var(--toggle-color, var(--primary)); border-color: var(--toggle-color, var(--primary)); }
+.toggle--on { background: var(--toggle-color, var(--primary, #006FFF)); border-color: var(--toggle-color, var(--primary, #006FFF)); }
 .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: transform 0.25s var(--ease-spring); }
 .toggle--on .toggle-thumb { transform: translateX(20px); }
 
 .escrow-banner { background: linear-gradient(135deg, rgba(107,63,160,0.05), rgba(201,150,58,0.03)); border: 1px solid rgba(107,63,160,0.18); border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; gap: 1.75rem; }
 .escrow-banner-head { display: flex; gap: 1.25rem; align-items: flex-start; }
-.escrow-head-icon   { font-size: 1.75rem; color: var(--primary); flex-shrink: 0; margin-top: 0.15rem; }
-.escrow-eyebrow     { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary); margin-bottom: 0.4rem; }
+.escrow-head-icon   { font-size: 1.75rem; color: var(--primary, #006FFF); flex-shrink: 0; margin-top: 0.15rem; }
+.escrow-eyebrow     { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--primary, #006FFF); margin-bottom: 0.4rem; }
 .escrow-banner-head h2 { font-size: 1.3rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; letter-spacing: -0.3px; }
 .escrow-sub { font-size: 0.875rem; color: var(--text-mid); line-height: 1.7; max-width: 560px; }
 

@@ -1,0 +1,44 @@
+
+[functions.plaid-link-token]
+enabled = true
+verify_jwt = true
+import_map = "./functions/plaid-link-token/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/plaid-link-token/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/plaid-link-token/*.html" ]
+
+[functions.plaid-exchange-token]
+enabled = true
+verify_jwt = true
+import_map = "./functions/plaid-exchange-token/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/plaid-exchange-token/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/plaid-exchange-token/*.html" ]
+
+[functions.stripe-connect-onboard]
+enabled = true
+verify_jwt = true
+import_map = "./functions/stripe-connect-onboard/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/stripe-connect-onboard/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/stripe-connect-onboard/*.html" ]
+
+[functions.stripe-charge-contribution]
+enabled = true
+verify_jwt = true
+import_map = "./functions/stripe-charge-contribution/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/stripe-charge-contribution/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/stripe-charge-contribution/*.html" ]

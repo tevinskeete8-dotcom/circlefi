@@ -4,10 +4,10 @@ import PardnaLogo from "../components/PardnaLogo";
 
 // ── Design tokens ─────────────────────────────────────────────────
 const C = {
-  primary:      "#1D4ED8",
-  primaryMid:   "#3B82F6",
-  primaryDim:   "#1E40AF",
-  primaryLight: "#EFF6FF",
+  primary:      "#006FFF",
+  primaryMid:   "#006FFF",
+  primaryDim:   "#0050CC",
+  primaryLight: "#E6F0FF",
   primaryDark:  "#0F172A",
   gold:         "#D97706",
   goldBright:   "#F59E0B",
@@ -21,7 +21,7 @@ const C = {
   dim:          "#94A3B8",
   border:       "rgba(15,23,42,0.08)",
   // aliases for backward compat
-  purple:       "#1D4ED8",
+  purple:       "#006FFF",
   purpleMid:    "#3B82F6",
   purpleDim:    "#1E40AF",
   purpleLight:  "#EFF6FF",
@@ -319,6 +319,29 @@ export default function Landing() {
         <div style={{ position: "absolute", top: "50%", right: "15%", width: 150, height: 150, borderRadius: "50%", background: `radial-gradient(circle, ${C.teal}20, transparent 70%)`, filter: "blur(30px)", animation: "float3 12s ease-in-out infinite", zIndex: 0 }} />
 
         <div style={{ position: "relative", zIndex: 1, maxWidth: 760 }}>
+          {/* Definition card */}
+          <div style={{ ...anim(0.05), display: "inline-block", marginBottom: "2.25rem", textAlign: "left" }}>
+            <div style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderLeft: `3px solid ${C.primary}`,
+              borderRadius: 10,
+              padding: "0.75rem 1.25rem",
+              backdropFilter: "blur(8px)",
+            }}>
+              <span style={{ fontFamily: "'Noto Serif', Georgia, serif", fontStyle: "italic", fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "rgba(255,255,255,0.95)", fontWeight: 600, letterSpacing: "-0.2px" }}>
+                part·ner
+              </span>
+              <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", margin: "0 0.4rem", fontFamily: "Georgia, serif" }}>
+                /ˈpärdnə/
+              </span>
+              <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)", fontStyle: "italic", marginRight: "0.5rem" }}>noun</span>
+              <span style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
+                — a savings circle. the oldest form of community banking.
+              </span>
+            </div>
+          </div>
+
           <div style={{ ...anim(0.1), display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, background: "rgba(201,150,58,0.12)", border: "1px solid rgba(201,150,58,0.25)", padding: "0.4rem 1.1rem", borderRadius: 100, marginBottom: "2rem" }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.gold, display: "inline-block" }} />
             Now in early access

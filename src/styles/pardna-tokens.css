@@ -1,0 +1,109 @@
+/* ─────────────────────────────────────────────
+   Pardna Design Tokens — v2
+   Electric Blue (#006FFF) refresh
+   Import this file FIRST in index.css / main.css
+───────────────────────────────────────────── */
+
+:root {
+  /* Brand */
+  --primary:        #006FFF;
+  --primary-hover:  #0060E6;
+  --primary-dim:    rgba(0, 111, 255, 0.12);
+  --primary-glow:   rgba(0, 111, 255, 0.25);
+
+  /* Neutrals */
+  --bg:             #F8FAFC;
+  --bg-card:        #FFFFFF;
+  --bg-input:       #F1F5F9;
+  --border:         #E2E8F0;
+  --border-strong:  #CBD5E1;
+
+  /* Text */
+  --text:           #0F172A;
+  --text-mid:       #475569;
+  --text-muted:     #94A3B8;
+
+  /* Status */
+  --success:        #10B981;
+  --success-dim:    rgba(16, 185, 129, 0.1);
+  --warning:        #F59E0B;
+  --warning-dim:    rgba(245, 158, 11, 0.1);
+  --danger:         #EF4444;
+  --danger-dim:     rgba(239, 68, 68, 0.1);
+
+  /* Sidebar */
+  --sidebar-bg:     #0F172A;
+  --sidebar-text:   rgba(255,255,255,0.6);
+  --sidebar-active: #FFFFFF;
+  --sidebar-w:      220px;
+
+  /* Topbar */
+  --topbar-h:       56px;
+  --topbar-bg:      #FFFFFF;
+
+  /* Elevation */
+  --shadow-sm:      0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md:      0 4px 12px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+  --shadow-lg:      0 12px 32px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.06);
+
+  /* Radius */
+  --radius-sm:      8px;
+  --radius-md:      12px;
+  --radius-lg:      16px;
+  --radius-xl:      20px;
+
+  /* Motion */
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast:  150ms;
+  --duration-base:  220ms;
+  --duration-slow:  350ms;
+}
+
+/* Dark mode sidebar retains dark bg, primary updates */
+.sidebar {
+  --sidebar-accent: #006FFF;
+}
+
+/* Global primary color patch — catches any hardcoded #1D4ED8 */
+.sec-btn,
+.login-btn,
+.ob-btn,
+.cta-btn {
+  background: var(--primary) !important;
+}
+
+.sec-btn:hover,
+.login-btn:hover,
+.ob-btn:hover,
+.cta-btn:hover {
+  background: var(--primary-hover) !important;
+}
+
+.sec-card-icon,
+.topbar-avatar {
+  color: var(--primary);
+  background: var(--primary-dim);
+}
+
+a { color: var(--primary); }
+a:hover { color: var(--primary-hover); }
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-dim) !important;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
