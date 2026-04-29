@@ -414,27 +414,27 @@ export default function Landing() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#F8FAFC", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,111,255,0.06), transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "-10%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(245,158,11,0.06), transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }} />
+      <section id="features" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#006FFF", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", bottom: "-10%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.06), transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }} />
         <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.gold, display: "block", marginBottom: "0.75rem" }}>Why Pardna</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: "#0F172A", marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-              Everything your circle<br /><em style={{ color: "#006FFF" }}>needs to thrive.</em>
+            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", display: "block", marginBottom: "0.75rem" }}>Why Pardna</span>
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: "#FFFFFF", marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
+              Everything your circle<br /><em style={{ color: "#F59E0B" }}>needs to thrive.</em>
             </h2>
           </Reveal>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem" }}>
             {FEATURES.map((f, i) => (
               <Reveal key={f.title} delay={(i % 3) * 0.1}>
-                <div style={{ background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 20, padding: "1.75rem", display: "flex", gap: "1.25rem", alignItems: "flex-start", transition: "background 0.2s, transform 0.2s", cursor: "default" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "#F8FAFC"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,111,255,0.1)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "#FFFFFF"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
+                <div style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 20, padding: "1.75rem", display: "flex", gap: "1.25rem", alignItems: "flex-start", transition: "background 0.2s, transform 0.2s", cursor: "default" }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.18)"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
                 >
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0 }}>{f.icon}</div>
                   <div>
-                    <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0F172A", marginBottom: "0.4rem" }}>{f.title}</div>
-                    <div style={{ fontSize: "0.85rem", color: "#64748B", lineHeight: 1.7 }}>{f.body}</div>
+                    <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "0.4rem" }}>{f.title}</div>
+                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.7 }}>{f.body}</div>
                   </div>
                 </div>
               </Reveal>
@@ -444,10 +444,10 @@ export default function Landing() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how-it-works" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#006FFF" }}>
+      <section id="how-it-works" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#FFFFFF" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", display: "block", marginBottom: "0.75rem" }}>Getting started</span>
+            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Getting started</span>
             <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
               Up and running<br /><em style={{ color: C.purple }}>in minutes.</em>
             </h2>
@@ -455,14 +455,14 @@ export default function Landing() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "1.5rem", alignItems: "stretch" }}>
             {STEPS.map((s, i) => (
               <Reveal key={s.n} delay={i * 0.15}>
-                <div style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(15,23,42,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s", height: "100%" }}
+                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(15,23,42,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s", height: "100%" }}
                   onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(15,23,42,0.15)"; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(15,23,42,0.06)"; }}
                 >
                   <div style={{ position: "absolute", top: -10, right: 16, fontSize: "5rem", fontWeight: 900, color: "rgba(0,0,0,0.15)", lineHeight: 1, fontFamily: "'Noto Serif', Georgia, serif", userSelect: "none" }}>{s.n}</div>
 
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "0.5rem" }}>{s.title}</div>
-                  <div style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.7 }}>{s.body}</div>
+                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: C.text, marginBottom: "0.5rem" }}>{s.title}</div>
+                  <div style={{ fontSize: "0.875rem", color: C.mid, lineHeight: 1.7 }}>{s.body}</div>
                 </div>
               </Reveal>
             ))}
