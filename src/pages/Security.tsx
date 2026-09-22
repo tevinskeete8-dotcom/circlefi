@@ -1,226 +1,67 @@
-import { useState } from "react";
-import { supabase } from "../lib/supabase";
-import "../styles/security.css";
+const TEAL = "#5EEAD4";
+const INK = "#0B0B0B";
+const WHITE = "#FFFFFF";
+const MUTED = "#6F6F6F";
+const LINE = "rgba(11,11,11,0.08)";
 
+const pillars = [
+  {
+    t: "FDIC-protected escrow",
+    d: "Pooled circle funds sit in custodial escrow accounts — not with Pardna, and not with any one member. Coverage follows applicable FDIC limits at the partner bank.",
+  },
+  {
+    t: "Stripe infrastructure",
+    d: "Payments move through Stripe Treasury / Unit. Pardna is a payments and escrow platform, not a bank and not a deposit-taking institution.",
+  },
+  {
+    t: "Identity checks",
+    d: "Members are verified before they join a circle. We follow KYC and AML requirements for the product as it operates today.",
+  },
+  {
+    t: "Scheduled payouts",
+    d: "The pot releases on the calendar the group agreed to. An organizer cannot hold or redirect a scheduled payout.",
+  },
+];
 
-
-// ── KYC ──────────────────────────────────────────────────────────────
-function KYCSection() {
-  return (
-    <div className="sec-card">
-      <div className="sec-card-head">
-        <div className="sec-card-icon" style={{ color: "#D97706" }}>◈</div>
-        <div>
-          <h3>Identity Verification (KYC)</h3>
-          <p>Verify your identity to unlock full circle features and credit reporting.</p>
-        </div>
-      </div>
-      <div className="kyc-status">
-        <div className="kyc-dot" />
-        <div>
-          <p className="kyc-status-label">Verification Pending</p>
-          <p className="kyc-status-sub">Required to participate in circles above $500/month.</p>
-        </div>
-        <span className="kyc-badge">Not Started</span>
-      </div>
-      <div className="kyc-steps">
-        {[
-          { n: "01", title: "Government ID",       desc: "Passport, driver's license, or state ID." },
-          { n: "02", title: "Selfie Check",         desc: "A quick photo to match your ID." },
-          { n: "03", title: "Address Confirmation", desc: "A recent utility bill or bank statement." },
-        ].map((s) => (
-          <div className="kyc-step" key={s.n}>
-            <div className="kyc-step-num">{s.n}</div>
-            <div>
-              <p className="kyc-step-title">{s.title}</p>
-              <p className="kyc-step-desc">{s.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="kyc-notice">
-        🔐 Pardna follows all KYC/AML requirements. Your data is encrypted and never sold.
-      </div>
-      <button className="sec-btn sec-btn--gold" disabled>
-        Start Verification — Coming Soon
-      </button>
-    </div>
-  );
-}
-
-// ── Sessions ─────────────────────────────────────────────────────────
-function SessionsSection() {
-  const [loading, setLoading] = useState(false);
-  const [done, setDone]       = useState(false);
-
-  const handleSignOutAll = async () => {
-    setLoading(true);
-    await supabase.auth.signOut({ scope: "global" });
-    setDone(true);
-    setLoading(false);
-  };
-
-  return (
-    <div className="sec-card">
-      <div className="sec-card-head">
-        <div className="sec-card-icon" style={{ color: "#7B5EA7" }}>◉</div>
-        <div>
-          <h3>Connected Sessions</h3>
-          <p>Manage where you're logged in. Sign out all devices if you suspect unauthorized access.</p>
-        </div>
-      </div>
-      {done && <div className="sec-alert sec-alert--success">✓ All other sessions have been signed out.</div>}
-      <div className="session-list">
-        <div className="session-row">
-          <div className="session-device">💻</div>
-          <div className="session-info">
-            <p className="session-name">Current session</p>
-            <p className="session-meta">Active now · This device</p>
-          </div>
-          <span className="session-badge">Active</span>
-        </div>
-      </div>
-      <button className="sec-btn sec-btn--danger" onClick={handleSignOutAll} disabled={loading || done}>
-        {loading ? <span className="spinner" /> : "Sign Out All Devices"}
-      </button>
-    </div>
-  );
-}
-
-// ── Privacy ───────────────────────────────────────────────────────────
-function PrivacySection() {
-  const [prefs, setPrefs] = useState({
-    creditReporting: true,
-    activityVisible: true,
-    marketingEmails: false,
-  });
-  const toggle = (key: keyof typeof prefs) =>
-    setPrefs((p) => ({ ...p, [key]: !p[key] }));
-
-  const items: { key: keyof typeof prefs; title: string; desc: string; color: string }[] = [
-    { key: "creditReporting", color: "#1D4ED8", title: "Credit Reporting",        desc: "Share your contribution history with credit bureaus to build your financial profile." },
-    { key: "activityVisible", color: "#D97706", title: "Circle Activity Visible", desc: "Allow other circle members to see your payment status in shared circles." },
-    { key: "marketingEmails", color: "#7B5EA7", title: "Product Updates",         desc: "Receive emails about new Pardna features and community finance insights." },
-  ];
-
-  return (
-    <div className="sec-card">
-      <div className="sec-card-head">
-        <div className="sec-card-icon" style={{ color: "#3D7EAA" }}>⬡</div>
-        <div>
-          <h3>Privacy & Data</h3>
-          <p>Control how your data is used across the Pardna platform.</p>
-        </div>
-      </div>
-      <div className="privacy-list">
-        {items.map((item) => (
-          <div className="privacy-row" key={item.key}>
-            <div className="privacy-info">
-              <p className="privacy-title">{item.title}</p>
-              <p className="privacy-desc">{item.desc}</p>
-            </div>
-            <button
-              className={`toggle ${prefs[item.key] ? "toggle--on" : ""}`}
-              onClick={() => toggle(item.key)}
-              style={{ "--toggle-color": item.color } as React.CSSProperties}
-              aria-label={`Toggle ${item.title}`}
-            >
-              <span className="toggle-thumb" />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── Escrow Protection Banner ──────────────────────────────────────────
-function EscrowBanner() {
-  const pillars = [
-    {
-      icon: "🏦", color: "#1D4ED8",
-      title: "FDIC-Protected Escrow",
-      desc:  "All pooled circle funds are held in custodial escrow accounts — not by Pardna or any individual member. Your money is FDIC-insured up to applicable limits.",
-    },
-    {
-      icon: "⚡", color: "#D97706",
-      title: "Stripe Treasury Infrastructure",
-      desc:  "Payments are processed through Stripe Treasury and Unit — regulated payments infrastructure. Pardna operates as a payments + escrow platform, not a deposit-taking institution.",
-    },
-    {
-      icon: "🔐", color: "#7B5EA7",
-      title: "KYC / AML Compliant",
-      desc:  "Every member is verified before joining a circle. We follow all Know Your Customer and Anti-Money Laundering requirements without exception.",
-    },
-    {
-      icon: "🔄", color: "#3D7EAA",
-      title: "Automated Payout Rotation",
-      desc:  "Payouts are released automatically by the escrow engine on schedule — no organizer can access or withhold the pool. The rotation is enforced by the platform, not by trust alone.",
-    },
-  ];
-
-  return (
-    <div className="escrow-banner">
-      <div className="escrow-banner-head">
-        <div className="escrow-head-icon">⬡</div>
-        <div>
-          <p className="escrow-eyebrow">Circle Escrow Protection</p>
-          <h2>How we protect your circle funds</h2>
-          <p className="escrow-sub">
-            Pardna is structured as payments + escrow infrastructure — not a bank.
-            This gives us a defensible regulatory position and means your funds are
-            protected at every step of the rotation cycle.
-          </p>
-        </div>
-      </div>
-      <div className="escrow-pillars">
-        {pillars.map((p) => (
-          <div className="escrow-pillar" key={p.title}>
-            <div className="escrow-pillar-icon">{p.icon}</div>
-            <h4 style={{ color: p.color }}>{p.title}</h4>
-            <p>{p.desc}</p>
-          </div>
-        ))}
-      </div>
-      <div className="escrow-footnote">
-        <span>🛡</span>
-        <span>
-          Pardna holds no deposits and is not a bank. Funds are held in escrow by our
-          regulated infrastructure partners until scheduled disbursement. Float yield
-          earned on held balances is disclosed in our fee schedule.
-        </span>
-      </div>
-    </div>
-  );
-}
-
-// ── Main ──────────────────────────────────────────────────────────────
 export default function Security() {
   return (
-    <div className="sec-page">
-      <div className="sec-header">
-        <div>
-          <p className="sec-eyebrow">Account & platform</p>
-          <h1 className="sec-title">Your <span className="sec-title-accent">Security</span></h1>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: INK }}>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 6 }}>
+          Account and platform
         </div>
+        <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: "-0.035em" }}>
+          Your Security
+        </h1>
       </div>
-      <div className="sec-content">
-        <EscrowBanner />
-        <div className="sec-card">
-          <div className="sec-card-head">
-            <div className="sec-card-icon" style={{ color: "#006FFF" }}>⟡</div>
-            <div>
-              <h3>Change Password</h3>
-              <p>Update your password or display name from your profile.</p>
-            </div>
-          </div>
-          <a href="/app/profile" style={{ display: "inline-block", marginTop: "0.75rem", color: "#006FFF", fontWeight: 600, textDecoration: "none", fontSize: "0.9rem" }}>
-            Go to Profile →
-          </a>
+
+      <div style={{ background: INK, color: "#fff", borderRadius: 24, padding: "28px 26px" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 10 }}>
+          Circle escrow
         </div>
-        <KYCSection />
-        <SessionsSection />
-        <PrivacySection />
+        <h2 style={{ margin: "0 0 10px", fontSize: 26, fontWeight: 800, letterSpacing: "-0.03em", color: TEAL }}>
+          How circle funds are held
+        </h2>
+        <p style={{ margin: "0 0 22px", color: "#A3A3A3", lineHeight: 1.6, maxWidth: 640 }}>
+          Pardna runs payments and escrow. It is not a bank. Funds stay with regulated partners until a payout date hits.
+        </p>
+
+        <div style={{ display: "grid", gap: 10 }}>
+          {pillars.map((p) => (
+            <div key={p.t} style={{ background: "#1A1A1A", borderRadius: 16, padding: "16px 18px" }}>
+              <div style={{ fontWeight: 800, color: TEAL, marginBottom: 6 }}>{p.t}</div>
+              <div style={{ color: "#C8C8C8", fontSize: 14, lineHeight: 1.6 }}>{p.d}</div>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ margin: "18px 0 0", color: "#8A8A8A", fontSize: 13, lineHeight: 1.6 }}>
+          Pardna holds no deposits. Float yield on held balances, if any, is disclosed in the fee schedule.
+        </p>
+      </div>
+
+      <div style={{ marginTop: 14, background: WHITE, border: `1px solid ${LINE}`, borderRadius: 18, padding: 20, color: MUTED, fontSize: 14, lineHeight: 1.6 }}>
+        Bank connections run through Plaid. We do not see your banking password.
       </div>
     </div>
   );

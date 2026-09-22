@@ -1,522 +1,293 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PardnaLogo from "../components/PardnaLogo";
 
-// ── Design tokens ─────────────────────────────────────────────────
-const C = {
-  primary:      "#006FFF",
-  primaryMid:   "#006FFF",
-  primaryDim:   "#0050CC",
-  primaryLight: "#E6F0FF",
-  primaryDark:  "#0F172A",
-  gold:         "#D97706",
-  goldBright:   "#F59E0B",
-  goldLight:    "#FFFBEB",
-  teal:         "#059669",
-  tealLight:    "#ECFDF5",
-  bg:           "#F8FAFC",
-  card:         "#FFFFFF",
-  text:         "#0F172A",
-  mid:          "#475569",
-  dim:          "#94A3B8",
-  border:       "rgba(15,23,42,0.08)",
-  // aliases for backward compat
-  purple:       "#006FFF",
-  purpleMid:    "#3B82F6",
-  purpleDim:    "#1E40AF",
-  purpleLight:  "#EFF6FF",
-  purpleDark:   "#0F172A",
-};
-
-
-
-function useInView(threshold = 0.15): [React.RefObject<HTMLDivElement | null>, boolean] {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setVisible(true); obs.disconnect(); }
-    }, { threshold });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return [ref, visible];
-}
-
-const COMMUNITIES = [
-  { flag: "🇬🇾", name: "Box-hand",     region: "Guyana"      },
-  { flag: "🇹🇹", name: "Sou-Sou",     region: "Trinidad"    },
-  { flag: "🇯🇲", name: "Partner",     region: "Jamaica"     },
-  { flag: "🇬🇭", name: "Susu",        region: "West Africa" },
-  { flag: "🇲🇽", name: "Tanda",       region: "Mexico"      },
-  { flag: "🇵🇭", name: "Paluwagan",   region: "Philippines" },
-  { flag: "🇰🇷", name: "Gye",         region: "Korea"       },
-  { flag: "🇮🇳", name: "Chit Fund",   region: "India"       },
-  { flag: "🇧🇧", name: "Meeting Turn",region: "Barbados"    },
-];
-
-const FEATURES = [
-  { icon: "🔐", bg: C.purpleLight, title: "Bank-grade security",  body: "End-to-end encrypted transactions. Verified member identities. FDIC-protected escrow. Your community's money, safe." },
-  { icon: "📈", bg: C.goldLight,   title: "Build real credit",    body: "Your circle contributions are reported as positive financial behaviour — building the credit profile banks have denied you." },
-  { icon: "🤝", bg: C.tealLight,   title: "Trusted circles only", body: "Invite-only groups with full activity transparency. Know exactly who you're saving with, every round." },
-  { icon: "⚡", bg: C.purpleLight, title: "Instant payouts",      body: "When your turn comes, funds land immediately. No waiting, no cheques, no bank bureaucracy." },
-  { icon: "🔄", bg: C.goldLight,   title: "Flexible formats",     body: "Rotating, goal-based, or emergency circles. Configure the structure your community already knows." },
-  { icon: "📊", bg: C.tealLight,   title: "Automated tracking",   body: "Smart reminders, live contribution logs, progress dashboards. The admin your organiser used to carry alone." },
-];
-
-const STEPS = [
-  { n: "01", icon: "1", title: "Start your circle",    body: "Set the amount, frequency, and size. Invite people you trust. Takes five minutes." },
-  { n: "02", icon: "2", title: "Everyone contributes", body: "Members pay each round on schedule. Automated reminders handle the awkward follow-ups." },
-  { n: "03", icon: "3", title: "Receive your payout",  body: "When your position comes up, the full pool transfers instantly to your account." },
-];
-
-const STATS = [
-  { val: "$1T+",  label: "Estimated global informal savings annually" },
-  { val: "1.4B",  label: "Adults underserved by formal banking"      },
-  { val: "Early\naccess", label: "Now open — join the first circles"  },
-];
-
-const MEMBERS = [
-  { i: "KA", c: "#1D4ED8" }, { i: "MR", c: "#D97706" },
-  { i: "JT", c: "#059669" }, { i: "SB", c: "#3B82F6" },
-  { i: "OD", c: "#1E40AF" },
-];
-
-function Reveal({ children, delay = 0, style = {} }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
-  const [ref, visible] = useInView();
-  return (
-    <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(28px)", transition: `opacity 0.6s ease ${delay}s, transform 0.6s ease ${delay}s`, ...style }}>
-      {children}
-    </div>
-  );
-}
-
-const signupStyle: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "0.5rem",
-  background: "#006FFF",
-  color: "#FFFFFF", borderRadius: 100, fontWeight: 700,
-  textDecoration: "none", cursor: "pointer",
-  boxShadow: "0 8px 32px rgba(0,111,255,0.3)",
-  transition: "transform 0.2s, box-shadow 0.2s",
-};
-
-const FAQS = [
-  {
-    q: "Will I owe taxes on my payout?",
-    a: "In a standard savings circle, your payout is not taxable income. You're receiving back the money your group pooled together — there's no profit, no interest, and no gain. You put in $500/month for 10 months and receive $5,000 back. The IRS does not tax the return of your own contributions. If you have a specific tax situation, we always recommend consulting a tax professional."
-  },
-  {
-    q: "What happens if someone doesn't pay?",
-    a: "Every member is identity-verified before joining a circle. Contributions are tied to a verified bank account, so payments are pulled automatically on the scheduled date — no relying on someone to remember or follow through. If a payment fails, the organizer is notified immediately and the circle has a grace period to resolve it before the next payout is affected."
-  },
-  {
-    q: "Is my bank account information safe?",
-    a: "Yes. Pardna uses Plaid, the same technology used by major banks and apps like Venmo and Robinhood, to securely connect your bank account. We never see or store your banking credentials. Your connection is encrypted and you can revoke it at any time."
-  },
-  {
-    q: "Who holds the money in the circle?",
-    a: "Circle funds are held in FDIC-insured custodial accounts — not by Pardna, and not by any individual member. This means your money is protected up to $250,000 and no one person can run off with the pot. Funds are only released when it's your turn, based on the rotation your group agreed to."
-  },
-  {
-    q: "Can I trust the other people in my circle?",
-    a: "You control who joins your circle. Every invite is personal — you generate a unique link and share it only with people you trust. Members are identity-verified before they can join, and every contribution is tracked transparently so everyone can see the full history at any time."
-  },
-  {
-    q: "What if I need to leave the circle early?",
-    a: "We recommend only joining a circle you're confident you can complete — just like the traditional practice. That said, life happens. Circles can handle early exits based on rules the organizer sets up, and your organizer can work with you to find a resolution. We're building formal exit and replacement mechanics to make this smoother."
-  },
-  {
-    q: "Does using Pardna affect my credit score?",
-    a: "Joining a circle does not affect your credit score. We're working on building a reputation system that lets you carry your on-time contribution history as a financial credential — something you can use to demonstrate creditworthiness even if you've never had a loan. That feature is coming soon."
-  },
-  {
-    q: "Why would I use Pardna instead of just running it informally?",
-    a: "The informal version works when everyone shows up. Pardna adds the infrastructure that removes the awkward conversations — automated contributions, transparent tracking, verified identities, and protected funds. You keep the community and the trust. We handle the follow-ups."
-  },
-];
-
-function FAQ({ isMobile, C }: { isMobile: boolean; C: Record<string, string> }) {
-  const [open, setOpen] = useState<number | null>(null);
-
-  return (
-    <section id="faq" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#FFFFFF" }}>
-      <div style={{ maxWidth: 760, margin: "0 auto" }}>
-        <Reveal>
-          <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Common questions</span>
-          <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "0.75rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-            Honest answers<br />
-            <em style={{ color: C.purple }}>to real concerns.</em>
-          </h2>
-          <p style={{ fontSize: "1rem", color: C.mid, lineHeight: 1.7, marginBottom: "3rem", maxWidth: 520 }}>
-            We know the questions people don't always ask out loud. Here are the ones that matter most.
-          </p>
-        </Reveal>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {FAQS.map((item, i) => (
-            <Reveal key={i} delay={i * 0.04}>
-              <div
-                style={{
-                  background: C.card, border: `1px solid ${open === i ? C.purple : C.border}`,
-                  borderRadius: 16, overflow: "hidden",
-                  transition: "border-color 0.2s, box-shadow 0.2s",
-                  boxShadow: open === i ? `0 4px 24px rgba(29,78,216,0.08)` : "0 2px 8px rgba(15,23,42,0.04)",
-                }}
-              >
-                <button
-                  onClick={() => setOpen(open === i ? null : i)}
-                  style={{
-                    width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: isMobile ? "1.1rem 1.25rem" : "1.25rem 1.75rem",
-                    background: "none", border: "none", cursor: "pointer", gap: "1rem", textAlign: "left",
-                  }}
-                >
-                  <span style={{ fontSize: isMobile ? "0.95rem" : "1rem", fontWeight: 700, color: C.text, lineHeight: 1.4 }}>
-                    {item.q}
-                  </span>
-                  <span style={{
-                    flexShrink: 0, width: 28, height: 28, borderRadius: "50%",
-                    background: open === i ? C.purple : "rgba(15,23,42,0.06)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "background 0.2s, transform 0.25s",
-                    transform: open === i ? "rotate(45deg)" : "none",
-                  }}>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <line x1="6" y1="1" x2="6" y2="11" stroke={open === i ? "#fff" : C.text} strokeWidth="1.8" strokeLinecap="round" />
-                      <line x1="1" y1="6" x2="11" y2="6" stroke={open === i ? "#fff" : C.text} strokeWidth="1.8" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                </button>
-
-                {open === i && (
-                  <div style={{
-                    padding: isMobile ? "0 1.25rem 1.25rem" : "0 1.75rem 1.5rem",
-                    fontSize: "0.9rem", color: C.mid, lineHeight: 1.75,
-                    borderTop: `1px solid ${C.border}`, paddingTop: "1.1rem",
-                  }}>
-                    {item.a}
-                  </div>
-                )}
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+const GREEN = "#5EEAD4";
+const INK = "#0B0B0B";
+const MUTED = "#8A8A8A";
 
 export default function Landing() {
-  const [heroVisible, setHeroVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   useEffect(() => {
-    setTimeout(() => setHeroVisible(true), 80);
     const onResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-    };
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const anim = (delay: number): React.CSSProperties => ({
-    opacity:    heroVisible ? 1 : 0,
-    transform:  heroVisible ? "translateY(0)" : "translateY(24px)",
-    transition: `opacity 0.7s ease ${delay}s, transform 0.7s ease ${delay}s`,
-  });
+  const faqs = [
+    {
+      q: "Who holds the money?",
+      a: "Circle funds sit in FDIC-insured custodial accounts — not with Pardna, and not with the person who started the circle. Payouts release on the schedule the group agreed to.",
+    },
+    {
+      q: "What if someone doesn’t pay?",
+      a: "Everyone in a circle is identity-verified. Contributions pull automatically from a connected bank account on the due date. If a pull fails, the group is notified immediately.",
+    },
+    {
+      q: "Who can join my circle?",
+      a: "Only people you invite. There is no public marketplace. You send a private link to friends, roommates, or family you already trust.",
+    },
+    {
+      q: "Do I build credit?",
+      a: "Joining does not change your credit score today. Every on-time contribution is stored as a Pardna record — a history you can use to show you save on schedule. Bureau reporting is on the roadmap.",
+    },
+    {
+      q: "Can I leave early?",
+      a: "Circles work best when everyone finishes. Life happens. The organizer can set exit rules before the circle starts. Don’t join a circle you can’t complete.",
+    },
+    {
+      q: "Is my bank login safe?",
+      a: "Bank connections run through Plaid. We never see or store your banking password. You can disconnect at any time.",
+    },
+  ];
 
   return (
-    <div style={{ fontFamily: "'Noto Sans', system-ui, sans-serif", color: C.text }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#F5F5F5", background: INK }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+      `}</style>
 
-      {/* ── NAV ── */}
       <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        position: "sticky", top: 0, zIndex: 40,
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 clamp(1.25rem, 6vw, 4rem)",
-        height: 68,
-        background: "rgba(255,255,255,0.97)",
-        backdropFilter: "blur(12px)",
-        borderBottom: "1px solid rgba(15,23,42,0.08)",
-        transition: "background 0.3s",
+        height: 64, padding: "0 clamp(1.1rem, 4vw, 2.5rem)",
+        background: "rgba(11,11,11,0.88)", backdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
-        <PardnaLogo size="md" />
-
-        {/* Desktop links */}
+        <Link to="/" style={{ color: "#fff", textDecoration: "none", display: "flex", alignItems: "center" }}>
+          <PardnaLogo dark size="sm" />
+        </Link>
         {!isMobile && (
-          <div style={{ display: "flex", alignItems: "center", gap: "clamp(1rem, 3vw, 2.5rem)" }}>
-            <a href="#features" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>Features</a>
-            <a href="#how-it-works" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>How it works</a>
-            <a href="#communities" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>Communities</a>
-            <a href="#faq" style={{ fontSize: "0.875rem", color: "#475569", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
+          <div style={{ display: "flex", gap: "2rem", fontSize: 14, color: MUTED, fontWeight: 500 }}>
+            <a href="#how" style={{ color: MUTED, textDecoration: "none" }}>How it works</a>
+            <a href="#trust" style={{ color: MUTED, textDecoration: "none" }}>Trust</a>
+            <a href="#faq" style={{ color: MUTED, textDecoration: "none" }}>FAQ</a>
           </div>
         )}
-
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {!isMobile && (
-            <Link to="/signup" style={{
-              padding: "0.5rem 1.25rem", background: "#006FFF", color: "#fff",
-              borderRadius: 100, fontSize: "0.875rem", fontWeight: 700,
-              textDecoration: "none", transition: "opacity 0.2s",
-            }}>Get started →</Link>
+            <Link to="/login" style={{ color: MUTED, textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Log in</Link>
           )}
+          <Link to="/signup" style={{
+            background: GREEN, color: INK, textDecoration: "none",
+            fontWeight: 800, fontSize: 14, padding: "8px 16px", borderRadius: 999,
+          }}>Get started</Link>
           {isMobile && (
-            <button onClick={() => setMenuOpen(!menuOpen)} style={{
-              background: "none", border: "none", cursor: "pointer",
-              padding: "0.5rem", display: "flex", flexDirection: "column",
-              gap: "5px", alignItems: "flex-end",
-            }}>
-              <span style={{ display: "block", width: 22, height: 2, background: "#0F172A", borderRadius: 2, transition: "transform 0.25s, opacity 0.25s", transform: menuOpen ? "translateY(7px) rotate(45deg)" : "none" }} />
-              <span style={{ display: "block", width: 16, height: 2, background: "#0F172A", borderRadius: 2, opacity: menuOpen ? 0 : 1, transition: "opacity 0.25s" }} />
-              <span style={{ display: "block", width: 22, height: 2, background: "#0F172A", borderRadius: 2, transition: "transform 0.25s", transform: menuOpen ? "translateY(-7px) rotate(-45deg)" : "none" }} />
-            </button>
+            <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: "none", border: 0, color: "#fff", fontSize: 20, cursor: "pointer" }}>☰</button>
           )}
         </div>
       </nav>
 
-      {/* Mobile drawer */}
       {isMobile && menuOpen && (
-        <div style={{
-          position: "fixed", top: 68, left: 0, right: 0, zIndex: 99,
-          background: "#FFFFFF", backdropFilter: "blur(12px)",
-          padding: "1.75rem clamp(1.25rem, 6vw, 4rem) 2rem",
-          borderBottom: "1px solid rgba(15,23,42,0.08)",
-          display: "flex", flexDirection: "column", gap: "1.5rem",
-        }}>
-          <a href="#features" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>Features</a>
-          <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>How it works</a>
-          <a href="#communities" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>Communities</a>
-          <a href="#faq" onClick={() => setMenuOpen(false)} style={{ fontSize: "1.05rem", color: "#0F172A", textDecoration: "none", fontWeight: 500 }}>FAQ</a>
-          <Link to="/signup" onClick={() => setMenuOpen(false)} style={{
-            ...signupStyle, padding: "0.9rem 1.5rem", fontSize: "0.95rem",
-            textAlign: "center", justifyContent: "center", marginTop: "0.25rem",
-          }}>Get started →</Link>
+        <div style={{ padding: "16px 20px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column", gap: 16 }}>
+          <a href="#how" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none" }}>How it works</a>
+          <a href="#trust" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none" }}>Trust</a>
+          <a href="#faq" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none" }}>FAQ</a>
+          <Link to="/login" onClick={() => setMenuOpen(false)} style={{ color: MUTED, textDecoration: "none" }}>Log in</Link>
         </div>
       )}
 
-      {/* HERO */}
-      <section style={{
-        minHeight: "100vh", display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center", textAlign: "center",
-        padding: "9rem clamp(1.25rem, 6vw, 5rem) 6rem",
-        position: "relative", overflow: "hidden",
-        background: "#FFFFFF",
+      <header style={{
+        display: "grid",
+        gridTemplateColumns: isMobile ? "1fr" : "1.05fr .95fr",
+        gap: isMobile ? 40 : 56,
+        alignItems: "center",
+        padding: isMobile ? "48px 20px 64px" : "72px clamp(1.5rem, 5vw, 3rem) 88px",
+        maxWidth: 1160, margin: "0 auto",
       }}>
-        {/* Subtle blue gradient top */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 360, background: "linear-gradient(180deg, rgba(0,111,255,0.06) 0%, transparent 100%)", zIndex: 0 }} />
-
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 680 }}>
-
-          {/* Logo */}
-          <div style={{ ...anim(0.0), display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
-            <PardnaLogo size={72} />
+        <div>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase",
+            color: GREEN, marginBottom: 20,
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: GREEN }} />
+            Early access
           </div>
-
-          {/* Phonetic definition — right under the logo */}
-          <div style={{ ...anim(0.08), marginBottom: "2.5rem" }}>
-            <p style={{ fontSize: "clamp(0.85rem, 2vw, 1rem)", color: "#64748B", fontFamily: "Georgia, serif", margin: 0, lineHeight: 1.6 }}>
-              <span style={{ fontStyle: "italic", fontWeight: 600, color: "#0F172A" }}>part·ner</span>
-              {" "}
-              <span style={{ color: "#94A3B8" }}>/ˈpärdnə/</span>
-              {" "}
-              <span style={{ color: "#94A3B8", fontStyle: "italic" }}>noun</span>
-              {" — "}
-              <span style={{ color: "#475569" }}>a savings circle. the oldest form of community banking.</span>
-            </p>
-          </div>
-
-          {/* Badge */}
-          <div style={{ ...anim(0.15), display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: C.teal, background: C.tealLight, border: `1px solid ${C.teal}30`, padding: "0.4rem 1.1rem", borderRadius: 100, marginBottom: "1.75rem" }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.teal, display: "inline-block" }} />
-            Now in early access
-          </div>
-
-          <h1 style={{ ...anim(0.22), fontSize: "clamp(2.4rem, 6vw, 4.5rem)", fontWeight: 800, letterSpacing: "-2px", lineHeight: 1.08, color: "#0F172A", marginBottom: "1.25rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-            Before the banks existed,{" "}
-            <span style={{ color: C.primary }}>
-              your community
-            </span>{" "}
-            already knew how.
+          <h1 style={{
+            fontSize: isMobile ? 40 : 64,
+            fontWeight: 800, letterSpacing: "-0.045em", lineHeight: 0.98,
+            marginBottom: 20, color: "#fff",
+          }}>
+            Save on a schedule.<br />Get paid when it’s your turn.
           </h1>
-
-          <p style={{ ...anim(0.35), fontSize: "clamp(1rem, 2vw, 1.15rem)", color: "#475569", lineHeight: 1.75, maxWidth: 500, margin: "0 auto 2.5rem" }}>
-            The savings circle your community already runs — now with infrastructure. Security, accountability, and the financial credibility you deserve.
+          <p style={{ fontSize: 18, lineHeight: 1.55, color: MUTED, maxWidth: 440, marginBottom: 28 }}>
+            Pool a set amount with people you already trust. Contributions pull automatically. When your turn hits, the full pot lands.
           </p>
-
-          <div style={{ ...anim(0.48), display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap", justifyContent: "center", marginBottom: "3rem" }}>
-            <Link to="/signup" style={{ ...signupStyle, padding: "0.95rem 2.25rem", fontSize: "1rem" }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(0,111,255,0.45)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,111,255,0.3)"; }}
-            >Start your circle →</Link>
-            <a href="#how-it-works" style={{ padding: "0.95rem 2.25rem", background: "#F1F5F9", color: "#0F172A", borderRadius: 100, fontSize: "1rem", fontWeight: 600, textDecoration: "none", border: "1px solid #E2E8F0", transition: "background 0.2s" }}
-              onMouseEnter={e => e.currentTarget.style.background = "#E2E8F0"}
-              onMouseLeave={e => e.currentTarget.style.background = "#F1F5F9"}
-            >See how it works</a>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 22 }}>
+            <Link to="/signup" style={{
+              background: GREEN, color: INK, textDecoration: "none",
+              fontWeight: 800, fontSize: 16, padding: "14px 22px", borderRadius: 999,
+            }}>Start a circle</Link>
+            <a href="#how" style={{
+              background: "transparent", color: "#fff", textDecoration: "none",
+              fontWeight: 600, fontSize: 16, padding: "14px 22px", borderRadius: 999,
+              border: "1px solid rgba(255,255,255,0.16)",
+            }}>See how it works</a>
           </div>
+          <p style={{ fontSize: 13, color: "#6A6A6A" }}>
+            Invite-only · Auto-pay · FDIC-insured escrow
+          </p>
+        </div>
 
-          <div style={{ ...anim(0.65), display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <div style={{ display: "flex" }}>
-              {MEMBERS.map((m, i) => (
-                <div key={m.i} style={{ width: 30, height: 30, borderRadius: "50%", background: m.c, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", fontWeight: 700, color: "#fff", border: "2px solid #FFFFFF", marginLeft: i > 0 ? -8 : 0 }}>{m.i}</div>
-              ))}
+        <div style={{
+          background: "#141414", border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: 28, padding: 22, boxShadow: "0 30px 80px rgba(0,0,0,0.45)",
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, color: "#8A8A8A", fontSize: 12, fontWeight: 600 }}>
+            <span>Roommate circle · Round 3 of 6</span>
+            <span style={{ color: GREEN }}>Live</span>
+          </div>
+          <div style={{ fontSize: 13, color: "#8A8A8A", marginBottom: 6 }}>This month’s pool</div>
+          <div style={{ fontSize: 48, fontWeight: 800, letterSpacing: "-0.04em", color: "#fff", lineHeight: 1 }}>$1,200</div>
+          <div style={{ fontSize: 13, color: "#8A8A8A", margin: "8px 0 18px" }}>$200 each · payout in 11 days</div>
+          <div style={{ height: 8, background: "#222", borderRadius: 99, overflow: "hidden", marginBottom: 20 }}>
+            <div style={{ width: "50%", height: "100%", background: GREEN }} />
+          </div>
+          {["Alex — paid", "Jordan — paid", "Sam — next payout", "Riley — upcoming", "Casey — upcoming", "You — upcoming"].map((row, i) => (
+            <div key={row} style={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              padding: "10px 0", borderTop: "1px solid rgba(255,255,255,0.06)",
+              fontSize: 14, color: i === 2 ? GREEN : "#E8E8E8",
+            }}>
+              <span>{row}</span>
+              <span style={{ color: i < 2 ? GREEN : "#666", fontSize: 12 }}>{i < 2 ? "✓" : i === 2 ? "→" : ""}</span>
             </div>
-            <span style={{ color: "#64748B", fontSize: "0.78rem" }}>
-              Join a growing community of members saving together on <strong style={{ color: "#0F172A" }}>Pardna</strong>
-            </span>
-            <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.6rem" }}>●</span>
-            <span style={{ color: "#64748B", fontSize: "0.78rem" }}>🔐 FDIC-protected escrow</span>
-          </div>
-        </div>
-      </section>
-
-      {/* STATS BAR */}
-      <div style={{ background: "#FFFFFF", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)" }}>
-        {STATS.map((s, i) => (
-          <Reveal key={s.val} delay={i * 0.1}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "2.5rem 1rem", textAlign: "center", borderRight: !isMobile && i < 2 ? "1px solid #E2E8F0" : "none", borderBottom: isMobile && i < 2 ? "1px solid #E2E8F0" : "none" }}>
-              <div style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-1.5px", color: "#006FFF", lineHeight: 1, marginBottom: "0.4rem", fontFamily: "'Noto Serif', Georgia, serif", whiteSpace: "pre-line" }}>{s.val}</div>
-              <div style={{ fontSize: "0.82rem", color: "#64748B" }}>{s.label}</div>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-
-      {/* COMMUNITIES */}
-      <section id="communities" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#FFFFFF" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Cultural roots</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "0.75rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-              A tradition across cultures,<br />
-              <em style={{ color: C.purple }}>now with infrastructure.</em>
-            </h2>
-            <p style={{ fontSize: "1rem", color: C.mid, lineHeight: 1.7, maxWidth: 520, marginBottom: "2.5rem" }}>
-              Savings circles have existed across every continent for centuries. Pardna is the digital home they've never had.
-            </p>
-          </Reveal>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.65rem" }}>
-            {COMMUNITIES.map((c, i) => (
-              <Reveal key={c.name} delay={i * 0.05}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.6rem 1.1rem", background: C.card, border: `1px solid ${C.border}`, borderRadius: 100, boxShadow: "0 2px 8px rgba(15,23,42,0.07)", transition: "transform 0.2s, box-shadow 0.2s", cursor: "default" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(15,23,42,0.15)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(15,23,42,0.07)"; }}
-                >
-                  <span style={{ fontSize: "1.1rem" }}>{c.flag}</span>
-                  <span style={{ fontWeight: 700, color: C.text, fontSize: "0.875rem" }}>{c.name}</span>
-                  <span style={{ color: C.dim, fontSize: "0.75rem" }}>{c.region}</span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES */}
-      <section id="features" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#006FFF", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-20%", right: "-10%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%)", filter: "blur(60px)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "-10%", left: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.06), transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }} />
-        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", display: "block", marginBottom: "0.75rem" }}>Why Pardna</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: "#FFFFFF", marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-              Everything your circle<br /><em style={{ color: "#F59E0B" }}>needs to thrive.</em>
-            </h2>
-          </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.25rem" }}>
-            {FEATURES.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 3) * 0.1}>
-                <div style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 20, padding: "1.75rem", display: "flex", gap: "1.25rem", alignItems: "flex-start", transition: "background 0.2s, transform 0.2s", cursor: "default" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.18)"; e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
-                >
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", flexShrink: 0 }}>{f.icon}</div>
-                  <div>
-                    <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#FFFFFF", marginBottom: "0.4rem" }}>{f.title}</div>
-                    <div style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.72)", lineHeight: 1.7 }}>{f.body}</div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section id="how-it-works" style={{ padding: "6rem clamp(1.25rem, 5vw, 4rem)", background: "#FFFFFF" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: C.purple, display: "block", marginBottom: "0.75rem" }}>Getting started</span>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)", fontWeight: 800, letterSpacing: "-0.75px", lineHeight: 1.1, color: C.text, marginBottom: "3rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-              Up and running<br /><em style={{ color: C.purple }}>in minutes.</em>
-            </h2>
-          </Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: "1.5rem", alignItems: "stretch" }}>
-            {STEPS.map((s, i) => (
-              <Reveal key={s.n} delay={i * 0.15}>
-                <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, padding: "2.25rem", boxShadow: "0 2px 12px rgba(15,23,42,0.06)", position: "relative", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s", height: "100%" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(15,23,42,0.15)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(15,23,42,0.06)"; }}
-                >
-                  <div style={{ position: "absolute", top: -10, right: 16, fontSize: "5rem", fontWeight: 900, color: "rgba(0,0,0,0.15)", lineHeight: 1, fontFamily: "'Noto Serif', Georgia, serif", userSelect: "none" }}>{s.n}</div>
-
-                  <div style={{ fontSize: "1.1rem", fontWeight: 700, color: C.text, marginBottom: "0.5rem" }}>{s.title}</div>
-                  <div style={{ fontSize: "0.875rem", color: C.mid, lineHeight: 1.7 }}>{s.body}</div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <FAQ isMobile={isMobile} C={C} />
-
-      {/* CTA */}
-      <section style={{ padding: "7rem clamp(1.25rem, 5vw, 4rem)", textAlign: "center", background: "#006FFF", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,255,0.12) 0%, transparent 65%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "-20%", right: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%)", filter: "blur(40px)" }} />
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <Reveal>
-            <span style={{ fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.16em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", display: "block", marginBottom: "1.25rem" }}>Join the movement</span>
-            <h2 style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)", fontWeight: 800, letterSpacing: "-1px", lineHeight: 1.1, color: "#FFFFFF", marginBottom: "1.25rem", fontFamily: "'Noto Serif', Georgia, serif" }}>
-              Every circle has a payout.{" "}
-              <em style={{ color: "#F59E0B" }}>Yours is coming.</em>
-            </h2>
-            <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.7, maxWidth: 480, margin: "0 auto 2.5rem" }}>
-              Thousands are already building wealth together — the way communities always have. Find your circle and claim your turn.
-            </p>
-            <Link to="/signup" style={{ padding: "1rem 2.5rem", fontSize: "1.05rem", background: "#FFFFFF", color: "#006FFF", borderRadius: 100, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem", boxShadow: "0 8px 32px rgba(0,0,0,0.15)", transition: "transform 0.2s, box-shadow 0.2s" }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 18px 50px rgba(0,0,0,0.2)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.15)"; }}
-            >Start your circle today →</Link>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={{ padding: "1.75rem clamp(1.25rem, 5vw, 4rem)", background: "#006FFF", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
-        <PardnaLogo dark size="sm" />
-        <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.6)", margin: 0 }}>© 2026 Pardna. All rights reserved.</p>
-        <div style={{ display: "flex", gap: "1.5rem" }}>
-          {["Privacy", "Terms", "Contact"].map(l => (
-            <a key={l} href="#" style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", textDecoration: "none", transition: "color 0.2s" }}
-              onMouseEnter={e => e.currentTarget.style.color = "#F59E0B"}
-              onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.65)"}
-            >{l}</a>
           ))}
         </div>
-      </footer>
+      </header>
 
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:wght@400;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        @keyframes float1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(20px,-30px) scale(1.05); } }
-        @keyframes float2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-25px,20px) scale(0.95); } }
-        @keyframes float3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(15px,-20px); } }
-        @keyframes scrollHint { 0%,100% { opacity: 0.4; transform: translateX(-50%) translateY(0); } 50% { opacity: 0.15; transform: translateX(-50%) translateY(8px); } }
-      `}</style>
+      <section id="how" style={{ background: "#111", padding: isMobile ? "64px 20px" : "88px 24px" }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+          <p style={{ color: GREEN, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>How it works</p>
+          <h2 style={{ fontSize: isMobile ? 32 : 44, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 36, maxWidth: 560 }}>
+            Set it once. Stay in because leaving takes effort.
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 16 }}>
+            {[
+              { n: "01", t: "Open a circle", d: "Pick an amount. $50, $100, or $200 to start. Invite people you already text." },
+              { n: "02", t: "It pulls on schedule", d: "No chasing. Contributions come out of connected accounts on the date you set." },
+              { n: "03", t: "Someone gets the pot", d: "Each round, one person receives the full pool. Then it rotates until everyone has." },
+            ].map((s) => (
+              <div key={s.n} style={{ background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 24 }}>
+                <div style={{ color: GREEN, fontWeight: 800, fontSize: 13, marginBottom: 28 }}>{s.n}</div>
+                <h3 style={{ fontSize: 20, fontWeight: 750, marginBottom: 8 }}>{s.t}</h3>
+                <p style={{ color: MUTED, lineHeight: 1.6, fontSize: 15 }}>{s.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="trust" style={{ padding: isMobile ? "64px 20px" : "88px 24px" }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+          <p style={{ color: GREEN, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Trust</p>
+          <h2 style={{ fontSize: isMobile ? 32 : 44, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 12, maxWidth: 640 }}>
+            The questions you should ask before you send money.
+          </h2>
+          <p style={{ color: MUTED, marginBottom: 36, maxWidth: 480, lineHeight: 1.6 }}>
+            This is a multi-month commitment, not a $20 tap. Here is how the money is handled.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
+            {[
+              { t: "You pick the people", d: "Private invites only. No strangers, no public feed of circles." },
+              { t: "Nobody holds the cash", d: "Funds sit in FDIC-insured custodial accounts until a scheduled payout." },
+              { t: "Payments are automatic", d: "Tied to a verified bank account. The circle does not depend on someone remembering." },
+              { t: "You can see every round", d: "Live log of who paid, who is next, and when the pot moves." },
+            ].map((c) => (
+              <div key={c.t} style={{ border: "1px solid rgba(255,255,255,0.08)", borderRadius: 18, padding: "22px 24px" }}>
+                <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{c.t}</h3>
+                <p style={{ color: MUTED, lineHeight: 1.6, fontSize: 15 }}>{c.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section style={{ background: "#111", padding: isMobile ? "64px 20px" : "80px 24px" }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 40, alignItems: "center" }}>
+          <div>
+            <p style={{ color: GREEN, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>Your record</p>
+            <h2 style={{ fontSize: isMobile ? 32 : 40, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 14 }}>
+              Finish circles. Build a history banks never gave you.
+            </h2>
+            <p style={{ color: MUTED, lineHeight: 1.65, fontSize: 16 }}>
+              Every on-time contribution adds to your Pardna record. It does not change your credit score today. It is a savings history you can carry — and the path to reporting later.
+            </p>
+          </div>
+          <div style={{ background: "#1A1A1A", borderRadius: 24, padding: 28, border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ fontSize: 13, color: MUTED, marginBottom: 8 }}>Pardna record</div>
+            <div style={{ fontSize: 56, fontWeight: 800, letterSpacing: "-0.04em", color: GREEN }}>0</div>
+            <div style={{ fontSize: 14, color: MUTED, marginBottom: 20 }}>Starting score · grows with on-time rounds</div>
+            {["Pay on the date", "Finish a full rotation", "Stay in more than one circle"].map((x) => (
+              <div key={x} style={{ padding: "10px 0", borderTop: "1px solid rgba(255,255,255,0.06)", color: "#E8E8E8", fontSize: 15 }}>{x}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" style={{ padding: isMobile ? "64px 20px" : "88px 24px" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <p style={{ color: GREEN, fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 12 }}>FAQ</p>
+          <h2 style={{ fontSize: isMobile ? 32 : 40, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 28 }}>Straight answers.</h2>
+          {faqs.map((item, i) => (
+            <div key={item.q} style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <button
+                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                style={{
+                  width: "100%", textAlign: "left", background: "none", border: 0, color: "#fff",
+                  padding: "18px 0", fontSize: 17, fontWeight: 650, cursor: "pointer",
+                  display: "flex", justifyContent: "space-between", gap: 16, fontFamily: "inherit",
+                }}
+              >
+                {item.q}
+                <span style={{ color: GREEN }}>{openFaq === i ? "–" : "+"}</span>
+              </button>
+              {openFaq === i && (
+                <p style={{ color: MUTED, lineHeight: 1.7, paddingBottom: 18, fontSize: 15 }}>{item.a}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ padding: isMobile ? "24px 16px 72px" : "24px 24px 96px" }}>
+        <div style={{
+          maxWidth: 1080, margin: "0 auto", background: GREEN, color: INK,
+          borderRadius: 28, padding: isMobile ? "48px 24px" : "72px 48px", textAlign: "center",
+        }}>
+          <h2 style={{ fontSize: isMobile ? 32 : 48, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 12 }}>
+            Start with people you already trust.
+          </h2>
+          <p style={{ fontSize: 17, marginBottom: 28, maxWidth: 440, marginLeft: "auto", marginRight: "auto" }}>
+            One circle. A set amount. A date on the calendar. That is the whole habit.
+          </p>
+          <Link to="/signup" style={{
+            display: "inline-block", background: INK, color: "#fff", textDecoration: "none",
+            fontWeight: 800, fontSize: 16, padding: "14px 24px", borderRadius: 999,
+          }}>Create your account</Link>
+        </div>
+      </section>
+
+      <footer style={{
+        padding: "20px clamp(1.1rem, 4vw, 2.5rem) 32px",
+        display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+        color: "#666", fontSize: 13, borderTop: "1px solid rgba(255,255,255,0.06)",
+      }}>
+        <span>© 2026 Pardna</span>
+        <span>Pooled savings for people you already know.</span>
+        <div style={{ display: "flex", gap: 16 }}>
+          <a href="#" style={{ color: "#666", textDecoration: "none" }}>Privacy</a>
+          <a href="#" style={{ color: "#666", textDecoration: "none" }}>Terms</a>
+        </div>
+      </footer>
     </div>
   );
 }

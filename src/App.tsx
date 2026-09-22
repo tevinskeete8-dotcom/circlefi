@@ -18,10 +18,7 @@ import MainLayout from "./layout/MainLayout";
 import AcceptInvite from "./pages/AcceptInvite";
 import Profile from "./pages/Profile";
 
-
-// ── Check onboarding status ───────────────────────────────────────────
 function hasOnboarded(userId: string) {
-  // Check both new and old key for backwards compatibility
   return (
     localStorage.getItem(`pardna_onboarded_${userId}`) === "true" ||
     localStorage.getItem(`jouvay_onboarded_${userId}`) === "true" ||
@@ -29,8 +26,6 @@ function hasOnboarded(userId: string) {
   );
 }
 
-
-// ── Protected route wrapper ───────────────────────────────────────────
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
@@ -41,8 +36,6 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
       const s = data.session;
       setSession(s);
 
-      // If session exists but localStorage key missing, check Supabase profiles
-      // This handles users who onboarded before the pardna rename
       if (s?.user && !hasOnboarded(s.user.id)) {
         const { data: profile } = await supabase
           .from("profiles")
@@ -50,7 +43,6 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
           .eq("id", s.user.id)
           .single();
         if (profile?.first_name) {
-          // Backfill the localStorage key so future checks are instant
           localStorage.setItem(`pardna_onboarded_${s.user.id}`, "true");
         }
       }
@@ -72,14 +64,13 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
       <div
         style={{
           minHeight: "100vh",
-          background: "#F7F5F2",
+          background: "#F6F6F4",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          color: "#1D4ED8",
-          fontFamily: "Noto Sans, sans-serif",
+          color: "#5EEAD4",
+          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
           fontSize: "0.9rem",
-          letterSpacing: "0.05em",
         }}
       >
         Loading...
@@ -88,9 +79,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   if (!session) return <Navigate to="/login" replace />;
-
   if (!profileChecked) return null;
-
   if (!hasOnboarded(session.user.id)) {
     return <Navigate to="/onboarding" replace />;
   }
@@ -98,8 +87,6 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-
-// ── Layout wrapper for authenticated pages ───────────────────────────
 function AppShell({ children }: { children: ReactNode }) {
   return (
     <ProtectedRoute>
@@ -108,8 +95,6 @@ function AppShell({ children }: { children: ReactNode }) {
   );
 }
 
-
-// ── Onboarding guard ─────────────────────────────────────────────────
 function OnboardingRoute() {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
@@ -122,9 +107,7 @@ function OnboardingRoute() {
   }, []);
 
   if (loading) return null;
-
   if (!session) return <Navigate to="/login" replace />;
-
   if (hasOnboarded(session.user.id)) {
     return <Navigate to="/app" replace />;
   }
@@ -132,20 +115,27 @@ function OnboardingRoute() {
   return <Onboarding />;
 }
 
-
-// ── Redirect after authentication ────────────────────────────────────
 function AuthRedirectHandler() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } =
       supabase.auth.onAuthStateChange((event, session) => {
-        if (event === "SIGNED_IN" && session) {
-          if (!hasOnboarded(session.user.id)) {
-            navigate("/onboarding", { replace: true });
-          } else {
-            navigate("/app", { replace: true });
-          }
+        if (event !== "SIGNED_IN" || !session) return;
+
+        const path = window.location.pathname;
+        if (
+          path.startsWith("/app") ||
+          path.startsWith("/onboarding") ||
+          path.startsWith("/invite")
+        ) {
+          return;
+        }
+
+        if (!hasOnboarded(session.user.id)) {
+          navigate("/onboarding", { replace: true });
+        } else {
+          navigate("/app", { replace: true });
         }
       });
 
@@ -155,56 +145,26 @@ function AuthRedirectHandler() {
   return null;
 }
 
-
-// ── Main App Router ──────────────────────────────────────────────────
 export default function App() {
   return (
     <>
       <AuthRedirectHandler />
 
       <Routes>
-        {/* Public pages */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Onboarding */}
         <Route path="/onboarding" element={<OnboardingRoute />} />
 
-        {/* Protected app */}
         <Route path="/app" element={<AppShell><Dashboard /></AppShell>} />
+        <Route path="/app/circles" element={<AppShell><Circles /></AppShell>} />
+        <Route path="/app/circles/:id" element={<AppShell><CircleDetail /></AppShell>} />
+        <Route path="/app/reputation" element={<AppShell><Reputation /></AppShell>} />
+        <Route path="/app/profile" element={<AppShell><Profile /></AppShell>} />
+        <Route path="/app/security" element={<AppShell><Security /></AppShell>} />
 
-        <Route path="/app/circles" element={
-          <AppShell>
-            <Circles />
-          </AppShell>
-        } />
-
-        <Route path="/app/circles/:id" element={
-          <AppShell>
-            <CircleDetail />
-          </AppShell>
-        } />
-
-        <Route path="/app/reputation" element={
-          <AppShell>
-            <Reputation />
-          </AppShell>
-        } />
-
-        <Route path="/app/profile" element={
-          <AppShell><Profile /></AppShell>
-        } />
-        <Route path="/app/security" element={
-          <AppShell>
-            <Security />
-          </AppShell>
-        } />
-
-        {/* Invite */}
         <Route path="/invite/:token" element={<AcceptInvite />} />
-
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

@@ -1,289 +1,176 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
 import { Link } from "react-router-dom";
-import "../styles/dashboard.css";
+import { supabase } from "../lib/supabase";
+
+const TEAL = "#5EEAD4";
+const INK = "#0B0B0B";
+const CARD = "#141414";
+const MUTED = "#8A8A8A";
+const LINE = "rgba(255,255,255,0.08)";
 
 type Circle = {
   id: string;
   name: string;
-  contribution_amount: number;
-  total_members: number;
+  status?: string;
+  contribution_amount?: number;
+  amount?: number;
+  member_count?: number;
+  pool?: number;
+  progress?: number;
 };
 
-// Cycle progress — placeholder until you add cycle dates to the DB
-const MOCK_PROGRESS = [72, 45, 90, 33, 58, 80];
-const COLORS = ["#006FFF", "#D97706", "#7B5EA7", "#3D7EAA", "#C25F3B", "#2E8B57"];
-
-function getInitials(name: string) {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+function initials(name: string) {
+  return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
+}
+function money(n: number) {
+  return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
 export default function Dashboard() {
+  const [firstName, setFirstName] = useState("there");
   const [circles, setCircles] = useState<Circle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("");
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    async function fetchData() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      const user = auth.user;
+      if (!user) { setLoading(false); return; }
 
-      if (!session?.user) return;
-
-      // Get display name from profiles, fall back to email
       const { data: profile } = await supabase
         .from("profiles")
-        .select("first_name")
-        .eq("id", session.user.id)
-        .single();
+        .select("first_name, full_name")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      if (profile?.first_name) {
-        setUserName(profile.first_name);
-      } else {
-        const email = session.user.email ?? "";
-        setUserName(email.split("@")[0]);
-      }
+      setFirstName(
+        profile?.first_name ||
+        profile?.full_name?.split(" ")[0] ||
+        user.email?.split("@")[0] ||
+        "there"
+      );
 
-      const { data } = await supabase
-        .from("circles")
-        .select("*")
-        .eq("organizer_id", session.user.id);
-
-      setCircles(data ?? []);
+      const { data: rows } = await supabase.from("circles").select("*").order("created_at", { ascending: false });
+      setCircles((rows as Circle[]) || []);
       setLoading(false);
-
-      // Trigger stagger animation after data loads
-      setTimeout(() => setVisible(true), 50);
-    }
-
-    fetchData();
+    })();
   }, []);
 
-  const totalPool = circles.reduce(
-    (sum, c) => sum + c.contribution_amount * c.total_members,
-    0
-  );
-  const totalMembers = circles.reduce((sum, c) => sum + c.total_members, 0);
-  const avgContribution =
-    circles.length > 0
-      ? Math.round(circles.reduce((sum, c) => sum + c.contribution_amount, 0) / circles.length)
-      : 0;
-
-  const stats = [
-    {
-      label: "Active Circles",
-      value: circles.length,
-      sub: "circles you organise",
-      icon: "◉",
-      color: "#006FFF",
-    },
-    {
-      label: "Total Pool",
-      value: `$${totalPool.toLocaleString()}`,
-      sub: "combined monthly value",
-      icon: "⬡",
-      color: "#D97706",
-    },
-    {
-      label: "Total Members",
-      value: totalMembers,
-      sub: "across all circles",
-      icon: "◈",
-      color: "#7B5EA7",
-    },
-    {
-      label: "Avg Contribution",
-      value: `$${avgContribution}`,
-      sub: "per member per month",
-      icon: "⟡",
-      color: "#3D7EAA",
-    },
-  ];
+  const active = circles.filter((c) => (c.status || "active").toLowerCase() !== "closed");
+  const totalPool = active.reduce((sum, c) => {
+    const amt = Number(c.contribution_amount ?? c.amount ?? 0);
+    const members = Number(c.member_count ?? 0);
+    return sum + (c.pool ? Number(c.pool) : amt * members);
+  }, 0);
+  const totalMembers = active.reduce((sum, c) => sum + Number(c.member_count ?? 0), 0);
+  const avg = active.length
+    ? active.reduce((sum, c) => sum + Number(c.contribution_amount ?? c.amount ?? 0), 0) / active.length
+    : 0;
 
   return (
-    <div className={`dash ${visible ? "dash--visible" : ""}`}>
-
-      {/* ── HEADER ── */}
-      <header className="dash-header">
-        <div className="dash-header-left">
-          <p className="dash-eyebrow">Good to see you back</p>
-          <h1 className="dash-title" style={{ color: "#0F172A" }}>
-            {userName ? (
-              <>Welcome, <em style={{ color: "#F59E0B", fontStyle: "italic", fontFamily: "Georgia, serif" }}>{userName}</em></>
-            ) : (
-              "Your Dashboard"
-            )}
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap", marginBottom: 28 }}>
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>
+            Good to see you back
+          </div>
+          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 800, letterSpacing: "-0.04em", color: "#fff" }}>
+            Welcome, <span style={{ color: TEAL }}>{firstName}</span>
           </h1>
         </div>
-        <div className="dash-header-right">
-          <Link to="/app/circles" className="dash-new-btn">
-            + New Circle
-          </Link>
-        </div>
-      </header>
+        <Link to="/app/circles" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 18px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
+          + New circle
+        </Link>
+      </div>
 
-      {/* ── STAT CARDS ── */}
-      <section className="dash-stats">
-        {stats.map((s, i) => (
-          <div
-            className="stat-card"
-            key={s.label}
-            style={{ animationDelay: `${i * 0.08}s` }}
-          >
-            <div className="stat-icon" style={{ color: s.color }}>
-              {s.icon}
-            </div>
-            <div className="stat-value" style={{ color: s.color }}>
-              {loading ? <span className="skeleton skeleton--value" /> : s.value}
-            </div>
-            <div className="stat-label">{s.label}</div>
-            <div className="stat-sub">{s.sub}</div>
-            <div className="stat-line" style={{ background: s.color }} />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 32 }}>
+        {[
+          { v: String(active.length), l: "Active circles", s: "circles you organise" },
+          { v: money(totalPool), l: "Total pool", s: "combined monthly value" },
+          { v: String(totalMembers), l: "Members", s: "across all circles" },
+          { v: money(avg), l: "Avg contribution", s: "per member / month" },
+        ].map((s) => (
+          <div key={s.l} style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: "20px 18px" }}>
+            <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>{loading ? "—" : s.v}</div>
+            <div style={{ fontSize: 13, fontWeight: 650, marginTop: 6, color: "#E8E8E8" }}>{s.l}</div>
+            <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>{s.s}</div>
           </div>
         ))}
-      </section>
+      </div>
 
-      {/* ── CIRCLES ── */}
-      <section className="dash-circles">
-        <div className="dash-section-head">
-          <h2 className="dash-section-title">Your Circles</h2>
-          {circles.length > 0 && (
-            <span className="dash-count-badge">{circles.length} active</span>
-          )}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#fff" }}>Your circles</h2>
+        <span style={{ fontSize: 12, fontWeight: 700, color: TEAL }}>{active.length} active</span>
+      </div>
+
+      {loading ? (
+        <div style={{ color: MUTED }}>Loading…</div>
+      ) : circles.length === 0 ? (
+        <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 48, textAlign: "center" }}>
+          <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8 }}>No circles yet</div>
+          <div style={{ color: MUTED, marginBottom: 18 }}>Start one with people you already trust.</div>
+          <Link to="/app/circles" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800 }}>Create a circle</Link>
         </div>
-
-        {loading && (
-          <div className="circles-grid">
-            {[1, 2, 3].map((n) => (
-              <div className="circle-card" key={n}>
-                <div className="skeleton skeleton--title" />
-                <div className="skeleton skeleton--line" />
-                <div className="skeleton skeleton--bar" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {!loading && circles.length === 0 && (
-          <div className="empty-state">
-            <div className="empty-icon">◉</div>
-            <h3>No circles yet</h3>
-            <p>Create your first savings circle and invite your community.</p>
-            <Link to="/app/circles" className="dash-new-btn">
-              Create a Circle
-            </Link>
-          </div>
-        )}
-
-        {!loading && circles.length > 0 && (
-          <div className="circles-grid">
-            {circles.map((circle, i) => {
-              const progress = MOCK_PROGRESS[i % MOCK_PROGRESS.length];
-              const color = COLORS[i % COLORS.length];
-              const poolValue = circle.contribution_amount * circle.total_members;
-
-              return (
-                <div
-                  className="circle-card"
-                  key={circle.id}
-                  style={{ animationDelay: `${0.32 + i * 0.1}s` }}
-                >
-                  {/* Card header */}
-                  <div className="cc-head">
-                    <div className="cc-avatar" style={{ background: color }}>
-                      {getInitials(circle.name)}
-                    </div>
-                    <div className="cc-title-group">
-                      <h3 className="cc-name">{circle.name}</h3>
-                      <span className="cc-badge">Active</span>
-                    </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+          {circles.map((c) => {
+            const amt = Number(c.contribution_amount ?? c.amount ?? 0);
+            const members = Number(c.member_count ?? 0);
+            const pool = Number(c.pool ?? amt * members);
+            const progress = Math.min(100, Math.max(0, Number(c.progress ?? 0)));
+            return (
+              <div key={c.id} style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 42, height: 42, borderRadius: 12, background: TEAL, color: INK, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>
+                    {initials(c.name || "C")}
                   </div>
-
-                  {/* Stats row */}
-                  <div className="cc-stats">
-                    <div className="cc-stat">
-                      <span className="cc-stat-val">
-                        ${circle.contribution_amount.toLocaleString()}
-                      </span>
-                      <span className="cc-stat-lbl">per member</span>
-                    </div>
-                    <div className="cc-divider" />
-                    <div className="cc-stat">
-                      <span className="cc-stat-val">{circle.total_members}</span>
-                      <span className="cc-stat-lbl">members</span>
-                    </div>
-                    <div className="cc-divider" />
-                    <div className="cc-stat">
-                      <span className="cc-stat-val">
-                        ${poolValue.toLocaleString()}
-                      </span>
-                      <span className="cc-stat-lbl">pool / mo</span>
-                    </div>
-                  </div>
-
-                  {/* Cycle progress */}
-                  <div className="cc-progress-section">
-                    <div className="cc-progress-head">
-                      <span className="cc-progress-label">Cycle progress</span>
-                      <span className="cc-progress-pct" style={{ color }}>
-                        {progress}%
-                      </span>
-                    </div>
-                    <div className="cc-bar">
-                      <div
-                        className="cc-bar-fill"
-                        style={{
-                          width: `${progress}%`,
-                          background: `linear-gradient(90deg, ${color}, ${color}99)`,
-                          animationDelay: `${0.5 + i * 0.1}s`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="cc-actions">
-                    <Link
-                      to={`/app/circles/${circle.id}`}
-                      className="cc-btn cc-btn--primary"
-                      style={{ background: color }}
-                    >
-                      View Circle
-                    </Link>
-                    <Link to={`/app/circles/${circle.id}?invite=true`} className="cc-btn cc-btn--ghost">Manage</Link>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>{c.name}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 2 }}>{c.status || "Active"}</div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* ── PILOT NUDGE (from 90-day pilot doc) ── */}
-      {!loading && circles.length > 0 && (
-        <section className="pilot-banner">
-          <div className="pilot-banner-left">
-            <span className="pilot-icon">⬡</span>
-            <div>
-              <p className="pilot-title">Build your credit identity</p>
-              <p className="pilot-sub">
-                Every on-time contribution is tracked and builds your financial profile.
-              </p>
-            </div>
-          </div>
-          <Link to="/app/reputation" className="pilot-cta">
-            View Reputation →
-          </Link>
-        </section>
+                <div style={{ display: "flex", background: "#1A1A1A", borderRadius: 12, overflow: "hidden" }}>
+                  <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
+                    <div style={{ fontWeight: 800, color: "#fff" }}>{money(amt)}</div>
+                    <div style={{ fontSize: 11, color: MUTED }}>per member</div>
+                  </div>
+                  <div style={{ width: 1, background: LINE }} />
+                  <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
+                    <div style={{ fontWeight: 800, color: "#fff" }}>{members}</div>
+                    <div style={{ fontSize: 11, color: MUTED }}>members</div>
+                  </div>
+                  <div style={{ width: 1, background: LINE }} />
+                  <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
+                    <div style={{ fontWeight: 800, color: "#fff" }}>{money(pool)}</div>
+                    <div style={{ fontSize: 11, color: MUTED }}>pool / mo</div>
+                  </div>
+                </div>
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 6 }}>
+                    <span style={{ color: MUTED }}>Cycle progress</span>
+                    <span style={{ color: TEAL, fontWeight: 700 }}>{progress}%</span>
+                  </div>
+                  <div style={{ height: 6, background: "#222", borderRadius: 99, overflow: "hidden" }}>
+                    <div style={{ width: `${progress}%`, height: "100%", background: TEAL }} />
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <Link to={`/app/circles/${c.id}`} style={{ flex: 1, textAlign: "center", background: TEAL, color: INK, textDecoration: "none", padding: "9px 12px", borderRadius: 999, fontWeight: 800, fontSize: 13 }}>View circle</Link>
+                  <Link to={`/app/circles/${c.id}`} style={{ flex: 1, textAlign: "center", color: "#fff", textDecoration: "none", padding: "9px 12px", borderRadius: 999, fontWeight: 700, fontSize: 13, border: `1px solid ${LINE}` }}>Manage</Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
 
+      <div style={{ marginTop: 28, background: TEAL, color: INK, borderRadius: 24, padding: "22px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontWeight: 800, marginBottom: 4 }}>Build your record</div>
+          <div style={{ fontSize: 13 }}>On-time rounds are stored. This does not change your credit score today.</div>
+        </div>
+        <Link to="/app/reputation" style={{ background: INK, color: "#fff", textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>View record</Link>
+      </div>
     </div>
   );
 }

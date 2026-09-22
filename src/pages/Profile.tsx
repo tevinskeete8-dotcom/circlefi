@@ -1,172 +1,171 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import "../styles/security.css";
-import { UserCircle, KeyRound, Landmark } from "lucide-react";
+
+const TEAL = "#5EEAD4";
+const INK = "#0B0B0B";
+const WHITE = "#FFFFFF";
+const MUTED = "#6F6F6F";
+const LINE = "rgba(11,11,11,0.08)";
+const PAPER = "#F3F3F1";
 
 export default function Profile() {
-  const [firstName, setFirstName]   = useState("");
-  const [lastName, setLastName]     = useState("");
-  const [email, setEmail]           = useState("");
-  const [userId, setUserId]         = useState("");
-  const [nameLoading, setNameLoading]   = useState(false);
-  const [nameSuccess, setNameSuccess]   = useState(false);
-  const [nameError, setNameError]       = useState("");
-  const [newPw, setNewPw]           = useState("");
-  const [confirmPw, setConfirmPw]   = useState("");
-  const [pwLoading, setPwLoading]   = useState(false);
-  const [pwSuccess, setPwSuccess]   = useState(false);
-  const [pwError, setPwError]       = useState("");
-  const [stripeConnected, setStripeConnected]   = useState(false);
-  const [stripeLoading, setStripeLoading]       = useState(false);
-  const [stripeError, setStripeError]           = useState("");
-  const [stripeSuccess, setStripeSuccess]       = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [updatingPw, setUpdatingPw] = useState(false);
 
   useEffect(() => {
-    async function load() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return;
-      setEmail(session.user.email ?? "");
-      setUserId(session.user.id);
+    (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      const user = auth.user;
+      if (!user) return;
+      setEmail(user.email || "");
       const { data } = await supabase
         .from("profiles")
-        .select("first_name, last_name, stripe_account_id")
-        .eq("id", session.user.id)
-        .single();
-      if (data) {
-        setFirstName(data.first_name ?? "");
-        setLastName(data.last_name ?? "");
-        setStripeConnected(!!data.stripe_account_id);
-      }
-    }
-    load();
-    const stripeParam = searchParams.get("stripe");
-    if (stripeParam === "success") { setStripeSuccess(true); setStripeConnected(true); setSearchParams({}); }
-    else if (stripeParam === "refresh") { setStripeError("Onboarding expired. Please try again."); setSearchParams({}); }
+        .select("first_name, last_name, full_name")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!data) return;
+      setFirstName(data.first_name || data.full_name?.split(" ")[0] || "");
+      setLastName(data.last_name || data.full_name?.split(" ").slice(1).join(" ") || "");
+    })();
   }, []);
 
-  const handleSaveName = async () => {
-    setNameError(""); setNameSuccess(false);
-    if (!firstName.trim()) { setNameError("First name is required."); return; }
-    setNameLoading(true);
-    const { error } = await supabase.from("profiles").upsert({ id: userId, first_name: firstName.trim(), last_name: lastName.trim() });
-    if (error) { setNameError(error.message); }
-    else { setNameSuccess(true); localStorage.setItem(`pardna_onboarded_${userId}`, "true"); }
-    setNameLoading(false);
+  async function saveName(e: React.FormEvent) {
+    e.preventDefault();
+    setErr("");
+    setMsg("");
+    setSaving(true);
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        full_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+      })
+      .eq("id", auth.user.id);
+    setSaving(false);
+    if (error) setErr(error.message);
+    else setMsg("Name saved.");
+  }
+
+  async function savePassword(e: React.FormEvent) {
+    e.preventDefault();
+    setErr("");
+    setMsg("");
+    if (password.length < 8) {
+      setErr("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setErr("Passwords do not match.");
+      return;
+    }
+    setUpdatingPw(true);
+    const { error } = await supabase.auth.updateUser({ password });
+    setUpdatingPw(false);
+    if (error) setErr(error.message);
+    else {
+      setMsg("Password updated.");
+      setPassword("");
+      setConfirm("");
+    }
+  }
+
+  const input = {
+    width: "100%",
+    background: PAPER,
+    border: `1.5px solid ${LINE}`,
+    borderRadius: 12,
+    padding: "12px 14px",
+    fontFamily: "inherit",
+    fontSize: 15,
+    outline: "none",
+    boxSizing: "border-box" as const,
   };
 
-  const handleChangePassword = async () => {
-    setPwError(""); setPwSuccess(false);
-    if (!newPw || !confirmPw) { setPwError("Please fill in both fields."); return; }
-    if (newPw !== confirmPw)  { setPwError("Passwords do not match."); return; }
-    if (newPw.length < 8)     { setPwError("Password must be at least 8 characters."); return; }
-    setPwLoading(true);
-    const { error } = await supabase.auth.updateUser({ password: newPw });
-    if (error) { setPwError(error.message); } else { setPwSuccess(true); setNewPw(""); setConfirmPw(""); }
-    setPwLoading(false);
+  const card = {
+    background: WHITE,
+    border: `1px solid ${LINE}`,
+    borderRadius: 20,
+    padding: "22px 24px",
+    marginBottom: 12,
   };
 
-  const handleStripeConnect = async () => {
-    setStripeError(""); setStripeLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-connect-onboard`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-      });
-      const json = await res.json();
-      if (json.url) { window.location.href = json.url; }
-      else { setStripeError(json.error ?? "Something went wrong. Please try again."); }
-    } catch { setStripeError("Something went wrong. Please try again."); }
-    setStripeLoading(false);
+  const btn = {
+    background: INK,
+    color: "#fff",
+    border: 0,
+    borderRadius: 999,
+    padding: "10px 16px",
+    fontWeight: 800,
+    fontFamily: "inherit",
+    cursor: "pointer",
+    marginTop: 12,
   };
 
   return (
-    <div className="sec-page">
-      <div className="sec-header">
-        <div>
-          <p className="sec-eyebrow">Your account</p>
-          <h1>Your <span className="sec-title-accent">Profile</span></h1>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: INK, maxWidth: 720 }}>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 6 }}>
+          Account
         </div>
+        <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: "-0.035em" }}>
+          Your Profile
+        </h1>
       </div>
 
-      <div className="sec-content">
+      {msg && (
+        <div style={{ background: "#E6FAF7", color: INK, borderRadius: 12, padding: "10px 14px", marginBottom: 12, fontSize: 14, fontWeight: 600 }}>
+          {msg}
+        </div>
+      )}
+      {err && (
+        <div style={{ background: "#FEECEC", color: "#B42318", borderRadius: 12, padding: "10px 14px", marginBottom: 12, fontSize: 14 }}>
+          {err}
+        </div>
+      )}
 
-      <div className="sec-card">
-        <div className="sec-card-head">
-          <div className="sec-card-icon"><UserCircle size={20} strokeWidth={1.8} /></div>
-          <div><h3>Display Name</h3><p>This is the name shown across your circles and to other members.</p></div>
+      <form onSubmit={saveName} style={card}>
+        <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>Display name</div>
+        <div style={{ color: MUTED, fontSize: 14, marginBottom: 16 }}>Shown in your circles.</div>
+        <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>First name</label>
+        <input value={firstName} onChange={(e) => setFirstName(e.target.value)} style={{ ...input, marginBottom: 12 }} />
+        <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>Last name</label>
+        <input value={lastName} onChange={(e) => setLastName(e.target.value)} style={{ ...input, marginBottom: 12 }} />
+        <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>Email</label>
+        <input value={email} readOnly style={{ ...input, color: MUTED }} />
+        <button type="submit" style={btn} disabled={saving}>{saving ? "Saving…" : "Save changes"}</button>
+      </form>
+
+      <form onSubmit={savePassword} style={card}>
+        <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>Password</div>
+        <div style={{ color: MUTED, fontSize: 14, marginBottom: 16 }}>At least 8 characters.</div>
+        <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>New password</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ ...input, marginBottom: 12 }} />
+        <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>Confirm password</label>
+        <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} style={input} />
+        <button type="submit" style={btn} disabled={updatingPw}>{updatingPw ? "Updating…" : "Update password"}</button>
+      </form>
+
+      <div style={card}>
+        <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>Payout account</div>
+        <div style={{ color: MUTED, fontSize: 14, marginBottom: 14 }}>
+          Connected. Circle payouts can land here.
         </div>
-        {nameError   && <div className="sec-alert sec-alert--error">⚠ {nameError}</div>}
-        {nameSuccess && <div className="sec-alert sec-alert--success">✓ Name updated successfully.</div>}
-        <div className="sec-fields">
-          <div className="sec-row">
-            <div className="sec-field">
-              <label>First Name</label>
-              <input className="sec-input" type="text" placeholder="e.g. Tevin" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-            </div>
-            <div className="sec-field">
-              <label>Last Name</label>
-              <input className="sec-input" type="text" placeholder="e.g. Skeete" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-            </div>
-          </div>
-          <div className="sec-field">
-            <label>Email Address</label>
-            <input className="sec-input" type="email" value={email} disabled style={{ opacity: 0.5, cursor: "not-allowed" }} />
-          </div>
-        </div>
-        <button className="sec-btn" onClick={handleSaveName} disabled={nameLoading}>
-          {nameLoading ? <span className="spinner" /> : "Save changes"}
+        <button
+          type="button"
+          style={{ ...btn, background: "transparent", color: INK, border: `1.5px solid ${LINE}` }}
+        >
+          Update payout account
         </button>
-      </div>
-
-      <div className="sec-card">
-        <div className="sec-card-head">
-          <div className="sec-card-icon"><KeyRound size={20} strokeWidth={1.8} /></div>
-          <div><h3>Change Password</h3><p>Update your account password. Use at least 8 characters.</p></div>
-        </div>
-        {pwError   && <div className="sec-alert sec-alert--error">⚠ {pwError}</div>}
-        {pwSuccess && <div className="sec-alert sec-alert--success">✓ Password updated successfully.</div>}
-        <div className="sec-fields">
-          <div className="sec-row">
-            <div className="sec-field">
-              <label>New Password</label>
-              <input className="sec-input" type="password" placeholder="••••••••" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
-            </div>
-            <div className="sec-field">
-              <label>Confirm New Password</label>
-              <input className="sec-input" type="password" placeholder="••••••••" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} />
-            </div>
-          </div>
-        </div>
-        <button className="sec-btn" onClick={handleChangePassword} disabled={pwLoading}>
-          {pwLoading ? <span className="spinner" /> : "Update Password"}
-        </button>
-      </div>
-
-      <div className="sec-card">
-        <div className="sec-card-head">
-          <div className="sec-card-icon" style={stripeConnected ? { color: "#10B981", background: "rgba(16,185,129,0.1)" } : {}}>
-            <Landmark size={20} strokeWidth={1.8} />
-          </div>
-          <div>
-            <h3>Payout Account</h3>
-            <p>{stripeConnected ? "Your payout account is connected. You can receive circle payouts." : "Connect a bank account to receive payouts when it's your turn in a circle."}</p>
-          </div>
-        </div>
-        {stripeError   && <div className="sec-alert sec-alert--error">⚠ {stripeError}</div>}
-        {stripeSuccess && <div className="sec-alert sec-alert--success">✓ Payout account connected successfully.</div>}
-        {stripeConnected ? (
-          <button className="sec-btn" onClick={handleStripeConnect} disabled={stripeLoading} style={{ background: "#F1F5F9", color: "#475569" }}>
-            {stripeLoading ? <span className="spinner" /> : "Update payout account"}
-          </button>
-        ) : (
-          <button className="sec-btn" onClick={handleStripeConnect} disabled={stripeLoading}>
-            {stripeLoading ? <span className="spinner" /> : "Connect payout account"}
-          </button>
-        )}
-      </div>
       </div>
     </div>
   );
