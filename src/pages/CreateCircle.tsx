@@ -25,6 +25,7 @@ export default function CreateCircle() {
       return;
     }
     setSaving(true);
+
     const { data: auth } = await supabase.auth.getUser();
     const user = auth.user;
     if (!user) {
@@ -32,45 +33,30 @@ export default function CreateCircle() {
       return;
     }
 
-    const invite_code = crypto.randomUUID();
-    const insert = await supabase
+    const { data, error } = await supabase
       .from("circles")
       .insert({
         name: name.trim(),
-        contribution_amount: amount,
         organizer_id: user.id,
-        created_by: user.id,
-        invite_code,
-        status: "active",
+        contribution_amount: amount,
+        total_members: seats,
       })
       .select("*")
       .single();
 
-    let circle = insert.data as { id: string } | null;
-    if (insert.error || !circle) {
-      const fallback = await supabase
-        .from("circles")
-        .insert({
-          name: name.trim(),
-          contribution_amount: amount,
-        })
-        .select("*")
-        .single();
-      if (fallback.error || !fallback.data) {
-        setSaving(false);
-        setErr(insert.error?.message || fallback.error?.message || "Could not create the circle.");
-        return;
-      }
-      circle = fallback.data as { id: string };
+    if (error || !data?.id) {
+      setSaving(false);
+      setErr(error?.message || "Could not create the circle.");
+      return;
     }
 
     await supabase.from("circle_members").insert({
-      circle_id: circle.id,
+      circle_id: data.id,
       user_id: user.id,
     });
 
     setSaving(false);
-    navigate(`/app/circles/${circle.id}`);
+    navigate(`/app/circles/${data.id}`);
   }
 
   const input = {
@@ -96,7 +82,6 @@ export default function CreateCircle() {
       <h1 style={{ margin: "0 0 8px", fontSize: 36, letterSpacing: "-0.04em" }}>Start a circle</h1>
       <p style={{ color: MUTED, lineHeight: 1.6, margin: "0 0 24px" }}>
         Defaults are on purpose. Most people keep the suggested amount and schedule.
-        You can change them before you create.
       </p>
 
       {err && (
@@ -113,9 +98,6 @@ export default function CreateCircle() {
 
         <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 22, marginBottom: 12 }}>
           <div style={{ fontWeight: 800, marginBottom: 6 }}>Suggested contribution</div>
-          <div style={{ color: MUTED, fontSize: 14, marginBottom: 14 }}>
-            $50 / month is the default. People who see a filled-in number start more often than a blank field.
-          </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
             {[25, 50, 100, 250].map((n) => (
               <button
@@ -137,24 +119,17 @@ export default function CreateCircle() {
               </button>
             ))}
           </div>
-          <label style={{ display: "block", fontSize: 13, color: MUTED, marginBottom: 6 }}>Or set another amount</label>
           <input type="number" min={1} value={amount} onChange={(e) => setAmount(Number(e.target.value) || 0)} style={input} />
         </div>
 
         <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 22, marginBottom: 12 }}>
           <div style={{ fontWeight: 800, marginBottom: 6 }}>Seats</div>
-          <div style={{ color: MUTED, fontSize: 14, marginBottom: 14 }}>
-            Five people is the default size. Small enough to know everyone. You are already in.
-          </div>
           <input type="range" min={3} max={12} value={seats} onChange={(e) => setSeats(Number(e.target.value))} style={{ width: "100%" }} />
           <div style={{ marginTop: 8, fontWeight: 700 }}>{seats} people · you + {seats - 1} invites</div>
         </div>
 
         <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 22, marginBottom: 18 }}>
           <div style={{ fontWeight: 800, marginBottom: 6 }}>Schedule</div>
-          <div style={{ color: MUTED, fontSize: 14, marginBottom: 14 }}>
-            Monthly is on unless you change it. Same idea as default 401(k) enrollment: the plan starts; opting out is the extra step.
-          </div>
           <div style={{ display: "flex", gap: 8 }}>
             {[
               { id: "monthly", label: "Monthly" },
@@ -189,9 +164,6 @@ export default function CreateCircle() {
         >
           {saving ? "Creating…" : `Create circle · $${amount} ${cadence}`}
         </button>
-        <p style={{ color: MUTED, fontSize: 13, lineHeight: 1.5, marginTop: 12 }}>
-          No money moves yet. Creating puts you on the roster and gives you an invite link.
-        </p>
       </form>
     </div>
   );
