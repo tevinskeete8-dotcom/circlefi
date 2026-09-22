@@ -11,6 +11,7 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Circles from "./pages/Circles";
 import CircleDetail from "./pages/CircleDetail";
+import CreateCircle from "./pages/CreateCircle";
 import Reputation from "./pages/Reputation";
 import Security from "./pages/Security";
 
@@ -29,62 +30,45 @@ function hasOnboarded(userId: string) {
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
-  const [profileChecked, setProfileChecked] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      const s = data.session;
-      setSession(s);
-
-      if (s?.user && !hasOnboarded(s.user.id)) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("first_name")
-          .eq("id", s.user.id)
-          .single();
-        if (profile?.first_name) {
-          localStorage.setItem(`pardna_onboarded_${s.user.id}`, "true");
-        }
-      }
-
-      setProfileChecked(true);
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
       setLoading(false);
+      if (!data.session) navigate("/login");
     });
-
-    const { data: { subscription } } =
-      supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session);
-      });
-
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_e, sess) => {
+      setSession(sess);
+      if (!sess) navigate("/login");
+    });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#F6F6F4",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#5EEAD4",
-          fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-          fontSize: "0.9rem",
-        }}
-      >
-        Loading...
+      <div style={{ minHeight: "100vh", background: "#0B0B0B", color: "#8A8A8A", padding: 40 }}>
+        Loading…
       </div>
     );
   }
-
-  if (!session) return <Navigate to="/login" replace />;
-  if (!profileChecked) return null;
-  if (!hasOnboarded(session.user.id)) {
-    return <Navigate to="/onboarding" replace />;
-  }
-
+  if (!session) return null;
   return <>{children}</>;
+}
+
+function OnboardingRoute() {
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) navigate("/login");
+      else setLoading(false);
+    });
+  }, [navigate]);
+  if (loading) return null;
+  return <Onboarding />;
 }
 
 function AppShell({ children }: { children: ReactNode }) {
@@ -95,53 +79,22 @@ function AppShell({ children }: { children: ReactNode }) {
   );
 }
 
-function OnboardingRoute() {
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState<any>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) return null;
-  if (!session) return <Navigate to="/login" replace />;
-  if (hasOnboarded(session.user.id)) {
-    return <Navigate to="/app" replace />;
-  }
-
-  return <Onboarding />;
-}
-
 function AuthRedirectHandler() {
   const navigate = useNavigate();
-
   useEffect(() => {
-    const { data: { subscription } } =
-      supabase.auth.onAuthStateChange((event, session) => {
-        if (event !== "SIGNED_IN" || !session) return;
-
-        const path = window.location.pathname;
-        if (
-          path.startsWith("/app") ||
-          path.startsWith("/onboarding") ||
-          path.startsWith("/invite")
-        ) {
-          return;
-        }
-
-        if (!hasOnboarded(session.user.id)) {
-          navigate("/onboarding", { replace: true });
-        } else {
-          navigate("/app", { replace: true });
-        }
-      });
-
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) return;
+      const path = window.location.pathname;
+      if (path.startsWith("/app") || path.startsWith("/invite") || path === "/onboarding") return;
+      if (event === "SIGNED_IN") {
+        if (hasOnboarded(session.user.id)) navigate("/app");
+        else navigate("/onboarding");
+      }
+    });
     return () => subscription.unsubscribe();
   }, [navigate]);
-
   return null;
 }
 
@@ -149,15 +102,14 @@ export default function App() {
   return (
     <>
       <AuthRedirectHandler />
-
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
         <Route path="/onboarding" element={<OnboardingRoute />} />
 
         <Route path="/app" element={<AppShell><Dashboard /></AppShell>} />
+        <Route path="/app/circles/new" element={<AppShell><CreateCircle /></AppShell>} />
         <Route path="/app/circles" element={<AppShell><Circles /></AppShell>} />
         <Route path="/app/circles/:id" element={<AppShell><CircleDetail /></AppShell>} />
         <Route path="/app/reputation" element={<AppShell><Reputation /></AppShell>} />

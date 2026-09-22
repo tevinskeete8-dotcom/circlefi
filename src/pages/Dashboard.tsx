@@ -39,13 +39,12 @@ export default function Dashboard() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("first_name, full_name")
+        .select("first_name, last_name")
         .eq("id", user.id)
         .maybeSingle();
 
       setFirstName(
         profile?.first_name ||
-        profile?.full_name?.split(" ")[0] ||
         user.email?.split("@")[0] ||
         "there"
       );
@@ -78,7 +77,7 @@ export default function Dashboard() {
             Welcome, <span style={{ color: TEAL }}>{firstName}</span>
           </h1>
         </div>
-        <Link to="/app/circles" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 18px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
+        <Link to="/app/circles/new" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 18px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
           + New circle
         </Link>
       </div>
@@ -109,7 +108,7 @@ export default function Dashboard() {
         <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 48, textAlign: "center" }}>
           <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8 }}>No circles yet</div>
           <div style={{ color: MUTED, marginBottom: 18 }}>Start one with people you already trust.</div>
-          <Link to="/app/circles" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800 }}>Create a circle</Link>
+          <Link to="/app/circles/new" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800 }}>Create a circle</Link>
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>

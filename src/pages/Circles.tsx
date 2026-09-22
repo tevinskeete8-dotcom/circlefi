@@ -60,7 +60,7 @@ export default function Circles() {
             Your <span style={{ color: TEAL }}>circles</span>
           </h1>
         </div>
-        <Link to="/onboarding" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 18px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
+        <Link to="/app/circles/new" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 18px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
           + New circle
         </Link>
       </div>
