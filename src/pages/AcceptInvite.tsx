@@ -1,220 +1,137 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import PardnaLogo from "../components/PardnaLogo";
-import PlaidLinkButton from "../components/PlaidLink";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
-type InviteData = {
+const TEAL = "#5EEAD4";
+const INK = "#0B0B0B";
+const CARD = "#141414";
+const MUTED = "#8A8A8A";
+const LINE = "rgba(255,255,255,0.08)";
+
+type Circle = {
   id: string;
-  circle_id: string;
-  invited_email: string;
-  status: string;
-  circles: {
-    name: string;
-    contribution_amount: number;
-    total_members: number;
-  };
+  name?: string;
+  contribution_amount?: number;
+  amount?: number;
+  invite_code?: string;
+  organizer_id?: string;
+  created_by?: string;
 };
 
 export default function AcceptInvite() {
-  const { token } = useParams<{ token: string }>();
+  const { token } = useParams();
   const navigate = useNavigate();
-  const [invite, setInvite] = useState<InviteData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [accepting, setAccepting] = useState(false);
+  const [circle, setCircle] = useState<Circle | null>(null);
+  const [status, setStatus] = useState<"loading" | "need-login" | "ready" | "joining" | "error">("loading");
   const [error, setError] = useState("");
-  const [session, setSession] = useState<any>(null);
-  const [done, setDone] = useState(false);
-  const [bankConnected, setBankConnected] = useState(false);
-  const [checkingBank, setCheckingBank] = useState(false);
 
   useEffect(() => {
-    async function load() {
-      const { data: { session: s } } = await supabase.auth.getSession();
-      setSession(s);
-
-      const { data, error: err } = await supabase
-        .from("circle_invitations")
-        .select("*, circles(name, contribution_amount, total_members)")
-        .eq("token", token)
-        .eq("status", "pending")
-        .single();
-
-      if (err || !data) {
-        setError("This invite link is invalid or has already been used.");
-      } else {
-        setInvite(data as InviteData);
-      }
-
-      // Check if user already has a bank connected
-      if (s?.user) {
-        setCheckingBank(true);
-        const { data: conn } = await supabase
-          .from("plaid_connections")
-          .select("id")
-          .eq("user_id", s.user.id)
-          .single();
-        setBankConnected(!!conn);
-        setCheckingBank(false);
-      }
-
-      setLoading(false);
-    }
-    load();
-  }, [token]);
-
-  const handleAccept = async () => {
-    if (!invite || !session) return;
-    setAccepting(true);
-    setError("");
-
-    const { error: memberErr } = await supabase
-      .from("circle_members")
-      .insert({ circle_id: invite.circle_id, user_id: session.user.id });
-
-    if (memberErr && !memberErr.message.includes("duplicate")) {
-      setError(memberErr.message);
-      setAccepting(false);
+    if (!token) {
+      setStatus("error");
+      setError("This invite link is missing a code.");
       return;
     }
 
-    await supabase
-      .from("circle_invitations")
-      .update({ status: "accepted", accepted_by: session.user.id })
-      .eq("id", invite.id);
+    (async () => {
+      const byCode = await supabase.from("circles").select("*").eq("invite_code", token).maybeSingle();
+      const byId = byCode.data
+        ? byCode
+        : await supabase.from("circles").select("*").eq("id", token).maybeSingle();
 
-    setDone(true);
-    setTimeout(() => navigate(`/app/circles/${invite.circle_id}`), 2000);
-  };
+      const found = (byId.data || byCode.data) as Circle | null;
+      if (!found) {
+        setStatus("error");
+        setError("This invite is invalid or the circle was removed.");
+        return;
+      }
+      setCircle(found);
 
-  const C = {
-    primary: "#006FFF", gold: "#F59E0B", bg: "#F8FAFC",
-    dark: "#0F172A", mid: "#475569",
-  };
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        setStatus("need-login");
+        return;
+      }
+      setStatus("ready");
+    })();
+  }, [token]);
 
-  if (loading) return (
-    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Noto Sans, sans-serif" }}>
-      <div style={{ color: C.mid }}>Loading invite...</div>
-    </div>
-  );
+  async function join() {
+    if (!circle) return;
+    setStatus("joining");
+    setError("");
+
+    const { data: auth } = await supabase.auth.getUser();
+    const user = auth.user;
+    if (!user) {
+      setStatus("need-login");
+      return;
+    }
+
+    const { error: insertError } = await supabase.from("circle_members").insert({
+      circle_id: circle.id,
+      user_id: user.id,
+      role: "member",
+      status: "active",
+    });
+
+    if (insertError && !String(insertError.message).toLowerCase().includes("duplicate")) {
+      setStatus("ready");
+      setError(insertError.message);
+      return;
+    }
+
+    navigate(`/app/circles/${circle.id}`);
+  }
+
+  const amt = Number(circle?.contribution_amount ?? circle?.amount ?? 0);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Noto Sans', sans-serif", padding: "2rem" }}>
-      <div style={{ width: "100%", maxWidth: 440, background: "#fff", borderRadius: 24, padding: "2.5rem", boxShadow: "0 8px 40px rgba(15,23,42,0.12)", border: "1px solid rgba(15,23,42,0.1)" }}>
+    <div style={{ minHeight: "100vh", background: INK, color: "#F5F5F5", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div style={{ width: "100%", maxWidth: 440, background: CARD, border: `1px solid ${LINE}`, borderRadius: 24, padding: 28 }}>
+        <div style={{ fontWeight: 800, fontSize: 14, color: TEAL, marginBottom: 18 }}>Pardna</div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "2rem" }}>
-          <PardnaLogo size="md" />
-        </div>
+        {status === "loading" && <div style={{ color: MUTED }}>Opening invite…</div>}
 
-        {error && !invite && (
-          <div style={{ textAlign: "center", padding: "2rem 0" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "1rem" }}>⚠️</div>
-            <h2 style={{ color: C.dark, marginBottom: "0.5rem" }}>Invalid Invite</h2>
-            <p style={{ color: C.mid, marginBottom: "1.5rem" }}>{error}</p>
-            <Link to="/" style={{ color: C.primary, fontWeight: 600 }}>Go home →</Link>
-          </div>
-        )}
-
-        {done && (
-          <div style={{ textAlign: "center", padding: "2rem 0" }}>
-            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>🎉</div>
-            <h2 style={{ color: C.dark, marginBottom: "0.5rem" }}>You're in!</h2>
-            <p style={{ color: C.mid }}>Taking you to the circle now...</p>
-          </div>
-        )}
-
-        {!error && !done && invite && (
+        {status === "error" && (
           <>
-            {/* Circle info */}
-            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-              <div style={{ width: 56, height: 56, borderRadius: "50%", background: C.primary, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", margin: "0 auto 1rem", color: "#fff", fontWeight: 800 }}>
-                {invite.circles.name.slice(0, 2).toUpperCase()}
-              </div>
-              <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: C.dark, marginBottom: "0.4rem" }}>
-                You've been invited
-              </h2>
-              <p style={{ color: C.mid, fontSize: "0.95rem" }}>
-                to join <strong style={{ color: C.primary }}>{invite.circles.name}</strong>
-              </p>
-            </div>
+            <h1 style={{ fontSize: 28, letterSpacing: "-0.03em", margin: "0 0 10px" }}>Invite not found</h1>
+            <p style={{ color: MUTED }}>{error}</p>
+            <Link to="/" style={{ color: TEAL }}>Go home</Link>
+          </>
+        )}
 
-            {/* Circle stats */}
-            <div style={{ background: "#F8FAFC", borderRadius: 16, padding: "1.25rem", marginBottom: "1.5rem", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem", textAlign: "center" }}>
-              <div>
-                <div style={{ fontWeight: 800, color: C.primary, fontSize: "1.1rem" }}>${invite.circles.contribution_amount.toLocaleString()}</div>
-                <div style={{ fontSize: "0.72rem", color: C.mid }}>per member</div>
-              </div>
-              <div>
-                <div style={{ fontWeight: 800, color: C.primary, fontSize: "1.1rem" }}>{invite.circles.total_members}</div>
-                <div style={{ fontSize: "0.72rem", color: C.mid }}>members</div>
-              </div>
-              <div>
-                <div style={{ fontWeight: 800, color: C.primary, fontSize: "1.1rem" }}>${(invite.circles.contribution_amount * invite.circles.total_members).toLocaleString()}</div>
-                <div style={{ fontSize: "0.72rem", color: C.mid }}>pool / mo</div>
-              </div>
+        {(status === "need-login" || status === "ready" || status === "joining") && circle && (
+          <>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>
+              You’re invited
             </div>
+            <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.03em", margin: "0 0 10px" }}>
+              {circle.name || "A circle"}
+            </h1>
+            <p style={{ color: MUTED, lineHeight: 1.6, margin: "0 0 22px" }}>
+              Planned amount {amt ? `$${amt.toLocaleString()} per person` : "set by the organizer"}.
+              No money moves in this test. Joining puts your name on the roster.
+            </p>
 
-            {!session ? (
-              <div style={{ textAlign: "center" }}>
-                <p style={{ color: C.mid, fontSize: "0.875rem", marginBottom: "1.25rem" }}>
-                  You need a Pardna account to accept this invite.
-                </p>
-                <Link
-                  to={`/signup?invite=${token}`}
-                  style={{ display: "block", width: "100%", padding: "0.875rem", background: C.primary, color: "#fff", borderRadius: 100, fontWeight: 700, textDecoration: "none", textAlign: "center", marginBottom: "0.75rem" }}
-                >
-                  Create account & join →
+            {error && <div style={{ color: "#FF8A80", fontSize: 14, marginBottom: 14 }}>{error}</div>}
+
+            {status === "need-login" ? (
+              <div style={{ display: "flex", gap: 8 }}>
+                <Link to={`/login?next=/invite/${token}`} style={{ flex: 1, textAlign: "center", background: TEAL, color: INK, textDecoration: "none", padding: "12px 16px", borderRadius: 999, fontWeight: 800 }}>
+                  Log in to join
                 </Link>
-                <Link
-                  to={`/login?invite=${token}`}
-                  style={{ display: "block", width: "100%", padding: "0.875rem", background: "#E6F0FF", color: C.primary, borderRadius: 100, fontWeight: 600, textDecoration: "none", textAlign: "center" }}
-                >
-                  Log in to accept
+                <Link to={`/signup?next=/invite/${token}`} style={{ flex: 1, textAlign: "center", color: "#fff", textDecoration: "none", padding: "12px 16px", borderRadius: 999, fontWeight: 700, border: `1px solid ${LINE}` }}>
+                  Create account
                 </Link>
-              </div>
-            ) : checkingBank ? (
-              <div style={{ textAlign: "center", color: C.mid, fontSize: "0.875rem", padding: "1rem 0" }}>
-                Checking your account...
-              </div>
-            ) : !bankConnected ? (
-              /* Step 1 — Connect bank */
-              <div>
-                <div style={{ background: "#E6F0FF", borderRadius: 12, padding: "1rem 1.25rem", marginBottom: "1.25rem", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
-                  <span style={{ fontSize: "1.1rem", flexShrink: 0 }}>🏦</span>
-                  <div>
-                    <p style={{ fontWeight: 700, color: C.dark, fontSize: "0.875rem", marginBottom: "0.2rem" }}>Bank account required</p>
-                    <p style={{ color: C.mid, fontSize: "0.8rem", lineHeight: 1.5 }}>
-                      Connect your bank so contributions can be pulled automatically on schedule. Your credentials are never stored by Pardna.
-                    </p>
-                  </div>
-                </div>
-                <PlaidLinkButton
-                  label="Connect bank to continue"
-                  onSuccess={() => setBankConnected(true)}
-                  onError={(e) => setError(e)}
-                  style={{
-                    width: "100%", padding: "0.9rem", background: C.primary,
-                    color: "#fff", border: "none", borderRadius: 100,
-                    fontWeight: 700, fontSize: "1rem", cursor: "pointer",
-                  }}
-                />
               </div>
             ) : (
-              /* Step 2 — Join circle */
-              <div>
-                <div style={{ background: "#ECFDF5", borderRadius: 12, padding: "0.75rem 1rem", marginBottom: "1.25rem", display: "flex", gap: "0.6rem", alignItems: "center" }}>
-                  <span style={{ color: "#059669", fontSize: "1rem" }}>✓</span>
-                  <p style={{ color: "#059669", fontSize: "0.82rem", fontWeight: 600, margin: 0 }}>Bank account connected</p>
-                </div>
-                {error && <div style={{ color: "#EF4444", fontSize: "0.85rem", marginBottom: "1rem" }}>⚠ {error}</div>}
-                <button
-                  onClick={handleAccept}
-                  disabled={accepting}
-                  style={{ width: "100%", padding: "0.9rem", background: C.primary, color: "#fff", border: "none", borderRadius: 100, fontWeight: 700, fontSize: "1rem", cursor: "pointer" }}
-                >
-                  {accepting ? "Joining..." : "Accept & join circle →"}
-                </button>
-              </div>
+              <button
+                onClick={join}
+                disabled={status === "joining"}
+                style={{ width: "100%", background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "12px 16px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}
+              >
+                {status === "joining" ? "Joining…" : "Join this circle"}
+              </button>
             )}
           </>
         )}
