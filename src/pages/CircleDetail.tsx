@@ -18,15 +18,15 @@ type Circle = {
   pool?: number;
   progress?: number;
   invite_code?: string;
+  organizer_id?: string;
+  created_by?: string;
 };
 
-type Member = {
+type Row = {
   id?: string;
   user_id?: string;
-  name?: string;
-  full_name?: string;
-  role?: string;
-  status?: string;
+  name: string;
+  tag: string;
 };
 
 function money(n: number) {
@@ -47,7 +47,7 @@ function ShareIcon() {
 export default function CircleDetail() {
   const { id } = useParams();
   const [circle, setCircle] = useState<Circle | null>(null);
-  const [members, setMembers] = useState<Member[]>([]);
+  const [people, setPeople] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -58,22 +58,47 @@ export default function CircleDetail() {
     if (!id) return;
     (async () => {
       const { data } = await supabase.from("circles").select("*").eq("id", id).maybeSingle();
-      setCircle((data as Circle) || null);
+      const c = (data as Circle) || null;
+      setCircle(c);
 
       const { data: memberRows } = await supabase
         .from("circle_members")
         .select("*")
         .eq("circle_id", id);
-      setMembers((memberRows as Member[]) || []);
+
+      const rows = (memberRows || []) as { id?: string; user_id?: string }[];
+      const ids = rows.map((r) => r.user_id).filter(Boolean) as string[];
+
+      let names: Record<string, string> = {};
+      if (ids.length) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, first_name, last_name")
+          .in("id", ids);
+        for (const p of profiles || []) {
+          const label = [p.first_name, p.last_name].filter(Boolean).join(" ").trim();
+          names[p.id] = label || "Member";
+        }
+      }
+
+      const organizer = c?.organizer_id || c?.created_by;
+      const listed = rows.map((r) => ({
+        id: r.id,
+        user_id: r.user_id,
+        name: (r.user_id && names[r.user_id]) || "Member",
+        tag: r.user_id && organizer && r.user_id === organizer ? "Organizer" : "Member",
+      }));
+
+      setPeople(listed);
       setLoading(false);
     })();
   }, [id]);
 
   const amt = Number(circle?.contribution_amount ?? circle?.amount ?? 0);
-  const count = Math.max(Number(circle?.member_count ?? 0), members.length);
+  const count = Math.max(Number(circle?.member_count ?? 0), people.length);
   const pool = Number(circle?.pool ?? amt * count);
   const progress = Math.min(100, Math.max(0, Number(circle?.progress ?? 0)));
-  const inviteUrl = `${window.location.origin}/invite/${circle?.invite_code || circle?.id || ""}`;
+  const inviteUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/invite/${circle?.invite_code || circle?.id || ""}`;
   const inviteText = `Join ${circle?.name || "my Pardna circle"}. Planned amount ${amt ? `$${amt}` : "TBD"} per person. No money moves until we say so.\n${inviteUrl}`;
 
   async function shareLink() {
@@ -98,25 +123,20 @@ export default function CircleDetail() {
     e.preventDefault();
     const cleanEmail = email.trim();
     const cleanPhone = phone.replace(/[^\d+]/g, "");
-
     if (!cleanEmail && !cleanPhone) {
       setMsg("Add an email or a phone number.");
       return;
     }
-
     if (cleanEmail) {
       window.location.href = `mailto:${encodeURIComponent(cleanEmail)}?subject=${encodeURIComponent(
         `Join ${circle?.name || "my Pardna circle"}`
       )}&body=${encodeURIComponent(inviteText)}`;
     }
-
     if (cleanPhone) {
-      const sms = `sms:${cleanPhone}?&body=${encodeURIComponent(inviteText)}`;
       window.setTimeout(() => {
-        window.location.href = sms;
+        window.location.href = `sms:${cleanPhone}?&body=${encodeURIComponent(inviteText)}`;
       }, cleanEmail ? 400 : 0);
     }
-
     setMsg("Opening Mail or Messages with the invite filled in.");
     setInviteOpen(false);
     setEmail("");
@@ -124,7 +144,6 @@ export default function CircleDetail() {
   }
 
   if (loading) return <div style={{ color: MUTED }}>Loading circle…</div>;
-
   if (!circle) {
     return (
       <div>
@@ -149,23 +168,11 @@ export default function CircleDetail() {
             {circle.name || "Circle"}
           </h1>
         </div>
-
         <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={() => setInviteOpen(true)}
-            style={{ background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "10px 18px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}
-          >
+          <button onClick={() => setInviteOpen(true)} style={{ background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "10px 18px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}>
             Invite
           </button>
-          <button
-            onClick={shareLink}
-            title="Share link"
-            style={{
-              width: 42, height: 42, borderRadius: 999, border: `1px solid ${LINE}`,
-              background: CARD, color: "#fff", cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
-          >
+          <button onClick={shareLink} title="Share link" style={{ width: 42, height: 42, borderRadius: 999, border: `1px solid ${LINE}`, background: CARD, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <ShareIcon />
           </button>
         </div>
@@ -191,80 +198,38 @@ export default function CircleDetail() {
         ))}
       </div>
 
-      <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 22, marginBottom: 14 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
-          <span style={{ color: MUTED }}>This cycle</span>
-          <span style={{ color: TEAL, fontWeight: 700 }}>{progress}%</span>
-        </div>
-        <div style={{ height: 8, background: "#222", borderRadius: 99, overflow: "hidden" }}>
-          <div style={{ width: `${progress}%`, height: "100%", background: TEAL }} />
-        </div>
-      </div>
-
       <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 22 }}>
         <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 14, color: "#fff" }}>People in this circle</div>
-        {members.length === 0 ? (
-          <div style={{ color: MUTED, fontSize: 14 }}>
-            You are the organizer. Invite someone to put a second name on this list.
-          </div>
+        {people.length === 0 ? (
+          <div style={{ color: MUTED, fontSize: 14 }}>No one on the roster yet.</div>
         ) : (
-          members.map((m, i) => (
+          people.map((m, i) => (
             <div key={m.id || m.user_id || i} style={{
               display: "flex", justifyContent: "space-between", alignItems: "center",
               padding: "12px 0", borderTop: i === 0 ? "none" : `1px solid ${LINE}`,
             }}>
-              <span style={{ color: "#fff", fontWeight: 600 }}>{m.full_name || m.name || "Member"}</span>
-              <span style={{ color: TEAL, fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>
-                {m.role || m.status || "Member"}
-              </span>
+              <span style={{ color: "#fff", fontWeight: 600 }}>{m.name}</span>
+              <span style={{ color: TEAL, fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>{m.tag}</span>
             </div>
           ))
         )}
       </div>
 
       {inviteOpen && (
-        <div
-          onClick={() => setInviteOpen(false)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 80 }}
-        >
-          <form
-            onClick={(e) => e.stopPropagation()}
-            onSubmit={sendInvites}
-            style={{ width: "100%", maxWidth: 420, background: CARD, border: `1px solid ${LINE}`, borderRadius: 24, padding: 24 }}
-          >
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>
-              Invite
-            </div>
+        <div onClick={() => setInviteOpen(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 80 }}>
+          <form onClick={(e) => e.stopPropagation()} onSubmit={sendInvites} style={{ width: "100%", maxWidth: 420, background: CARD, border: `1px solid ${LINE}`, borderRadius: 24, padding: 24 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>Invite</div>
             <h2 style={{ margin: "0 0 8px", fontSize: 24, letterSpacing: "-0.03em" }}>Add someone you trust</h2>
             <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.55, margin: "0 0 18px" }}>
-              Email or text opens on your device with the circle link already written. Pardna is not sending the message for you yet.
+              Email or text opens on your device with the circle link already written.
             </p>
-
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="friend@email.com"
-              style={{ width: "100%", boxSizing: "border-box", background: "#1A1A1A", border: `1px solid ${LINE}`, borderRadius: 12, padding: "12px 14px", color: "#fff", fontFamily: "inherit", marginBottom: 12 }}
-            />
-
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="friend@email.com" style={{ width: "100%", boxSizing: "border-box", background: "#1A1A1A", border: `1px solid ${LINE}`, borderRadius: 12, padding: "12px 14px", color: "#fff", fontFamily: "inherit", marginBottom: 12 }} />
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Phone</label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="2015550100"
-              style={{ width: "100%", boxSizing: "border-box", background: "#1A1A1A", border: `1px solid ${LINE}`, borderRadius: 12, padding: "12px 14px", color: "#fff", fontFamily: "inherit", marginBottom: 18 }}
-            />
-
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="2015550100" style={{ width: "100%", boxSizing: "border-box", background: "#1A1A1A", border: `1px solid ${LINE}`, borderRadius: 12, padding: "12px 14px", color: "#fff", fontFamily: "inherit", marginBottom: 18 }} />
             <div style={{ display: "flex", gap: 8 }}>
-              <button type="submit" style={{ flex: 1, background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "12px 16px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}>
-                Send invite
-              </button>
-              <button type="button" onClick={() => setInviteOpen(false)} style={{ background: "transparent", color: MUTED, border: `1px solid ${LINE}`, borderRadius: 999, padding: "12px 16px", fontFamily: "inherit", cursor: "pointer" }}>
-                Cancel
-              </button>
+              <button type="submit" style={{ flex: 1, background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "12px 16px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}>Send invite</button>
+              <button type="button" onClick={() => setInviteOpen(false)} style={{ background: "transparent", color: MUTED, border: `1px solid ${LINE}`, borderRadius: 999, padding: "12px 16px", fontFamily: "inherit", cursor: "pointer" }}>Cancel</button>
             </div>
           </form>
         </div>
