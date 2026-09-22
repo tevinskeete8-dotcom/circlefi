@@ -3,10 +3,9 @@ import { supabase } from "../lib/supabase";
 
 const TEAL = "#5EEAD4";
 const INK = "#0B0B0B";
-const WHITE = "#FFFFFF";
-const MUTED = "#6F6F6F";
-const LINE = "rgba(11,11,11,0.08)";
-const PAPER = "#F3F3F1";
+const CARD = "#141414";
+const MUTED = "#8A8A8A";
+const LINE = "rgba(255,255,255,0.08)";
 
 export default function Profile() {
   const [firstName, setFirstName] = useState("");
@@ -27,12 +26,12 @@ export default function Profile() {
       setEmail(user.email || "");
       const { data } = await supabase
         .from("profiles")
-        .select("first_name, last_name, full_name")
+        .select("first_name, last_name")
         .eq("id", user.id)
         .maybeSingle();
       if (!data) return;
-      setFirstName(data.first_name || data.full_name?.split(" ")[0] || "");
-      setLastName(data.last_name || data.full_name?.split(" ").slice(1).join(" ") || "");
+      setFirstName(data.first_name || "");
+      setLastName(data.last_name || "");
     })();
   }, []);
 
@@ -48,7 +47,6 @@ export default function Profile() {
       .update({
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        full_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
       })
       .eq("id", auth.user.id);
     setSaving(false);
@@ -80,19 +78,20 @@ export default function Profile() {
   }
 
   const input = {
-    width: "100%",
-    background: PAPER,
+    width: "100%" as const,
+    background: "#1A1A1A",
     border: `1.5px solid ${LINE}`,
     borderRadius: 12,
     padding: "12px 14px",
     fontFamily: "inherit",
     fontSize: 15,
     outline: "none",
+    color: "#fff",
     boxSizing: "border-box" as const,
   };
 
   const card = {
-    background: WHITE,
+    background: CARD,
     border: `1px solid ${LINE}`,
     borderRadius: 20,
     padding: "22px 24px",
@@ -100,19 +99,19 @@ export default function Profile() {
   };
 
   const btn = {
-    background: INK,
-    color: "#fff",
+    background: TEAL,
+    color: INK,
     border: 0,
     borderRadius: 999,
     padding: "10px 16px",
     fontWeight: 800,
     fontFamily: "inherit",
-    cursor: "pointer",
+    cursor: "pointer" as const,
     marginTop: 12,
   };
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: INK, maxWidth: 720 }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#F5F5F5", maxWidth: 720 }}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 6 }}>
           Account
@@ -123,12 +122,12 @@ export default function Profile() {
       </div>
 
       {msg && (
-        <div style={{ background: "#E6FAF7", color: INK, borderRadius: 12, padding: "10px 14px", marginBottom: 12, fontSize: 14, fontWeight: 600 }}>
+        <div style={{ background: "#12352F", color: TEAL, borderRadius: 12, padding: "10px 14px", marginBottom: 12, fontSize: 14, fontWeight: 600 }}>
           {msg}
         </div>
       )}
       {err && (
-        <div style={{ background: "#FEECEC", color: "#B42318", borderRadius: 12, padding: "10px 14px", marginBottom: 12, fontSize: 14 }}>
+        <div style={{ background: "#3A1515", color: "#FF8A80", borderRadius: 12, padding: "10px 14px", marginBottom: 12, fontSize: 14 }}>
           {err}
         </div>
       )}
@@ -154,19 +153,6 @@ export default function Profile() {
         <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} style={input} />
         <button type="submit" style={btn} disabled={updatingPw}>{updatingPw ? "Updating…" : "Update password"}</button>
       </form>
-
-      <div style={card}>
-        <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>Payout account</div>
-        <div style={{ color: MUTED, fontSize: 14, marginBottom: 14 }}>
-          Connected. Circle payouts can land here.
-        </div>
-        <button
-          type="button"
-          style={{ ...btn, background: "transparent", color: INK, border: `1.5px solid ${LINE}` }}
-        >
-          Update payout account
-        </button>
-      </div>
     </div>
   );
 }
