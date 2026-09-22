@@ -14,8 +14,6 @@ type Circle = {
   contribution_amount?: number;
   amount?: number;
   invite_code?: string;
-  organizer_id?: string;
-  created_by?: string;
 };
 
 export default function AcceptInvite() {
@@ -70,8 +68,6 @@ export default function AcceptInvite() {
     const { error: insertError } = await supabase.from("circle_members").insert({
       circle_id: circle.id,
       user_id: user.id,
-      role: "member",
-      status: "active",
     });
 
     if (insertError && !String(insertError.message).toLowerCase().includes("duplicate")) {
