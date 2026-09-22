@@ -33,12 +33,26 @@ function money(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
+function ShareIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+    </svg>
+  );
+}
+
 export default function CircleDetail() {
   const { id } = useParams();
   const [circle, setCircle] = useState<Circle | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -56,23 +70,60 @@ export default function CircleDetail() {
   }, [id]);
 
   const amt = Number(circle?.contribution_amount ?? circle?.amount ?? 0);
-  const count = Number(circle?.member_count ?? members.length ?? 0);
+  const count = Math.max(Number(circle?.member_count ?? 0), members.length);
   const pool = Number(circle?.pool ?? amt * count);
   const progress = Math.min(100, Math.max(0, Number(circle?.progress ?? 0)));
-  const invite = `${window.location.origin}/invite/${circle?.invite_code || circle?.id || ""}`;
+  const inviteUrl = `${window.location.origin}/invite/${circle?.invite_code || circle?.id || ""}`;
+  const inviteText = `Join ${circle?.name || "my Pardna circle"}. Planned amount ${amt ? `$${amt}` : "TBD"} per person. No money moves until we say so.\n${inviteUrl}`;
 
-  async function copyInvite() {
+  async function shareLink() {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: circle?.name || "Pardna", text: inviteText, url: inviteUrl });
+        setMsg("Share sheet opened.");
+        return;
+      } catch {
+        /* cancelled */
+      }
+    }
     try {
-      await navigator.clipboard.writeText(invite);
-      setMsg("Invite link copied.");
+      await navigator.clipboard.writeText(inviteUrl);
+      setMsg("Share link copied.");
     } catch {
-      setMsg(invite);
+      setMsg(inviteUrl);
     }
   }
 
-  if (loading) {
-    return <div style={{ color: MUTED }}>Loading circle…</div>;
+  function sendInvites(e: React.FormEvent) {
+    e.preventDefault();
+    const cleanEmail = email.trim();
+    const cleanPhone = phone.replace(/[^\d+]/g, "");
+
+    if (!cleanEmail && !cleanPhone) {
+      setMsg("Add an email or a phone number.");
+      return;
+    }
+
+    if (cleanEmail) {
+      window.location.href = `mailto:${encodeURIComponent(cleanEmail)}?subject=${encodeURIComponent(
+        `Join ${circle?.name || "my Pardna circle"}`
+      )}&body=${encodeURIComponent(inviteText)}`;
+    }
+
+    if (cleanPhone) {
+      const sms = `sms:${cleanPhone}?&body=${encodeURIComponent(inviteText)}`;
+      window.setTimeout(() => {
+        window.location.href = sms;
+      }, cleanEmail ? 400 : 0);
+    }
+
+    setMsg("Opening Mail or Messages with the invite filled in.");
+    setInviteOpen(false);
+    setEmail("");
+    setPhone("");
   }
+
+  if (loading) return <div style={{ color: MUTED }}>Loading circle…</div>;
 
   if (!circle) {
     return (
@@ -98,12 +149,26 @@ export default function CircleDetail() {
             {circle.name || "Circle"}
           </h1>
         </div>
-        <button
-          onClick={copyInvite}
-          style={{ background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "10px 18px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}
-        >
-          Copy invite link
-        </button>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => setInviteOpen(true)}
+            style={{ background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "10px 18px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}
+          >
+            Invite
+          </button>
+          <button
+            onClick={shareLink}
+            title="Share link"
+            style={{
+              width: 42, height: 42, borderRadius: 999, border: `1px solid ${LINE}`,
+              background: CARD, color: "#fff", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <ShareIcon />
+          </button>
+        </div>
       </div>
 
       {msg && (
@@ -140,7 +205,7 @@ export default function CircleDetail() {
         <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 14, color: "#fff" }}>People in this circle</div>
         {members.length === 0 ? (
           <div style={{ color: MUTED, fontSize: 14 }}>
-            No member list yet. Share the invite link so people can join.
+            You are the organizer. Invite someone to put a second name on this list.
           </div>
         ) : (
           members.map((m, i) => (
@@ -157,9 +222,53 @@ export default function CircleDetail() {
         )}
       </div>
 
-      <div style={{ marginTop: 16, background: INK, border: `1px solid ${LINE}`, borderRadius: 18, padding: 18, color: MUTED, fontSize: 13, lineHeight: 1.6 }}>
-        Funds sit in escrow until a scheduled payout. This page is the live view of who is in the circle and what the pot is.
-      </div>
+      {inviteOpen && (
+        <div
+          onClick={() => setInviteOpen(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20, zIndex: 80 }}
+        >
+          <form
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={sendInvites}
+            style={{ width: "100%", maxWidth: 420, background: CARD, border: `1px solid ${LINE}`, borderRadius: 24, padding: 24 }}
+          >
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>
+              Invite
+            </div>
+            <h2 style={{ margin: "0 0 8px", fontSize: 24, letterSpacing: "-0.03em" }}>Add someone you trust</h2>
+            <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.55, margin: "0 0 18px" }}>
+              Email or text opens on your device with the circle link already written. Pardna is not sending the message for you yet.
+            </p>
+
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="friend@email.com"
+              style={{ width: "100%", boxSizing: "border-box", background: "#1A1A1A", border: `1px solid ${LINE}`, borderRadius: 12, padding: "12px 14px", color: "#fff", fontFamily: "inherit", marginBottom: 12 }}
+            />
+
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Phone</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="2015550100"
+              style={{ width: "100%", boxSizing: "border-box", background: "#1A1A1A", border: `1px solid ${LINE}`, borderRadius: 12, padding: "12px 14px", color: "#fff", fontFamily: "inherit", marginBottom: 18 }}
+            />
+
+            <div style={{ display: "flex", gap: 8 }}>
+              <button type="submit" style={{ flex: 1, background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "12px 16px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}>
+                Send invite
+              </button>
+              <button type="button" onClick={() => setInviteOpen(false)} style={{ background: "transparent", color: MUTED, border: `1px solid ${LINE}`, borderRadius: 999, padding: "12px 16px", fontFamily: "inherit", cursor: "pointer" }}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
