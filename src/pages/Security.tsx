@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 
 const TEAL = "#5EEAD4";
-const INK = "#0B0B0B";
 const CARD = "#141414";
 const MUTED = "#8A8A8A";
 const LINE = "rgba(255,255,255,0.08)";
