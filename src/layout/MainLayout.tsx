@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import Logo from "../components/Logo";
+import PardnaLogo from "../components/PardnaLogo";
 
 const TEAL = "#5EEAD4";
 const INK = "#0B0B0B";
@@ -56,13 +56,20 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
       <div aria-hidden="true" className="pardna-grain" />
 
       <nav style={{
-        position: "sticky", top: 0, zIndex: 40,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        height: 64, padding: "0 clamp(1.1rem, 4vw, 2.5rem)",
-        background: "rgba(11,11,11,0.78)", backdropFilter: "blur(18px)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)", gap: 16,
+        position: "sticky",
+        top: 0,
+        zIndex: 40,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        height: 64,
+        padding: "0 clamp(1.1rem, 4vw, 2.5rem)",
+        background: "rgba(11,11,11,0.78)",
+        backdropFilter: "blur(18px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        gap: 16,
       }}>
-        <Logo to="/app" />
+        <PardnaLogo to="/app" />
         <div style={{ display: "flex", gap: 22, alignItems: "center", flexWrap: "wrap" }}>
           {links.map((l) => (
             <NavLink

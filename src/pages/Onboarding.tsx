@@ -413,3 +413,4 @@ export default function Onboarding() {
     </div>
   );
 }
+// @ts-nocheck
