@@ -1,123 +1,59 @@
 import { useState } from "react";
-import PardnaLogo from "../components/PardnaLogo";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { useNavigate, Link } from "react-router-dom";
-import "../styles/login.css";
+import Logo from "../components/Logo";
+
+const TEAL = "#5EEAD4";
+const INK = "#0B0B0B";
+const CARD = "#141414";
+const MUTED = "#8A8A8A";
+const LINE = "rgba(255,255,255,0.08)";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const next = params.get("next") || "/app";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
 
-  const handleLogin = async () => {
-    setLoading(true);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
     setError("");
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+    setBusy(false);
+    if (err) setError(err.message);
+    else navigate(next);
+  }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (!error) {
-      navigate("/app");
-    } else {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleLogin();
+  const field: React.CSSProperties = {
+    width: "100%", boxSizing: "border-box", background: "#1A1A1A",
+    border: "1px solid " + LINE, borderRadius: 12, padding: "12px 14px",
+    color: "#fff", fontFamily: "inherit", marginBottom: 12,
   };
 
   return (
-    <div className="login-page">
-
-      {/* Background effects */}
-      <div className="login-bg-grid" aria-hidden="true" />
-      <div className="login-glow" aria-hidden="true" />
-
-      {/* Back to landing */}
-      <Link to="/" className="login-back">
-        ← Back to Pardna
-      </Link>
-
-      <div className="login-card">
-
-        {/* Logo */}
-        <PardnaLogo size="md" />
-
-        <div className="login-header">
-          <h1>Welcome back</h1>
-          <p>Sign in to your savings circle</p>
+    <div style={{ minHeight: "100vh", background: INK, color: "#fff", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", display: "grid", placeItems: "center", padding: 24 }}>
+      <div style={{ width: "100%", maxWidth: 420 }}>
+        <div style={{ marginBottom: 28 }}><Logo to="/" /></div>
+        <div style={{ background: CARD, border: "1px solid " + LINE, borderRadius: 24, padding: 24 }}>
+          <h1 style={{ margin: "0 0 8px", fontSize: 28 }}>Log in</h1>
+          <p style={{ color: MUTED, margin: "0 0 20px" }}>Use the email on your account.</p>
+          <form onSubmit={submit}>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" type="email" required style={field} />
+            <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" type="password" required style={field} />
+            {error && <div style={{ color: "#FF8A80", fontSize: 14, marginBottom: 12 }}>{error}</div>}
+            <button type="submit" disabled={busy} style={{ width: "100%", background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "12px 16px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}>
+              {busy ? "Signing in…" : "Log in"}
+            </button>
+          </form>
         </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="login-error">
-            <span>⚠</span> {error}
-          </div>
-        )}
-
-        {/* Fields */}
-        <div className="login-fields">
-          <div className="field-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              className="login-input"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="field-group">
-            <div className="field-label-row">
-              <label htmlFor="password">Password</label>
-              <a href="#" className="forgot-link">Forgot password?</a>
-            </div>
-            <input
-              id="password"
-              className="login-input"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="current-password"
-            />
-          </div>
-        </div>
-
-        <button
-          className={`login-btn ${loading ? "login-btn--loading" : ""}`}
-          onClick={handleLogin}
-          disabled={loading}
-        >
-          {loading ? (
-            <span className="spinner" />
-          ) : (
-            <>Sign in <span className="btn-arrow">→</span></>
-          )}
-        </button>
-
-        <p className="login-signup">
-          Don't have an account?{" "}
-          <Link to="/signup">Create one free</Link>
+        <p style={{ color: MUTED, marginTop: 16, fontSize: 14 }}>
+          No account? <Link to={"/signup" + (params.get("next") ? "?next=" + encodeURIComponent(next) : "")} style={{ color: TEAL }}>Create one</Link>
         </p>
-
       </div>
-
-      {/* Bottom trust line */}
-      <p className="login-trust">
-        🔐 Bank-grade encryption · Your data is always protected
-      </p>
     </div>
   );
 }

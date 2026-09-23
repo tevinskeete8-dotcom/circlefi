@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import Logo from "../components/Logo";
 
 const TEAL = "#5EEAD4";
 const INK = "#0B0B0B";
@@ -27,11 +28,7 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
         navigate("/login");
         return;
       }
-      const { data } = await supabase
-        .from("profiles")
-        .select("first_name, last_name")
-        .eq("id", user.id)
-        .maybeSingle();
+      const { data } = await supabase.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle();
       setName(data?.first_name || user.email?.split("@")[0] || "You");
     })();
   }, [navigate]);
@@ -59,22 +56,13 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
       <div aria-hidden="true" className="pardna-grain" />
 
       <nav style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 40,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        height: 64,
-        padding: "0 clamp(1.1rem, 4vw, 2.5rem)",
-        background: "rgba(11,11,11,0.78)",
-        backdropFilter: "blur(18px)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        gap: 16,
+        position: "sticky", top: 0, zIndex: 40,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        height: 64, padding: "0 clamp(1.1rem, 4vw, 2.5rem)",
+        background: "rgba(11,11,11,0.78)", backdropFilter: "blur(18px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)", gap: 16,
       }}>
-        <NavLink to="/app" style={{ color: "#fff", textDecoration: "none", fontWeight: 800, fontSize: 18, letterSpacing: "-0.03em" }}>
-          Pardna
-        </NavLink>
+        <Logo to="/app" />
         <div style={{ display: "flex", gap: 22, alignItems: "center", flexWrap: "wrap" }}>
           {links.map((l) => (
             <NavLink

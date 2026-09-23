@@ -1,242 +1,59 @@
 import { useState } from "react";
-import PardnaLogo from "../components/PardnaLogo";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { useNavigate, Link } from "react-router-dom";
-import "../styles/login.css"; // reuses login styles — no new CSS needed
+import Logo from "../components/Logo";
+
+const TEAL = "#5EEAD4";
+const INK = "#0B0B0B";
+const CARD = "#141414";
+const MUTED = "#8A8A8A";
+const LINE = "rgba(255,255,255,0.08)";
 
 export default function Signup() {
-  const [firstName, setFirstName] = useState("");
-  const [email, setEmail]         = useState("");
-  const [password, setPassword]   = useState("");
-  const [confirm, setConfirm]     = useState("");
-  const [loading, setLoading]     = useState(false);
-  const [error, setError]         = useState("");
-  const [success, setSuccess]     = useState(false);
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const next = params.get("next") || "/onboarding";
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const handleSignup = async () => {
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
     setError("");
-
-    if (!firstName.trim() || !email || !password || !confirm) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    if (password !== confirm) {
-      setError("Passwords do not match.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-
-    setLoading(true);
-
-    const { data: signupData, error: signupError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (signupError) {
-      setError(signupError.message);
-      setLoading(false);
-      return;
-    }
-
-    // Save first name to profiles
-    if (signupData?.user) {
-      await supabase.from("profiles").upsert({
-        id: signupData.user.id,
-        first_name: firstName.trim(),
-      });
-    }
-
-    // Auto sign-in after signup
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (loginError) {
-      // Signup worked but auto-login failed — show confirmation instead
-      setSuccess(true);
-      setLoading(false);
-    } else {
-      navigate("/app");
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleSignup();
-  };
-
-  // ── Email confirmation screen ────────────────────────────────────
-  if (success) {
-    return (
-      <div className="login-page">
-        <div className="login-bg-grid" aria-hidden="true" />
-        <div className="login-glow" aria-hidden="true" />
-
-        <div className="login-card">
-          <PardnaLogo size="md" />
-
-          <div className="login-header">
-            <h1>Check your email</h1>
-            <p>We sent a confirmation link to <strong style={{ color: "#EEF2F8" }}>{email}</strong></p>
-          </div>
-
-          <div className="login-error" style={{
-            background: "rgba(26,191,173,0.08)",
-            borderColor: "rgba(26,191,173,0.2)",
-            color: "#1D4ED8",
-          }}>
-            <span>✓</span> Click the link in your email to activate your account.
-          </div>
-
-          <p className="login-signup" style={{ textAlign: "center" }}>
-            Already confirmed?{" "}
-            <Link to="/login">Sign in</Link>
-          </p>
-        </div>
-      </div>
-    );
+    const { error: err } = await supabase.auth.signUp({ email, password });
+    setBusy(false);
+    if (err) setError(err.message);
+    else navigate(next);
   }
 
-  // ── Main signup form ─────────────────────────────────────────────
+  const field: React.CSSProperties = {
+    width: "100%", boxSizing: "border-box", background: "#1A1A1A",
+    border: "1px solid " + LINE, borderRadius: 12, padding: "12px 14px",
+    color: "#fff", fontFamily: "inherit", marginBottom: 12,
+  };
+
   return (
-    <div className="login-page">
-
-      <div className="login-bg-grid" aria-hidden="true" />
-      <div className="login-glow" aria-hidden="true" />
-
-      <Link to="/" className="login-back">
-        ← Back to Pardna
-      </Link>
-
-      <div className="login-card">
-
-        <div className="login-logo">
-          <PardnaLogo size="md" />
+    <div style={{ minHeight: "100vh", background: INK, color: "#fff", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", display: "grid", placeItems: "center", padding: 24 }}>
+      <div style={{ width: "100%", maxWidth: 420 }}>
+        <div style={{ marginBottom: 28 }}><Logo to="/" /></div>
+        <div style={{ background: CARD, border: "1px solid " + LINE, borderRadius: 24, padding: 24 }}>
+          <h1 style={{ margin: "0 0 8px", fontSize: 28 }}>Create account</h1>
+          <p style={{ color: MUTED, margin: "0 0 20px" }}>Start a circle or join one you were invited to.</p>
+          <form onSubmit={submit}>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" type="email" required style={field} />
+            <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password (8+ characters)" type="password" minLength={8} required style={field} />
+            {error && <div style={{ color: "#FF8A80", fontSize: 14, marginBottom: 12 }}>{error}</div>}
+            <button type="submit" disabled={busy} style={{ width: "100%", background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "12px 16px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}>
+              {busy ? "Creating…" : "Create account"}
+            </button>
+          </form>
         </div>
-
-        <div className="login-header">
-          <h1>Create your account</h1>
-          <p>Join a savings circle and start building credit</p>
-        </div>
-
-        {error && (
-          <div className="login-error">
-            <span>⚠</span> {error}
-          </div>
-        )}
-
-        <div className="login-fields">
-          <div className="field-group">
-            <label htmlFor="firstName">First Name</label>
-            <input
-              id="firstName"
-              className="login-input"
-              type="text"
-              placeholder="e.g. Amara"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="given-name"
-            />
-          </div>
-
-          <div className="field-group">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              className="login-input"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="field-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              className="login-input"
-              type="password"
-              placeholder="Min. 8 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="new-password"
-            />
-          </div>
-
-          <div className="field-group">
-            <label htmlFor="confirm">Confirm Password</label>
-            <input
-              id="confirm"
-              className="login-input"
-              type="password"
-              placeholder="••••••••"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="new-password"
-            />
-          </div>
-        </div>
-
-        {/* Password strength indicator */}
-        {password.length > 0 && (
-          <div className="password-strength">
-            <div className="strength-bars">
-              {[1, 2, 3, 4].map((n) => (
-                <div
-                  key={n}
-                  className="strength-bar"
-                  style={{
-                    background:
-                      password.length >= n * 3
-                        ? password.length < 6  ? "#F87171"
-                        : password.length < 10 ? "#D97706"
-                        : "#1D4ED8"
-                        : "rgba(255,255,255,0.08)",
-                  }}
-                />
-              ))}
-            </div>
-            <span className="strength-label">
-              {password.length < 6  ? "Too short"
-              : password.length < 10 ? "Could be stronger"
-              : "Strong password"}
-            </span>
-          </div>
-        )}
-
-        <button
-          className={`login-btn ${loading ? "login-btn--loading" : ""}`}
-          onClick={handleSignup}
-          disabled={loading}
-        >
-          {loading ? (
-            <span className="spinner" />
-          ) : (
-            <>Create account <span className="btn-arrow">→</span></>
-          )}
-        </button>
-
-        <p className="login-signup">
-          Already have an account?{" "}
-          <Link to="/login">Sign in</Link>
+        <p style={{ color: MUTED, marginTop: 16, fontSize: 14 }}>
+          Already have one? <Link to={"/login" + (params.get("next") ? "?next=" + encodeURIComponent(next) : "")} style={{ color: TEAL }}>Log in</Link>
         </p>
-
       </div>
-
-      <p className="login-trust">
-        🔐 Bank-grade encryption · Your data is always protected
-      </p>
     </div>
   );
 }
