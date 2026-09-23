@@ -37,7 +37,7 @@ function Card({ c }: { c: Circle }) {
           {initials(c.name || "C")}
         </div>
         <div>
-          <div style={{ fontWeight: 800 }}>{c.name}</div>
+          <div style={{ fontWeight: 800, color: "#fff" }}>{c.name}</div>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: closed ? MUTED : TEAL }}>
             {closed ? "Closed" : "Active"}
           </div>
@@ -45,12 +45,12 @@ function Card({ c }: { c: Circle }) {
       </div>
       <div style={{ display: "flex", background: "#1A1A1A", borderRadius: 12, marginBottom: 14 }}>
         <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-          <div style={{ fontWeight: 800 }}>{money(amt)}</div>
+          <div style={{ fontWeight: 800, color: "#fff" }}>{money(amt)}</div>
           <div style={{ fontSize: 11, color: MUTED }}>per member</div>
         </div>
         <div style={{ width: 1, background: LINE }} />
         <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-          <div style={{ fontWeight: 800 }}>{seats}</div>
+          <div style={{ fontWeight: 800, color: "#fff" }}>{seats}</div>
           <div style={{ fontSize: 11, color: MUTED }}>seats</div>
         </div>
       </div>
@@ -74,26 +74,26 @@ export default function Circles() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  (async () => {
-    const { data: auth } = await supabase.auth.getUser();
-    const user = auth.user;
-    if (!user) {
+    (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      const user = auth.user;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      setUserId(user.id);
+
+      const { data } = await supabase
+        .from("circles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const mine = (data as Circle[]) || [];
+      setLive(mine.filter((c) => (c.status || "active").toLowerCase() !== "closed"));
+      setClosed(mine.filter((c) => (c.status || "").toLowerCase() === "closed"));
       setLoading(false);
-      return;
-    }
-    setUserId(user.id);
-
-    const { data } = await supabase
-      .from("circles")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    const mine = (data as Circle[]) || [];
-    setLive(mine.filter((c) => (c.status || "active").toLowerCase() !== "closed"));
-    setClosed(mine.filter((c) => (c.status || "").toLowerCase() === "closed"));
-    setLoading(false);
-  })();
-}, []);
+    })();
+  }, []);
 
   const filtered = live.filter((c) => {
     if (!(c.name || "").toLowerCase().includes(q.toLowerCase())) return false;
@@ -103,11 +103,11 @@ export default function Circles() {
   });
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#F5F5F5", maxWidth: 1100 }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#F5F5F5", maxWidth: 880, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap", marginBottom: 22 }}>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>Your savings groups</div>
-          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 800, letterSpacing: "-0.04em" }}>
+          <h1 style={{ margin: 0, fontSize: "clamp(32px, 5vw, 44px)", fontWeight: 800, letterSpacing: "-0.04em", color: "#fff" }}>
             Your <span style={{ color: TEAL }}>circles</span>
           </h1>
         </div>
@@ -115,7 +115,7 @@ export default function Circles() {
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {([
             ["all", "All (" + live.length + ")"],
             ["organizing", "Organizing"],
@@ -167,7 +167,7 @@ export default function Circles() {
         {openClosed && (
           <div style={{ marginTop: 14 }}>
             {closed.length === 0 ? (
-              <div style={{ color: MUTED }}>No closed circles yet. End one and it lands here.</div>
+              <div style={{ color: MUTED }}>No closed circles yet.</div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
                 {closed.map((c) => (

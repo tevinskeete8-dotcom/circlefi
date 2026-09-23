@@ -1,67 +1,51 @@
+import { Link } from "react-router-dom";
+
 const TEAL = "#5EEAD4";
 const INK = "#0B0B0B";
-const WHITE = "#FFFFFF";
-const MUTED = "#6F6F6F";
-const LINE = "rgba(11,11,11,0.08)";
+const CARD = "#141414";
+const MUTED = "#8A8A8A";
+const LINE = "rgba(255,255,255,0.08)";
 
-const pillars = [
+const rows = [
   {
-    t: "FDIC-protected escrow",
-    d: "Pooled circle funds sit in custodial escrow accounts — not with Pardna, and not with any one member. Coverage follows applicable FDIC limits at the partner bank.",
+    t: "Your session",
+    d: "You sign in with Supabase Auth. Pages after login require a live session.",
   },
   {
-    t: "Stripe infrastructure",
-    d: "Payments move through Stripe Treasury / Unit. Pardna is a payments and escrow platform, not a bank and not a deposit-taking institution.",
+    t: "Names on the roster",
+    d: "Circles show first and last name from your profile. Email is not shown to other members.",
   },
   {
-    t: "Identity checks",
-    d: "Members are verified before they join a circle. We follow KYC and AML requirements for the product as it operates today.",
+    t: "No bank password here",
+    d: "Nothing on this build asks for a bank login. There is no Plaid connection live.",
   },
   {
-    t: "Scheduled payouts",
-    d: "The pot releases on the calendar the group agreed to. An organizer cannot hold or redirect a scheduled payout.",
+    t: "No money held yet",
+    d: "Mark paid only writes a row. Funds are not collected, escrowed, or FDIC-insured in this test.",
   },
 ];
 
 export default function Security() {
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: INK }}>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 6 }}>
-          Account and platform
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#F5F5F5", maxWidth: 880, margin: "0 auto" }}>
+      <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>Account</div>
+      <h1 style={{ margin: "0 0 8px", fontSize: "clamp(32px, 5vw, 44px)", letterSpacing: "-0.04em", color: "#fff" }}>
+        Your <span style={{ color: TEAL }}>security</span>
+      </h1>
+      <p style={{ color: MUTED, lineHeight: 1.6, margin: "0 0 22px", maxWidth: 560 }}>
+        What is true in this build. When payments exist, this page will name the partner and the license. Not before.
+      </p>
+
+      <div style={{ background: CARD, border: "1px solid " + LINE, borderRadius: 24, padding: 22 }}>
+        {rows.map((r) => (
+          <div key={r.t} style={{ background: "#1A1A1A", borderRadius: 16, padding: "16px 18px", marginBottom: 10 }}>
+            <div style={{ color: TEAL, fontWeight: 800, marginBottom: 6 }}>{r.t}</div>
+            <div style={{ color: "#D0D0D0", lineHeight: 1.55 }}>{r.d}</div>
+          </div>
+        ))}
+        <div style={{ color: MUTED, fontSize: 13, marginTop: 8 }}>
+          Change your password on <Link to="/app/profile" style={{ color: TEAL }}>Profile</Link>.
         </div>
-        <h1 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: "-0.035em" }}>
-          Your Security
-        </h1>
-      </div>
-
-      <div style={{ background: INK, color: "#fff", borderRadius: 24, padding: "28px 26px" }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: TEAL, marginBottom: 10 }}>
-          Circle escrow
-        </div>
-        <h2 style={{ margin: "0 0 10px", fontSize: 26, fontWeight: 800, letterSpacing: "-0.03em", color: TEAL }}>
-          How circle funds are held
-        </h2>
-        <p style={{ margin: "0 0 22px", color: "#A3A3A3", lineHeight: 1.6, maxWidth: 640 }}>
-          Pardna runs payments and escrow. It is not a bank. Funds stay with regulated partners until a payout date hits.
-        </p>
-
-        <div style={{ display: "grid", gap: 10 }}>
-          {pillars.map((p) => (
-            <div key={p.t} style={{ background: "#1A1A1A", borderRadius: 16, padding: "16px 18px" }}>
-              <div style={{ fontWeight: 800, color: TEAL, marginBottom: 6 }}>{p.t}</div>
-              <div style={{ color: "#C8C8C8", fontSize: 14, lineHeight: 1.6 }}>{p.d}</div>
-            </div>
-          ))}
-        </div>
-
-        <p style={{ margin: "18px 0 0", color: "#8A8A8A", fontSize: 13, lineHeight: 1.6 }}>
-          Pardna holds no deposits. Float yield on held balances, if any, is disclosed in the fee schedule.
-        </p>
-      </div>
-
-      <div style={{ marginTop: 14, background: WHITE, border: `1px solid ${LINE}`, borderRadius: 18, padding: 20, color: MUTED, fontSize: 14, lineHeight: 1.6 }}>
-        Bank connections run through Plaid. We do not see your banking password.
       </div>
     </div>
   );

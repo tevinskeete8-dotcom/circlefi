@@ -43,27 +43,39 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
 
   return (
     <div style={{ minHeight: "100vh", background: INK, color: "#F5F5F5", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", position: "relative", overflowX: "hidden" }}>
-      <div aria-hidden="true" style={{
-        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
-        background:
-          "radial-gradient(900px 420px at 12% -10%, rgba(94,234,212,0.16), transparent 55%)," +
-          "radial-gradient(700px 380px at 90% 0%, rgba(94,234,212,0.07), transparent 50%)," +
-          "radial-gradient(600px 500px at 50% 110%, rgba(94,234,212,0.05), transparent 55%)",
-      }} />
+      <div
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          inset: 0,
+          pointerEvents: "none",
+          zIndex: 0,
+          background:
+            "radial-gradient(1100px 520px at 8% -8%, rgba(94,234,212,0.22), transparent 58%)," +
+            "radial-gradient(800px 420px at 100% 0%, rgba(94,234,212,0.10), transparent 52%)," +
+            "radial-gradient(700px 480px at 50% 115%, rgba(94,234,212,0.08), transparent 55%)",
+        }}
+      />
       <div aria-hidden="true" className="pardna-grain" />
 
       <nav style={{
-        position: "sticky", top: 0, zIndex: 40,
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        height: 64, padding: "0 clamp(1.1rem, 4vw, 2.5rem)",
-        background: "rgba(11,11,11,0.78)", backdropFilter: "blur(18px)",
+        position: "sticky",
+        top: 0,
+        zIndex: 40,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        height: 64,
+        padding: "0 clamp(1.1rem, 4vw, 2.5rem)",
+        background: "rgba(11,11,11,0.78)",
+        backdropFilter: "blur(18px)",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
         gap: 16,
       }}>
         <NavLink to="/app" style={{ color: "#fff", textDecoration: "none", fontWeight: 800, fontSize: 18, letterSpacing: "-0.03em" }}>
           Pardna
         </NavLink>
-        <div style={{ display: "flex", gap: 22, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 22, alignItems: "center", flexWrap: "wrap" }}>
           {links.map((l) => (
             <NavLink
               key={l.to}
