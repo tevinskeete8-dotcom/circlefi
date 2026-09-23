@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import Logo from "../components/Logo";
+import Logo from "../components/PardnaLogo";
 
 const TEAL = "#5EEAD4";
 const INK = "#0B0B0B";

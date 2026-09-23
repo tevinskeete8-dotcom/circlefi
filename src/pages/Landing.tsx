@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Logo from "../components/Logo";
+import Logo from "../components/PardnaLogo";
 
 const TEAL = "#5EEAD4";
 const INK = "#0B0B0B";
