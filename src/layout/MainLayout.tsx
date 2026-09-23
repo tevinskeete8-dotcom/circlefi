@@ -10,8 +10,8 @@ const MUTED = "#8A8A8A";
 const links = [
   { to: "/app", label: "Home", end: true },
   { to: "/app/circles", label: "Circles", end: false },
-  { to: "/app/reputation", label: "History", end: false },
-  { to: "/app/security", label: "Safety", end: false },
+  { to: "/app/reputation", label: "Streak", end: false },
+  { to: "/app/security", label: "Security", end: false },
   { to: "/app/profile", label: "Profile", end: false },
 ];
 
