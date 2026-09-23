@@ -29,15 +29,10 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
       }
       const { data } = await supabase
         .from("profiles")
-        .select("first_name, full_name")
+        .select("first_name, last_name")
         .eq("id", user.id)
         .maybeSingle();
-      setName(
-        data?.first_name ||
-          data?.full_name?.split(" ")[0] ||
-          user.email?.split("@")[0] ||
-          "You"
-      );
+      setName(data?.first_name || user.email?.split("@")[0] || "You");
     })();
   }, [navigate]);
 

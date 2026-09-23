@@ -14,7 +14,17 @@ type Circle = {
   contribution_amount?: number;
   amount?: number;
   invite_code?: string;
+  due_day?: number;
+  kind?: string;
+  status?: string;
 };
+
+function ordinal(n: number) {
+  if (n === 1) return "1st";
+  if (n === 2) return "2nd";
+  if (n === 3) return "3rd";
+  return `${n}th`;
+}
 
 export default function AcceptInvite() {
   const { token } = useParams();
@@ -22,6 +32,7 @@ export default function AcceptInvite() {
   const [circle, setCircle] = useState<Circle | null>(null);
   const [status, setStatus] = useState<"loading" | "need-login" | "ready" | "joining" | "error">("loading");
   const [error, setError] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -42,6 +53,11 @@ export default function AcceptInvite() {
         setError("This invite is invalid or the circle was removed.");
         return;
       }
+      if ((found.status || "active").toLowerCase() === "closed") {
+        setStatus("error");
+        setError("This circle has ended.");
+        return;
+      }
       setCircle(found);
 
       const { data: auth } = await supabase.auth.getUser();
@@ -54,7 +70,7 @@ export default function AcceptInvite() {
   }, [token]);
 
   async function join() {
-    if (!circle) return;
+    if (!circle || !agreed) return;
     setStatus("joining");
     setError("");
 
@@ -68,6 +84,8 @@ export default function AcceptInvite() {
     const { error: insertError } = await supabase.from("circle_members").insert({
       circle_id: circle.id,
       user_id: user.id,
+      status: "active",
+      agreed_at: new Date().toISOString(),
     });
 
     if (insertError && !String(insertError.message).toLowerCase().includes("duplicate")) {
@@ -76,10 +94,17 @@ export default function AcceptInvite() {
       return;
     }
 
+    await supabase.from("circle_events").insert({
+      circle_id: circle.id,
+      user_id: user.id,
+      kind: "joined",
+    });
+
     navigate(`/app/circles/${circle.id}`);
   }
 
   const amt = Number(circle?.contribution_amount ?? circle?.amount ?? 0);
+  const due = Number(circle?.due_day || 1);
 
   return (
     <div style={{ minHeight: "100vh", background: INK, color: "#F5F5F5", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -104,10 +129,19 @@ export default function AcceptInvite() {
             <h1 style={{ fontSize: 32, fontWeight: 800, letterSpacing: "-0.03em", margin: "0 0 10px" }}>
               {circle.name || "A circle"}
             </h1>
-            <p style={{ color: MUTED, lineHeight: 1.6, margin: "0 0 22px" }}>
-              Planned amount {amt ? `$${amt.toLocaleString()} per person` : "set by the organizer"}.
+            <p style={{ color: MUTED, lineHeight: 1.6, margin: "0 0 18px" }}>
+              {amt ? `$${amt.toLocaleString()} due the ${ordinal(due)}.` : "Amount set by the organizer."}{" "}
               No money moves in this test. Joining puts your name on the roster.
             </p>
+
+            <div style={{ background: "#1A1A1A", border: `1px solid ${LINE}`, borderRadius: 16, padding: 16, marginBottom: 16 }}>
+              <div style={{ fontWeight: 800, marginBottom: 8 }}>Before you join</div>
+              <ul style={{ margin: 0, paddingLeft: 18, color: MUTED, lineHeight: 1.6, fontSize: 14 }}>
+                <li>Same amount, same day, until every seat has had a turn.</li>
+                <li>If you get paid before the end, you still owe the remaining months.</li>
+                <li>Leaving early does not wipe what you owe.</li>
+              </ul>
+            </div>
 
             {error && <div style={{ color: "#FF8A80", fontSize: 14, marginBottom: 14 }}>{error}</div>}
 
@@ -121,13 +155,29 @@ export default function AcceptInvite() {
                 </Link>
               </div>
             ) : (
-              <button
-                onClick={join}
-                disabled={status === "joining"}
-                style={{ width: "100%", background: TEAL, color: INK, border: 0, borderRadius: 999, padding: "12px 16px", fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}
-              >
-                {status === "joining" ? "Joining…" : "Join this circle"}
-              </button>
+              <>
+                <label style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 14, fontSize: 14, lineHeight: 1.5, cursor: "pointer" }}>
+                  <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} style={{ marginTop: 3 }} />
+                  <span>I agree to stay on the bill until the circle ends, including after my payout.</span>
+                </label>
+                <button
+                  onClick={join}
+                  disabled={status === "joining" || !agreed}
+                  style={{
+                    width: "100%",
+                    background: agreed ? TEAL : "#333",
+                    color: agreed ? INK : MUTED,
+                    border: 0,
+                    borderRadius: 999,
+                    padding: "12px 16px",
+                    fontWeight: 800,
+                    fontFamily: "inherit",
+                    cursor: agreed ? "pointer" : "not-allowed",
+                  }}
+                >
+                  {status === "joining" ? "Joining…" : "Join this circle"}
+                </button>
+              </>
             )}
           </>
         )}
