@@ -14,140 +14,202 @@ type Circle = {
   status?: string;
   contribution_amount?: number;
   amount?: number;
-  member_count?: number;
-  pool?: number;
-  created_at?: string;
-  role?: string;
+  total_members?: number;
+  kind?: string;
+  organizer_id?: string;
 };
 
-function initials(name: string) {
-  return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
-}
+type Membership = {
+  circle_id: string;
+  status?: string;
+};
+
 function money(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+}
+
+function initials(name: string) {
+  return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0] ? w[0].toUpperCase() : "").join("");
 }
 
 export default function Circles() {
   const [circles, setCircles] = useState<Circle[]>([]);
   const [tab, setTab] = useState<"all" | "organizing" | "member">("all");
   const [q, setQ] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("circles").select("*").order("created_at", { ascending: false });
-      setCircles((data as Circle[]) || []);
+      const { data: auth } = await supabase.auth.getUser();
+      const user = auth.user;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      setUserId(user.id);
+
+      const { data: memberships } = await supabase
+        .from("circle_members")
+        .select("circle_id, status")
+        .eq("user_id", user.id);
+
+      const leftIds = new Set(
+        ((memberships as Membership[]) || [])
+          .filter((m) => (m.status || "active") === "left")
+          .map((m) => m.circle_id)
+      );
+
+      const liveIds = ((memberships as Membership[]) || [])
+        .filter((m) => (m.status || "active") !== "left")
+        .map((m) => m.circle_id);
+
+      let rows: Circle[] = [];
+      if (liveIds.length) {
+        const { data } = await supabase
+          .from("circles")
+          .select("*")
+          .in("id", liveIds)
+          .order("created_at", { ascending: false });
+        rows = (data as Circle[]) || [];
+      }
+
+      const { data: owned } = await supabase
+        .from("circles")
+        .select("*")
+        .eq("organizer_id", user.id)
+        .order("created_at", { ascending: false });
+
+      const seen = new Set(rows.map((c) => c.id));
+      for (const c of (owned as Circle[]) || []) {
+        if (!seen.has(c.id) && !leftIds.has(c.id)) rows.push(c);
+      }
+
+      setCircles(
+        rows.filter((c) => (c.status || "active").toLowerCase() !== "closed")
+      );
       setLoading(false);
     })();
   }, []);
 
   const filtered = circles.filter((c) => {
-    const nameOk = (c.name || "").toLowerCase().includes(q.toLowerCase());
-    if (!nameOk) return false;
-    if (tab === "organizing") return (c.role || "organizer") === "organizer";
-    if (tab === "member") return c.role === "member";
+    if (!(c.name || "").toLowerCase().includes(q.toLowerCase())) return false;
+    if (tab === "organizing") return c.organizer_id === userId;
+    if (tab === "member") return c.organizer_id !== userId;
     return true;
   });
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#F5F5F5", maxWidth: 1100 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap", marginBottom: 22 }}>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>
             Your savings groups
           </div>
-          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 800, letterSpacing: "-0.04em", color: "#fff" }}>
+          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 800, letterSpacing: "-0.04em" }}>
             Your <span style={{ color: TEAL }}>circles</span>
           </h1>
         </div>
-        <Link to="/app/circles/new" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 18px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
+        <Link
+          to="/app/circles/new"
+          style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}
+        >
           + New circle
         </Link>
       </div>
 
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
-        {([
-          ["all", `All (${circles.length})`],
-          ["organizing", "Organizing"],
-          ["member", "Member"],
-        ] as const).map(([id, label]) => (
-          <button
-            key={id}
-            onClick={() => setTab(id)}
-            style={{
-              border: 0, cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: 13,
-              padding: "8px 14px", borderRadius: 999,
-              background: tab === id ? TEAL : CARD,
-              color: tab === id ? INK : MUTED,
-            }}
-          >
-            {label}
-          </button>
-        ))}
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {([
+            ["all", "All (" + circles.length + ")"],
+            ["organizing", "Organizing"],
+            ["member", "Member"],
+          ] as const).map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              style={{
+                background: tab === id ? TEAL : "transparent",
+                color: tab === id ? INK : "#fff",
+                border: "1px solid " + (tab === id ? TEAL : LINE),
+                borderRadius: 999,
+                padding: "8px 14px",
+                fontWeight: 700,
+                fontFamily: "inherit",
+                cursor: "pointer",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search circles…"
+          placeholder="Search circles..."
           style={{
-            marginLeft: "auto", minWidth: 200, padding: "8px 14px", borderRadius: 999,
-            border: `1px solid ${LINE}`, outline: "none", fontFamily: "inherit",
-            background: CARD, color: "#fff",
+            background: "#1A1A1A",
+            border: "1px solid " + LINE,
+            borderRadius: 999,
+            padding: "8px 14px",
+            color: "#fff",
+            fontFamily: "inherit",
+            minWidth: 180,
           }}
         />
       </div>
 
       {loading ? (
-        <div style={{ color: MUTED }}>Loading…</div>
+        <div style={{ color: MUTED }}>Loading...</div>
       ) : filtered.length === 0 ? (
-        <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 48, textAlign: "center", color: MUTED }}>
-          No circles in this view.
-        </div>
+        <div style={{ color: MUTED }}>No live circles.</div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
           {filtered.map((c) => {
             const amt = Number(c.contribution_amount ?? c.amount ?? 0);
-            const members = Number(c.member_count ?? 0);
-            const pool = Number(c.pool ?? amt * members);
+            const seats = Number(c.total_members || 0);
             return (
-              <div key={c.id} style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{
-                    width: 42, height: 42, borderRadius: 12, background: TEAL, color: INK,
-                    display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0,
-                  }}>{initials(c.name || "C")}</div>
+              <div key={c.id} style={{ background: CARD, border: "1px solid " + LINE, borderRadius: 20, padding: 18 }}>
+                <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 14 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: TEAL, color: INK, display: "grid", placeItems: "center", fontWeight: 800, fontSize: 12 }}>
+                    {initials(c.name || "C")}
+                  </div>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>{c.name}</div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 2 }}>
+                    <div style={{ fontWeight: 800 }}>{c.name}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: TEAL }}>
                       {c.status || "Active"}
                     </div>
                   </div>
                 </div>
-                <div style={{ display: "flex", background: "#1A1A1A", borderRadius: 12 }}>
+                <div style={{ display: "flex", background: "#1A1A1A", borderRadius: 12, marginBottom: 14, overflow: "hidden" }}>
                   <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-                    <div style={{ fontWeight: 800, color: "#fff" }}>{money(amt)}</div>
+                    <div style={{ fontWeight: 800 }}>{money(amt)}</div>
                     <div style={{ fontSize: 11, color: MUTED }}>per member</div>
                   </div>
                   <div style={{ width: 1, background: LINE }} />
                   <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-                    <div style={{ fontWeight: 800, color: "#fff" }}>{members}</div>
-                    <div style={{ fontSize: 11, color: MUTED }}>members</div>
+                    <div style={{ fontWeight: 800 }}>{seats || "-"}</div>
+                    <div style={{ fontSize: 11, color: MUTED }}>seats</div>
                   </div>
                   <div style={{ width: 1, background: LINE }} />
                   <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-                    <div style={{ fontWeight: 800, color: "#fff" }}>{money(pool)}</div>
+                    <div style={{ fontWeight: 800 }}>{money(amt * (seats || 1))}</div>
                     <div style={{ fontSize: 11, color: MUTED }}>pool / mo</div>
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
-                  <Link to={`/app/circles/${c.id}`} style={{
-                    flex: 1, textAlign: "center", background: TEAL, color: INK, textDecoration: "none",
-                    padding: "9px 12px", borderRadius: 999, fontWeight: 800, fontSize: 13,
-                  }}>View</Link>
-                  <Link to={`/app/circles/${c.id}`} style={{
-                    flex: 1, textAlign: "center", color: "#fff", textDecoration: "none",
-                    padding: "9px 12px", borderRadius: 999, fontWeight: 700, fontSize: 13,
-                    border: `1px solid ${LINE}`,
-                  }}>Manage</Link>
+                  <Link
+                    to={"/app/circles/" + c.id}
+                    style={{ flex: 1, textAlign: "center", background: TEAL, color: INK, textDecoration: "none", padding: "9px 12px", borderRadius: 999, fontWeight: 800, fontSize: 13 }}
+                  >
+                    View
+                  </Link>
+                  <Link
+                    to={"/app/circles/" + c.id}
+                    style={{ flex: 1, textAlign: "center", color: "#fff", textDecoration: "none", padding: "9px 12px", borderRadius: 999, fontWeight: 700, fontSize: 13, border: "1px solid " + LINE }}
+                  >
+                    Manage
+                  </Link>
                 </div>
               </div>
             );
