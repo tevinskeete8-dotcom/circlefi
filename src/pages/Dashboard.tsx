@@ -14,16 +14,35 @@ type Circle = {
   status?: string;
   contribution_amount?: number;
   amount?: number;
-  member_count?: number;
-  pool?: number;
-  progress?: number;
+  kind?: string;
+  due_day?: number;
+  unlock_on?: string | null;
+  organizer_id?: string;
 };
 
-function initials(name: string) {
-  return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
-}
+type Membership = {
+  circle_id: string;
+  status?: string;
+};
+
 function money(n: number) {
   return n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+}
+
+function ordinal(n: number) {
+  if (n === 1) return "1st";
+  if (n === 2) return "2nd";
+  if (n === 3) return "3rd";
+  return n + "th";
+}
+
+function prettyDate(iso?: string | null) {
+  if (!iso) return "";
+  return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export default function Dashboard() {
@@ -35,7 +54,10 @@ export default function Dashboard() {
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
       const user = auth.user;
-      if (!user) { setLoading(false); return; }
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -43,121 +65,108 @@ export default function Dashboard() {
         .eq("id", user.id)
         .maybeSingle();
 
-      setFirstName(
-        profile?.first_name ||
-        user.email?.split("@")[0] ||
-        "there"
+      setFirstName(profile?.first_name || user.email?.split("@")[0] || "there");
+
+      const { data: memberships } = await supabase
+        .from("circle_members")
+        .select("circle_id, status")
+        .eq("user_id", user.id);
+
+      const leftIds = new Set(
+        ((memberships as Membership[]) || [])
+          .filter((m) => (m.status || "active") === "left")
+          .map((m) => m.circle_id)
       );
 
-      const { data: rows } = await supabase.from("circles").select("*").order("created_at", { ascending: false });
-      setCircles((rows as Circle[]) || []);
+      const liveIds = ((memberships as Membership[]) || [])
+        .filter((m) => (m.status || "active") !== "left")
+        .map((m) => m.circle_id);
+
+      let rows: Circle[] = [];
+      if (liveIds.length) {
+        const { data } = await supabase
+          .from("circles")
+          .select("*")
+          .in("id", liveIds)
+          .order("created_at", { ascending: false });
+        rows = (data as Circle[]) || [];
+      }
+
+      const { data: owned } = await supabase
+        .from("circles")
+        .select("*")
+        .eq("organizer_id", user.id)
+        .order("created_at", { ascending: false });
+
+      const seen = new Set(rows.map((c) => c.id));
+      for (const c of (owned as Circle[]) || []) {
+        if (!seen.has(c.id) && !leftIds.has(c.id)) rows.push(c);
+      }
+
+      setCircles(
+        rows.filter((c) => (c.status || "active").toLowerCase() !== "closed")
+      );
       setLoading(false);
     })();
   }, []);
 
-  const active = circles.filter((c) => (c.status || "active").toLowerCase() !== "closed");
-  const totalPool = active.reduce((sum, c) => {
-    const amt = Number(c.contribution_amount ?? c.amount ?? 0);
-    const members = Number(c.member_count ?? 0);
-    return sum + (c.pool ? Number(c.pool) : amt * members);
-  }, 0);
-  const totalMembers = active.reduce((sum, c) => sum + Number(c.member_count ?? 0), 0);
-  const avg = active.length
-    ? active.reduce((sum, c) => sum + Number(c.contribution_amount ?? c.amount ?? 0), 0) / active.length
-    : 0;
-
   return (
-    <div>
+    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", color: "#F5F5F5", maxWidth: 980 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16, flexWrap: "wrap", marginBottom: 28 }}>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: TEAL, marginBottom: 8 }}>
-            Good to see you back
+            Home
           </div>
-          <h1 style={{ margin: 0, fontSize: 40, fontWeight: 800, letterSpacing: "-0.04em", color: "#fff" }}>
-            Welcome, <span style={{ color: TEAL }}>{firstName}</span>
-          </h1>
+          <h1 style={{ margin: 0, fontSize: 36, letterSpacing: "-0.04em" }}>Hi, {firstName}</h1>
         </div>
-        <Link to="/app/circles/new" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 18px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
-          + New circle
+        <Link
+          to="/app/circles/new"
+          style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}
+        >
+          New
         </Link>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 32 }}>
-        {[
-          { v: String(active.length), l: "Active circles", s: "circles you organise" },
-          { v: money(totalPool), l: "Total pool", s: "combined monthly value" },
-          { v: String(totalMembers), l: "Members", s: "across all circles" },
-          { v: money(avg), l: "Avg contribution", s: "per member / month" },
-        ].map((s) => (
-          <div key={s.l} style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: "20px 18px" }}>
-            <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>{loading ? "—" : s.v}</div>
-            <div style={{ fontSize: 13, fontWeight: 650, marginTop: 6, color: "#E8E8E8" }}>{s.l}</div>
-            <div style={{ fontSize: 12, color: MUTED, marginTop: 2 }}>{s.s}</div>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#fff" }}>Your circles</h2>
-        <span style={{ fontSize: 12, fontWeight: 700, color: TEAL }}>{active.length} active</span>
-      </div>
-
       {loading ? (
-        <div style={{ color: MUTED }}>Loading…</div>
+        <div style={{ color: MUTED }}>Loading...</div>
       ) : circles.length === 0 ? (
-        <div style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 48, textAlign: "center" }}>
-          <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 8 }}>No circles yet</div>
-          <div style={{ color: MUTED, marginBottom: 18 }}>Start one with people you already trust.</div>
-          <Link to="/app/circles/new" style={{ background: TEAL, color: INK, textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800 }}>Create a circle</Link>
+        <div style={{ background: CARD, border: "1px solid " + LINE, borderRadius: 24, padding: 28 }}>
+          <div style={{ fontWeight: 800, fontSize: 20, marginBottom: 8 }}>Nothing due yet</div>
+          <div style={{ color: MUTED, lineHeight: 1.6, marginBottom: 16 }}>
+            Start a circle with people, or set a personal bill that stays on until a date you choose.
+          </div>
+          <Link
+            to="/app/circles/new"
+            style={{ display: "inline-block", background: TEAL, color: INK, textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800 }}
+          >
+            Start one
+          </Link>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gap: 12 }}>
           {circles.map((c) => {
             const amt = Number(c.contribution_amount ?? c.amount ?? 0);
-            const members = Number(c.member_count ?? 0);
-            const pool = Number(c.pool ?? amt * members);
-            const progress = Math.min(100, Math.max(0, Number(c.progress ?? 0)));
+            const solo = (c.kind || "group") === "solo";
             return (
-              <div key={c.id} style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 20, padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: 12, background: TEAL, color: INK, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>
-                    {initials(c.name || "C")}
-                  </div>
+              <Link
+                key={c.id}
+                to={"/app/circles/" + c.id}
+                style={{ textDecoration: "none", color: "inherit", background: CARD, border: "1px solid " + LINE, borderRadius: 20, padding: "18px 20px", display: "block" }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>{c.name}</div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: TEAL, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 2 }}>{c.status || "Active"}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: TEAL, marginBottom: 6 }}>
+                      {solo ? "Personal" : "Circle"}
+                    </div>
+                    <div style={{ fontWeight: 800, fontSize: 20 }}>{c.name}</div>
+                    <div style={{ color: MUTED, fontSize: 13, marginTop: 6 }}>
+                      {money(amt)} due the {ordinal(Number(c.due_day || 1))}
+                      {solo && c.unlock_on ? " · opens " + prettyDate(c.unlock_on) : ""}
+                    </div>
                   </div>
+                  <div style={{ fontWeight: 800, fontSize: 22, color: TEAL }}>{money(amt)}</div>
                 </div>
-                <div style={{ display: "flex", background: "#1A1A1A", borderRadius: 12, overflow: "hidden" }}>
-                  <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-                    <div style={{ fontWeight: 800, color: "#fff" }}>{money(amt)}</div>
-                    <div style={{ fontSize: 11, color: MUTED }}>per member</div>
-                  </div>
-                  <div style={{ width: 1, background: LINE }} />
-                  <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-                    <div style={{ fontWeight: 800, color: "#fff" }}>{members}</div>
-                    <div style={{ fontSize: 11, color: MUTED }}>members</div>
-                  </div>
-                  <div style={{ width: 1, background: LINE }} />
-                  <div style={{ flex: 1, textAlign: "center", padding: "10px 6px" }}>
-                    <div style={{ fontWeight: 800, color: "#fff" }}>{money(pool)}</div>
-                    <div style={{ fontSize: 11, color: MUTED }}>pool / mo</div>
-                  </div>
-                </div>
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 6 }}>
-                    <span style={{ color: MUTED }}>Cycle progress</span>
-                    <span style={{ color: TEAL, fontWeight: 700 }}>{progress}%</span>
-                  </div>
-                  <div style={{ height: 6, background: "#222", borderRadius: 99, overflow: "hidden" }}>
-                    <div style={{ width: `${progress}%`, height: "100%", background: TEAL }} />
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <Link to={`/app/circles/${c.id}`} style={{ flex: 1, textAlign: "center", background: TEAL, color: INK, textDecoration: "none", padding: "9px 12px", borderRadius: 999, fontWeight: 800, fontSize: 13 }}>View circle</Link>
-                  <Link to={`/app/circles/${c.id}`} style={{ flex: 1, textAlign: "center", color: "#fff", textDecoration: "none", padding: "9px 12px", borderRadius: 999, fontWeight: 700, fontSize: 13, border: `1px solid ${LINE}` }}>Manage</Link>
-                </div>
-              </div>
+              </Link>
             );
           })}
         </div>
@@ -165,10 +174,12 @@ export default function Dashboard() {
 
       <div style={{ marginTop: 28, background: TEAL, color: INK, borderRadius: 24, padding: "22px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <div>
-          <div style={{ fontWeight: 800, marginBottom: 4 }}>Build your record</div>
-          <div style={{ fontSize: 13 }}>On-time rounds are stored. This does not change your credit score today.</div>
+          <div style={{ fontWeight: 800, marginBottom: 4 }}>On-time record</div>
+          <div style={{ fontSize: 13 }}>Months marked on time are stored. This does not change a credit score today.</div>
         </div>
-        <Link to="/app/reputation" style={{ background: INK, color: "#fff", textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>View record</Link>
+        <Link to="/app/reputation" style={{ background: INK, color: "#fff", textDecoration: "none", padding: "10px 16px", borderRadius: 999, fontWeight: 800, fontSize: 14 }}>
+          View record
+        </Link>
       </div>
     </div>
   );
