@@ -7,14 +7,14 @@ type Props = {
   size?: "sm" | "md" | "lg" | number;
 };
 
-export default function PardnaLogo({ to = "/", word = true, dark = true, size = "sm" }: Props) {
-  const px = size === "lg" ? 36 : size === "md" ? 32 : typeof size === "number" ? size : 28;
+export default function PardnaLogo({ to = "/", word = false, dark = true, size = 40 }: Props) {
+  const px = size === "lg" ? 44 : size === "md" ? 36 : size === "sm" ? 32 : typeof size === "number" ? size : 40;
   const color = dark ? "#fff" : "#0B0B0B";
   const inner = (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-      <img src="/logo.jpg" alt="Pardna" width={px} height={px} style={{ borderRadius: 8 }} />
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      <img src="/logo.png" alt="Pardna" width={px} height={px} style={{ display: "block", borderRadius: 10 }} />
       {word && (
-        <span style={{ color, fontWeight: 800, fontSize: Math.max(16, Math.round(px * 0.64)), letterSpacing: "-0.03em" }}>
+        <span style={{ color, fontWeight: 800, fontSize: 18, letterSpacing: "-0.03em", marginLeft: 10 }}>
           Pardna
         </span>
       )}
@@ -22,7 +22,7 @@ export default function PardnaLogo({ to = "/", word = true, dark = true, size = 
   );
   if (!to) return inner;
   return (
-    <Link to={to} style={{ textDecoration: "none" }}>
+    <Link to={to} style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
       {inner}
     </Link>
   );
