@@ -61,9 +61,7 @@ export default function Landing() {
         background: "rgba(11,11,11,0.88)", backdropFilter: "blur(16px)",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
-        <Link to="/" style={{ color: "#fff", textDecoration: "none", display: "flex", alignItems: "center" }}>
-          <PardnaLogo dark size="sm" />
-        </Link>
+        <PardnaLogo to="/" />
         {!isMobile && (
           <div style={{ display: "flex", gap: "2rem", fontSize: 14, color: MUTED, fontWeight: 500 }}>
             <a href="#how" style={{ color: MUTED, textDecoration: "none" }}>How it works</a>
