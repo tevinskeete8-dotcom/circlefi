@@ -61,7 +61,7 @@ export default function Landing() {
         background: "rgba(11,11,11,0.88)", backdropFilter: "blur(16px)",
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
-        <PardnaLogo to="/" />
+        <PardnaLogo to="/" word size={28} />
         {!isMobile && (
           <div style={{ display: "flex", gap: "2rem", fontSize: 14, color: MUTED, fontWeight: 500 }}>
             <a href="#how" style={{ color: MUTED, textDecoration: "none" }}>How it works</a>
@@ -273,13 +273,21 @@ export default function Landing() {
           }}>Create your account</Link>
         </div>
       </section>
-
       <footer style={{
         padding: "20px clamp(1.1rem, 4vw, 2.5rem) 32px",
-        display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
-        color: "#666", fontSize: 13, borderTop: "1px solid rgba(255,255,255,0.06)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: 16,
+        color: "#666",
+        fontSize: 13,
+        borderTop: "1px solid rgba(255,255,255,0.06)",
       }}>
-        <span>© 2026 Pardna</span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+          <img src="/Favicon.png" alt="" width={22} height={22} style={{ borderRadius: 6 }} />
+          © 2026 Pardna
+        </span>
         <span>Pooled savings for people you already know.</span>
         <div style={{ display: "flex", gap: 16 }}>
           <a href="#" style={{ color: "#666", textDecoration: "none" }}>Privacy</a>
