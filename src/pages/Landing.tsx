@@ -6,6 +6,30 @@ const GREEN = "#5EEAD4";
 const INK = "#0B0B0B";
 const MUTED = "#8A8A8A";
 
+function RecordCount() {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    let i = 0;
+    let goingUp = true;
+    const t = window.setInterval(() => {
+      if (goingUp) {
+        i += 1;
+        if (i >= 12) goingUp = false;
+      } else {
+        i -= 1;
+        if (i <= 0) goingUp = true;
+      }
+      setN(i);
+    }, 140);
+    return () => window.clearInterval(t);
+  }, []);
+  return (
+    <div style={{ fontSize: 56, fontWeight: 800, letterSpacing: "-0.04em", color: GREEN }}>
+      {n}
+    </div>
+  );
+}
+
 export default function Landing() {
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth < 768 : false
@@ -63,17 +87,17 @@ export default function Landing() {
       }}>
         <PardnaLogo to="/" word size={28} />
         {!isMobile && (
-          <div style={{ display: "flex", gap: "2rem", fontSize: 14, color: MUTED, fontWeight: 500 }}>
-            <a href="#how" style={{ color: MUTED, textDecoration: "none" }}>How it works</a>
-            <a href="#trust" style={{ color: MUTED, textDecoration: "none" }}>Trust</a>
-            <a href="#faq" style={{ color: MUTED, textDecoration: "none" }}>FAQ</a>
+          <div style={{ display: "flex", gap: "2rem", fontSize: 14, fontWeight: 500 }}>
+            <a href="#how" style={{ color: "#fff", textDecoration: "none" }}>How it works</a>
+            <a href="#trust" style={{ color: "#fff", textDecoration: "none" }}>Trust</a>
+            <a href="#faq" style={{ color: "#fff", textDecoration: "none" }}>FAQ</a>
           </div>
         )}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {!isMobile && (
-            <Link to="/login" style={{ color: MUTED, textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Log in</Link>
+            <Link to="/login" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Log in</Link>
           )}
-          <Link to="/signup" style={{
+          <Link to="/signup" className="pardna-btn" style={{
             background: GREEN, color: INK, textDecoration: "none",
             fontWeight: 800, fontSize: 14, padding: "8px 16px", borderRadius: 999,
           }}>Get started</Link>
@@ -88,11 +112,11 @@ export default function Landing() {
           <a href="#how" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none" }}>How it works</a>
           <a href="#trust" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none" }}>Trust</a>
           <a href="#faq" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none" }}>FAQ</a>
-          <Link to="/login" onClick={() => setMenuOpen(false)} style={{ color: MUTED, textDecoration: "none" }}>Log in</Link>
+          <Link to="/login" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none" }}>Log in</Link>
         </div>
       )}
 
-      <header style={{
+      <header className="pardna-rise" style={{
         display: "grid",
         gridTemplateColumns: isMobile ? "1fr" : "1.05fr .95fr",
         gap: isMobile ? 40 : 56,
@@ -120,11 +144,11 @@ export default function Landing() {
             Pool a set amount with people you already trust. Contributions pull automatically. When your turn hits, the full pot lands.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 22 }}>
-            <Link to="/signup" style={{
+            <Link to="/signup" className="pardna-btn" style={{
               background: GREEN, color: INK, textDecoration: "none",
               fontWeight: 800, fontSize: 16, padding: "14px 22px", borderRadius: 999,
             }}>Start a circle</Link>
-            <a href="#how" style={{
+            <a href="#how" className="pardna-btn" style={{
               background: "transparent", color: "#fff", textDecoration: "none",
               fontWeight: 600, fontSize: 16, padding: "14px 22px", borderRadius: 999,
               border: "1px solid rgba(255,255,255,0.16)",
@@ -135,7 +159,7 @@ export default function Landing() {
           </p>
         </div>
 
-        <div style={{
+        <div className="pardna-card" style={{
           background: "#141414", border: "1px solid rgba(255,255,255,0.08)",
           borderRadius: 28, padding: 22, boxShadow: "0 30px 80px rgba(0,0,0,0.45)",
         }}>
@@ -168,13 +192,13 @@ export default function Landing() {
           <h2 style={{ fontSize: isMobile ? 32 : 44, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 36, maxWidth: 560 }}>
             Set it once. Stay in because leaving takes effort.
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 16 }}>
+          <div className="pardna-stagger" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 16 }}>
             {[
               { n: "01", t: "Open a circle", d: "Pick an amount. $50, $100, or $200 to start. Invite people you already text." },
               { n: "02", t: "It pulls on schedule", d: "No chasing. Contributions come out of connected accounts on the date you set." },
               { n: "03", t: "Someone gets the pot", d: "Each round, one person receives the full pool. Then it rotates until everyone has." },
             ].map((s) => (
-              <div key={s.n} style={{ background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 24 }}>
+              <div key={s.n} className="pardna-card" style={{ background: "#1A1A1A", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 24 }}>
                 <div style={{ color: GREEN, fontWeight: 800, fontSize: 13, marginBottom: 28 }}>{s.n}</div>
                 <h3 style={{ fontSize: 20, fontWeight: 750, marginBottom: 8 }}>{s.t}</h3>
                 <p style={{ color: MUTED, lineHeight: 1.6, fontSize: 15 }}>{s.d}</p>
@@ -200,7 +224,7 @@ export default function Landing() {
               { t: "Payments are automatic", d: "Tied to a verified bank account. The circle does not depend on someone remembering." },
               { t: "You can see every round", d: "Live log of who paid, who is next, and when the pot moves." },
             ].map((c) => (
-              <div key={c.t} style={{ border: "1px solid rgba(255,255,255,0.08)", borderRadius: 18, padding: "22px 24px" }}>
+              <div key={c.t} className="pardna-card" style={{ border: "1px solid rgba(255,255,255,0.08)", borderRadius: 18, padding: "22px 24px" }}>
                 <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{c.t}</h3>
                 <p style={{ color: MUTED, lineHeight: 1.6, fontSize: 15 }}>{c.d}</p>
               </div>
@@ -220,9 +244,9 @@ export default function Landing() {
               Every on-time contribution adds to your Pardna record. It does not change your credit score today. It is a savings history you can carry — and the path to reporting later.
             </p>
           </div>
-          <div style={{ background: "#1A1A1A", borderRadius: 24, padding: 28, border: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="pardna-card" style={{ background: "#1A1A1A", borderRadius: 24, padding: 28, border: "1px solid rgba(255,255,255,0.06)" }}>
             <div style={{ fontSize: 13, color: MUTED, marginBottom: 8 }}>Pardna record</div>
-            <div style={{ fontSize: 56, fontWeight: 800, letterSpacing: "-0.04em", color: GREEN }}>0</div>
+            <RecordCount />
             <div style={{ fontSize: 14, color: MUTED, marginBottom: 20 }}>Starting score · grows with on-time rounds</div>
             {["Pay on the date", "Finish a full rotation", "Stay in more than one circle"].map((x) => (
               <div key={x} style={{ padding: "10px 0", borderTop: "1px solid rgba(255,255,255,0.06)", color: "#E8E8E8", fontSize: 15 }}>{x}</div>
@@ -267,12 +291,13 @@ export default function Landing() {
           <p style={{ fontSize: 17, marginBottom: 28, maxWidth: 440, marginLeft: "auto", marginRight: "auto" }}>
             One circle. A set amount. A date on the calendar. That is the whole habit.
           </p>
-          <Link to="/signup" style={{
+          <Link to="/signup" className="pardna-btn" style={{
             display: "inline-block", background: INK, color: "#fff", textDecoration: "none",
             fontWeight: 800, fontSize: 16, padding: "14px 24px", borderRadius: 999,
           }}>Create your account</Link>
         </div>
       </section>
+
       <footer style={{
         padding: "20px clamp(1.1rem, 4vw, 2.5rem) 32px",
         display: "flex",

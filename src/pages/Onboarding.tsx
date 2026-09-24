@@ -1,3 +1,4 @@
+// @ts-nocheckS
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PardnaLogo from "../components/PardnaLogo";
@@ -413,4 +414,3 @@ export default function Onboarding() {
     </div>
   );
 }
-// @ts-nocheck

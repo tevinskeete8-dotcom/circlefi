@@ -1,0 +1,49 @@
+@keyframes pardna-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pardna-flash {
+  0% { box-shadow: 0 0 0 0 rgba(94, 234, 212, 0.7); }
+  100% { box-shadow: 0 0 0 18px rgba(94, 234, 212, 0); }
+}
+
+.pardna-rise {
+  animation: pardna-rise 0.5s ease both;
+}
+
+.pardna-btn {
+  transition: transform 0.15s ease, filter 0.15s ease !important;
+}
+.pardna-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.12);
+}
+.pardna-btn:active {
+  transform: scale(0.96);
+}
+
+.pardna-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+.pardna-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(94, 234, 212, 0.18);
+}
+
+.pardna-paid:active {
+  animation: pardna-flash 0.5s ease;
+}
+
+.pardna-nav-link {
+  position: relative;
+}
+.pardna-nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 2px;
+  background: #5EEAD4;
+}

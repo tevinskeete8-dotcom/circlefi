@@ -55,7 +55,7 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
       />
       <div aria-hidden="true" className="pardna-grain" />
 
-      <nav style={{
+      <nav className="pardna-nav" style={{
         position: "sticky",
         top: 0,
         zIndex: 40,
@@ -76,6 +76,7 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
               key={l.to}
               to={l.to}
               end={l.end}
+              className={({ isActive }) => "pardna-nav-link" + (isActive ? " active" : "")}
               style={({ isActive }) => ({
                 color: isActive ? TEAL : MUTED,
                 textDecoration: "none",
@@ -90,6 +91,7 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontSize: 13, color: MUTED }}>{name}</span>
           <button
+            className="pardna-btn"
             onClick={signOut}
             style={{ background: "transparent", color: "#fff", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 999, padding: "7px 12px", fontWeight: 700, fontFamily: "inherit", cursor: "pointer" }}
           >
@@ -98,7 +100,7 @@ export default function MainLayout({ children }: { children?: ReactNode }) {
         </div>
       </nav>
 
-      <main className="pardna-rise" style={{ position: "relative", zIndex: 1, padding: "28px clamp(1.1rem, 4vw, 2.5rem) 64px" }}>
+      <main className="pardna-rise pardna-stagger" style={{ position: "relative", zIndex: 1, padding: "28px clamp(1.1rem, 4vw, 2.5rem) 64px" }}>
         {children}
       </main>
     </div>
